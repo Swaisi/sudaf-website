@@ -2,15 +2,15 @@ import { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 
 const images = {
-  hero: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80",
-  transport: "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
-  traffic: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-  roads: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=1200&q=80",
-  ports: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80",
-  rail: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=1200&q=80",
-  airports: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80",
-  public: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80",
-  environment: "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=1200&q=80",
+  hero: "/images/hero.jpg",
+  transport: "/images/transport.jpg",
+  traffic: "/images/traffic.jpg",
+  roads: "/images/road.jpg",
+  ports: "/images/port.jpg",
+  rail: "/images/railway.jpg",
+  airports: "/images/airport.jpg",
+  public: "/images/bus.jpg",
+  environment: "/images/environment.jpg",
 };
 
 const services = [
@@ -19,64 +19,80 @@ const services = [
     image: images.transport,
     en: "Transportation Engineering & Planning",
     ar: "هندسة وتخطيط النقل",
-    enDesc: "Strategic transport planning, mobility policies, demand forecasting, and multimodal network studies.",
-    arDesc: "تخطيط النقل الاستراتيجي، سياسات التنقل، التنبؤ بالطلب، ودراسات الشبكات متعددة الوسائط.",
+    enDesc:
+      "Strategic transport planning, mobility policies, demand forecasting, and multimodal network studies.",
+    arDesc:
+      "تخطيط النقل الاستراتيجي، سياسات التنقل، التنبؤ بالطلب، ودراسات شبكات النقل متعددة الوسائط.",
   },
   {
     id: "traffic",
     image: images.traffic,
     en: "Traffic Engineering & Impact Studies",
     ar: "هندسة المرور ودراسات الأثر المروري",
-    enDesc: "Traffic impact assessments, surveys, intersection analysis, capacity studies, and traffic operations.",
-    arDesc: "دراسات الأثر المروري، العد المروري، تحليل التقاطعات، تقييم السعة، والتشغيل المروري.",
+    enDesc:
+      "Traffic impact assessments, traffic surveys, intersection analysis, capacity studies, and traffic operations.",
+    arDesc:
+      "دراسات الأثر المروري، العدّ المروري، تحليل التقاطعات، تقييم السعة، وتحليل التشغيل المروري.",
   },
   {
     id: "roads",
     image: images.roads,
     en: "Roads, Highways & International Corridors",
     ar: "الطرق والطرق السريعة والممرات الدولية",
-    enDesc: "Road network planning, highway studies, geometric design review, and international corridor assessment.",
-    arDesc: "تخطيط شبكات الطرق، دراسات الطرق السريعة، مراجعة التصميم الهندسي، وتقييم الممرات الدولية.",
+    enDesc:
+      "Road network planning, highway studies, geometric design review, and international corridor assessment.",
+    arDesc:
+      "تخطيط شبكات الطرق، دراسات الطرق السريعة، مراجعة التصميم الهندسي، وتقييم الممرات الدولية.",
   },
   {
     id: "ports",
     image: images.ports,
     en: "Ports & Maritime Transport",
     ar: "الموانئ والنقل البحري",
-    enDesc: "Port access planning, freight movement, logistics interface, and maritime connectivity studies.",
-    arDesc: "تخطيط مداخل الموانئ، حركة البضائع، الربط اللوجستي، ودراسات الاتصال البحري.",
+    enDesc:
+      "Port access planning, freight movement, logistics interface, and maritime transport connectivity.",
+    arDesc:
+      "تخطيط مداخل الموانئ، حركة البضائع، الربط اللوجستي، ودراسات الاتصال البحري.",
   },
   {
     id: "rail",
     image: images.rail,
     en: "Railway Planning",
     ar: "تخطيط السكك الحديدية",
-    enDesc: "Rail corridor planning, station access, freight/passenger rail studies, and intermodal integration.",
-    arDesc: "تخطيط مسارات السكك الحديدية، الوصول للمحطات، نقل الركاب والبضائع، والتكامل متعدد الوسائط.",
+    enDesc:
+      "Rail corridor planning, station access, freight/passenger rail studies, and intermodal integration.",
+    arDesc:
+      "تخطيط مسارات السكك الحديدية، الوصول للمحطات، نقل الركاب والبضائع، والتكامل متعدد الوسائط.",
   },
   {
     id: "airports",
     image: images.airports,
     en: "Airport & Airside Infrastructure",
     ar: "المطارات والبنية التحتية الجوية",
-    enDesc: "Airport access, landside and airside circulation, aprons, taxiways, and operational studies.",
-    arDesc: "دراسات الوصول للمطارات، الحركة البرية والجوية، الساحات، الممرات، والدراسات التشغيلية.",
+    enDesc:
+      "Airport access, landside and airside circulation, aprons, taxiways, and operational studies.",
+    arDesc:
+      "دراسات الوصول للمطارات، الحركة البرية والجوية، الساحات، ممرات الطائرات، والدراسات التشغيلية.",
   },
   {
     id: "public",
     image: images.public,
     en: "Public Transport Planning",
     ar: "تخطيط النقل العام",
-    enDesc: "Bus networks, route planning, accessibility, service coverage, and urban mobility integration.",
-    arDesc: "شبكات الحافلات، تخطيط المسارات، الوصول، تغطية الخدمة، والتكامل مع التنقل الحضري.",
+    enDesc:
+      "Bus networks, route planning, accessibility, service coverage, and urban mobility integration.",
+    arDesc:
+      "شبكات الحافلات، تخطيط المسارات، إمكانية الوصول، تغطية الخدمة، والتكامل مع التنقل الحضري.",
   },
   {
     id: "environment",
     image: images.environment,
     en: "Noise, Emissions & Transport Pollution",
     ar: "الضجيج والانبعاثات والتلوث المروري",
-    enDesc: "Transport noise, emissions, air quality impacts, pollution assessment, and mitigation measures.",
-    arDesc: "دراسات الضجيج، الانبعاثات، أثر جودة الهواء، تقييم التلوث، وإجراءات التخفيف.",
+    enDesc:
+      "Transport noise, emissions, air quality impacts, pollution assessment, and mitigation measures.",
+    arDesc:
+      "دراسات الضجيج، الانبعاثات، أثر جودة الهواء، تقييم التلوث، وإجراءات التخفيف.",
   },
 ];
 
@@ -88,6 +104,7 @@ export default function App() {
     <BrowserRouter>
       <div dir={ar ? "rtl" : "ltr"} style={styles.page}>
         <Header ar={ar} lang={lang} setLang={setLang} />
+
         <Routes>
           <Route path="/" element={<Home ar={ar} />} />
           <Route path="/services" element={<Services ar={ar} />} />
@@ -95,6 +112,7 @@ export default function App() {
           <Route path="/projects" element={<Projects ar={ar} />} />
           <Route path="/contact" element={<Contact ar={ar} />} />
         </Routes>
+
         <Footer ar={ar} />
       </div>
     </BrowserRouter>
@@ -115,7 +133,10 @@ function Header({ ar, lang, setLang }) {
         <Link to="/projects" style={styles.navLink}>{ar ? "الخبرات" : "Projects"}</Link>
         <Link to="/contact" style={styles.navLink}>{ar ? "اتصل بنا" : "Contact"}</Link>
 
-        <button onClick={() => setLang(lang === "en" ? "ar" : "en")} style={styles.langButton}>
+        <button
+          onClick={() => setLang(lang === "en" ? "ar" : "en")}
+          style={styles.langButton}
+        >
           {lang === "en" ? "العربية" : "English"}
         </button>
       </nav>
@@ -129,7 +150,7 @@ function Home({ ar }) {
       <section
         style={{
           ...styles.hero,
-          backgroundImage: `linear-gradient(rgba(17,24,39,.78),rgba(17,24,39,.92)), url(${images.hero})`,
+          backgroundImage: `linear-gradient(rgba(17,24,39,.72), rgba(17,24,39,.92)), url(${images.hero})`,
         }}
       >
         <img src="/logo.svg" alt="Sudaf Logo" style={styles.logoHero} />
@@ -144,12 +165,17 @@ function Home({ ar }) {
             : "Specialized engineering consultancy in transport planning, traffic studies, roads, ports, airports, railways, public transport, logistics, and transport-related environmental studies."}
         </p>
 
-        <div style={{ display: "flex", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+        <div style={styles.heroButtons}>
           <Link to="/services">
-            <button style={styles.primaryButton}>{ar ? "استعراض الخدمات" : "Explore Services"}</button>
+            <button style={styles.primaryButton}>
+              {ar ? "استعراض الخدمات" : "Explore Services"}
+            </button>
           </Link>
+
           <Link to="/contact">
-            <button style={styles.outlineButton}>{ar ? "اتصل بنا" : "Contact Us"}</button>
+            <button style={styles.outlineButton}>
+              {ar ? "اتصل بنا" : "Contact Us"}
+            </button>
           </Link>
         </div>
       </section>
@@ -158,21 +184,36 @@ function Home({ ar }) {
         <h2 style={styles.title}>{ar ? "عن الشركة" : "About Sudaf"}</h2>
         <p style={styles.text}>
           {ar
-            ? "سدف للاستشارات الهندسية شركة ليبية متخصصة في الدراسات الهندسية والتحليل الفني والتخطيط الاستراتيجي لمشاريع النقل والبنية التحتية، مع تركيز خاص على النقل متعدد الوسائط والمرور."
+            ? "سدف للاستشارات الهندسية شركة ليبية متخصصة في الدراسات الهندسية والتحليل الفني والتخطيط الاستراتيجي لمشاريع النقل والبنية التحتية، مع تركيز خاص على النقل متعدد الوسائط وهندسة المرور."
             : "Sudaf Engineering Consultancy is a Libya-based engineering consultancy focused on technical studies, data-driven analysis, and strategic planning for transport and infrastructure projects, with strong emphasis on multimodal transport and traffic engineering."}
         </p>
       </section>
 
       <Services ar={ar} compact />
 
-      <section style={styles.section}>
-        <h2 style={styles.title}>{ar ? "تواصل معنا" : "Contact Us"}</h2>
-        <p style={styles.text}>
-          {ar ? "لطلب الاستشارات أو الدراسات الفنية أو فرص الشراكة." : "For consultancy requests, technical studies, or partnership opportunities."}
-        </p>
-        <Link to="/contact">
-          <button style={styles.primaryButton}>{ar ? "فتح صفحة التواصل" : "Open Contact Page"}</button>
-        </Link>
+      <section style={styles.sectionAlt}>
+        <h2 style={styles.title}>
+          {ar ? "نهجنا في العمل" : "Our Approach"}
+        </h2>
+        <div style={styles.approachGrid}>
+          {(ar
+            ? [
+                ["تحليل البيانات", "نعتمد على البيانات المرورية والمكانية والتشغيلية كأساس للتقييم."],
+                ["حلول عملية", "نقدم توصيات قابلة للتنفيذ ومناسبة للبيئة المحلية."],
+                ["معايير دولية", "نراعي المنهجيات والمعايير الفنية المعتمدة دوليًا."],
+              ]
+            : [
+                ["Data-Driven Analysis", "We use traffic, spatial, and operational data as the foundation for assessment."],
+                ["Practical Solutions", "We provide implementable recommendations adapted to local conditions."],
+                ["International Methods", "We align our work with recognized engineering and planning methodologies."],
+              ]
+          ).map(([title, desc]) => (
+            <div key={title} style={styles.approachBox}>
+              <h3 style={styles.cardTitle}>{title}</h3>
+              <p style={styles.cardText}>{desc}</p>
+            </div>
+          ))}
+        </div>
       </section>
     </>
   );
@@ -183,7 +224,9 @@ function Services({ ar, compact = false }) {
 
   return (
     <section style={styles.section}>
-      <h2 style={styles.title}>{ar ? "الخدمات الهندسية الرئيسية" : "Core Engineering Services"}</h2>
+      <h2 style={styles.title}>
+        {ar ? "الخدمات الهندسية الرئيسية" : "Core Engineering Services"}
+      </h2>
 
       <div style={styles.grid}>
         {list.map((s) => (
@@ -192,7 +235,9 @@ function Services({ ar, compact = false }) {
             <div style={styles.cardBody}>
               <h3 style={styles.cardTitle}>{ar ? s.ar : s.en}</h3>
               <p style={styles.cardText}>{ar ? s.arDesc : s.enDesc}</p>
-              <span style={styles.readMore}>{ar ? "تفاصيل الخدمة" : "View Details"}</span>
+              <span style={styles.readMore}>
+                {ar ? "تفاصيل الخدمة" : "View Details"}
+              </span>
             </div>
           </Link>
         ))}
@@ -205,6 +250,22 @@ function ServiceDetail({ ar }) {
   const id = window.location.pathname.split("/").pop();
   const s = services.find((x) => x.id === id) || services[0];
 
+  const bullets = ar
+    ? [
+        "إعداد الدراسات الفنية والتحليلية",
+        "تحليل البيانات والتنبؤ المستقبلي",
+        "إعداد التقارير والتوصيات الفنية",
+        "دعم اتخاذ القرار والتخطيط الاستراتيجي",
+        "التكامل مع قطاعات النقل والبنية التحتية الأخرى",
+      ]
+    : [
+        "Preparation of technical and analytical studies",
+        "Data analysis and future forecasting",
+        "Technical reporting and recommendations",
+        "Decision-support and strategic planning input",
+        "Integration with other transport and infrastructure sectors",
+      ];
+
   return (
     <section style={styles.detail}>
       <img src={s.image} alt={ar ? s.ar : s.en} style={styles.detailImage} />
@@ -214,14 +275,15 @@ function ServiceDetail({ ar }) {
         <p style={styles.text}>{ar ? s.arDesc : s.enDesc}</p>
 
         <ul style={styles.list}>
-          {(ar
-            ? ["إعداد الدراسات الفنية", "تحليل البيانات", "التقييم والتنبؤ", "إعداد التقارير والتوصيات", "دعم القرارات الاستراتيجية"]
-            : ["Technical studies", "Data analysis", "Assessment and forecasting", "Reporting and recommendations", "Strategic decision support"]
-          ).map((x) => <li key={x}>{x}</li>)}
+          {bullets.map((x) => (
+            <li key={x}>{x}</li>
+          ))}
         </ul>
 
         <Link to="/services">
-          <button style={styles.primaryButton}>{ar ? "العودة للخدمات" : "Back to Services"}</button>
+          <button style={styles.primaryButton}>
+            {ar ? "العودة للخدمات" : "Back to Services"}
+          </button>
         </Link>
       </div>
     </section>
@@ -229,17 +291,45 @@ function ServiceDetail({ ar }) {
 }
 
 function Projects({ ar }) {
+  const projectAreas = [
+    {
+      image: images.traffic,
+      en: "Traffic Impact Assessment",
+      ar: "دراسات الأثر المروري",
+    },
+    {
+      image: images.roads,
+      en: "Road Network & Highway Studies",
+      ar: "دراسات الطرق والشبكات",
+    },
+    {
+      image: images.airports,
+      en: "Airport Infrastructure Studies",
+      ar: "دراسات البنية التحتية للمطارات",
+    },
+    {
+      image: images.ports,
+      en: "Ports, Freight & Logistics",
+      ar: "الموانئ والشحن واللوجستيات",
+    },
+  ];
+
   return (
     <section style={styles.section}>
-      <h2 style={styles.title}>{ar ? "مجالات الخبرة" : "Selected Experience Areas"}</h2>
+      <h2 style={styles.title}>
+        {ar ? "مجالات الخبرة" : "Selected Experience Areas"}
+      </h2>
+
       <div style={styles.grid}>
-        {services.slice(0, 4).map((s) => (
-          <div key={s.id} style={styles.card}>
-            <img src={s.image} alt={ar ? s.ar : s.en} style={styles.cardImage} />
+        {projectAreas.map((p) => (
+          <div key={p.en} style={styles.card}>
+            <img src={p.image} alt={ar ? p.ar : p.en} style={styles.cardImage} />
             <div style={styles.cardBody}>
-              <h3 style={styles.cardTitle}>{ar ? s.ar : s.en}</h3>
+              <h3 style={styles.cardTitle}>{ar ? p.ar : p.en}</h3>
               <p style={styles.cardText}>
-                {ar ? "دراسات وتحليلات فنية لدعم التخطيط واتخاذ القرار." : "Technical studies and analysis supporting planning and decision-making."}
+                {ar
+                  ? "دراسات وتحليلات فنية لدعم التخطيط واتخاذ القرار."
+                  : "Technical studies and analysis supporting planning and decision-making."}
               </p>
             </div>
           </div>
@@ -268,7 +358,9 @@ function Contact({ ar }) {
         <input name="email" type="email" placeholder={ar ? "البريد الإلكتروني" : "Your Email"} required style={styles.input} />
         <textarea name="message" placeholder={ar ? "الرسالة" : "Message"} rows="5" required style={styles.input} />
 
-        <button type="submit" style={styles.primaryButton}>{ar ? "إرسال" : "Send Message"}</button>
+        <button type="submit" style={styles.primaryButton}>
+          {ar ? "إرسال" : "Send Message"}
+        </button>
       </form>
 
       <div style={styles.contactInfo}>
@@ -282,7 +374,8 @@ function Contact({ ar }) {
 function Footer({ ar }) {
   return (
     <footer style={styles.footer}>
-      © {new Date().getFullYear()} {ar ? "شركة سدف للاستشارات الهندسية" : "Sudaf Engineering Consultancy"}
+      © {new Date().getFullYear()}{" "}
+      {ar ? "شركة سدف للاستشارات الهندسية" : "Sudaf Engineering Consultancy"}
     </footer>
   );
 }
@@ -295,21 +388,29 @@ const panel = "#1f2937";
 const styles = {
   page: {
     fontFamily: "Calibri, Arial, Tahoma, sans-serif",
-    background: "#f4efe8",
+    background: dark,
     color: "#e5e7eb",
     minHeight: "100vh",
+    width: "100%",
+    overflowX: "hidden",
   },
+
   header: {
-    maxWidth: "1220px",
-    margin: "0 auto",
-    padding: "22px 34px",
+    width: "100%",
+    padding: "18px 6%",
     background: dark,
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    gap: "20px",
+    gap: "18px",
     flexWrap: "wrap",
+    boxSizing: "border-box",
+    position: "sticky",
+    top: 0,
+    zIndex: 50,
+    borderBottom: "1px solid rgba(255,255,255,0.08)",
   },
+
   brand: {
     display: "flex",
     alignItems: "center",
@@ -317,24 +418,31 @@ const styles = {
     color: gold,
     textDecoration: "none",
     fontWeight: "bold",
-    fontSize: "22px",
+    fontSize: "clamp(18px, 4vw, 22px)",
+    lineHeight: "1.2",
   },
+
   logoSmall: {
-    width: "54px",
-    height: "54px",
+    width: "48px",
+    height: "48px",
     objectFit: "contain",
+    flexShrink: 0,
   },
+
   nav: {
     display: "flex",
-    gap: "18px",
+    gap: "16px",
     alignItems: "center",
     flexWrap: "wrap",
   },
+
   navLink: {
     color: "white",
     textDecoration: "none",
     fontWeight: "bold",
+    fontSize: "clamp(14px, 3vw, 16px)",
   },
+
   langButton: {
     background: brown,
     color: "white",
@@ -344,56 +452,90 @@ const styles = {
     cursor: "pointer",
     fontWeight: "bold",
   },
+
   hero: {
-    maxWidth: "1220px",
-    margin: "0 auto",
-    minHeight: "620px",
+    width: "100%",
+    minHeight: "calc(100vh - 85px)",
     backgroundSize: "cover",
     backgroundPosition: "center",
     textAlign: "center",
-    padding: "90px 34px",
+    padding: "80px 6%",
+    boxSizing: "border-box",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
   },
+
   logoHero: {
-    width: "135px",
-    marginBottom: "25px",
+    width: "clamp(120px, 34vw, 180px)",
+    marginBottom: "26px",
   },
+
   heroTitle: {
     color: gold,
-    fontSize: "48px",
-    marginBottom: "20px",
+    fontSize: "clamp(34px, 7vw, 56px)",
+    lineHeight: "1.15",
+    margin: "0 0 22px",
+    maxWidth: "950px",
+    textWrap: "balance",
   },
+
   heroText: {
     maxWidth: "900px",
     margin: "0 auto",
     lineHeight: "1.8",
-    fontSize: "20px",
+    fontSize: "clamp(16px, 4vw, 20px)",
     color: "#f3e8d6",
   },
-  section: {
-    maxWidth: "1220px",
-    margin: "0 auto",
-    background: dark,
-    padding: "80px 34px",
-    textAlign: "center",
+
+  heroButtons: {
+    marginTop: "28px",
+    display: "flex",
+    gap: "14px",
+    justifyContent: "center",
+    flexWrap: "wrap",
   },
+
+  section: {
+    width: "100%",
+    background: dark,
+    padding: "80px 6%",
+    textAlign: "center",
+    boxSizing: "border-box",
+  },
+
+  sectionAlt: {
+    width: "100%",
+    background: "#0b1220",
+    padding: "80px 6%",
+    textAlign: "center",
+    boxSizing: "border-box",
+  },
+
   title: {
     color: gold,
-    fontSize: "34px",
+    fontSize: "clamp(28px, 6vw, 38px)",
+    lineHeight: "1.2",
     marginBottom: "24px",
   },
+
   text: {
     maxWidth: "900px",
     margin: "0 auto",
     color: "#d1d5db",
     lineHeight: "1.8",
-    fontSize: "18px",
+    fontSize: "clamp(16px, 3.5vw, 18px)",
   },
+
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(270px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
     gap: "24px",
     marginTop: "36px",
+    width: "100%",
   },
+
   card: {
     background: panel,
     borderRadius: "18px",
@@ -403,47 +545,73 @@ const styles = {
     textAlign: "start",
     boxShadow: "0 20px 45px rgba(0,0,0,.25)",
   },
+
   cardImage: {
     width: "100%",
-    height: "190px",
+    height: "200px",
     objectFit: "cover",
+    display: "block",
   },
+
   cardBody: {
     padding: "24px",
   },
+
   cardTitle: {
     color: gold,
-    fontSize: "21px",
+    fontSize: "clamp(20px, 4vw, 23px)",
+    lineHeight: "1.3",
   },
+
   cardText: {
     color: "#d1d5db",
     lineHeight: "1.7",
+    fontSize: "16px",
   },
+
   readMore: {
     color: gold,
     fontWeight: "bold",
   },
-  detail: {
-    maxWidth: "1220px",
-    margin: "0 auto",
-    background: dark,
-    padding: "80px 34px",
+
+  approachGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+    gap: "22px",
+    marginTop: "36px",
+  },
+
+  approachBox: {
+    background: panel,
+    padding: "26px",
+    borderRadius: "16px",
+    textAlign: "start",
+  },
+
+  detail: {
+    width: "100%",
+    background: dark,
+    padding: "80px 6%",
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
     gap: "40px",
     alignItems: "center",
+    boxSizing: "border-box",
   },
+
   detailImage: {
     width: "100%",
-    height: "360px",
+    height: "clamp(260px, 45vw, 420px)",
     objectFit: "cover",
     borderRadius: "20px",
   },
+
   list: {
     color: "#d1d5db",
-    fontSize: "18px",
+    fontSize: "clamp(16px, 3.5vw, 18px)",
     lineHeight: "2",
   },
+
   form: {
     maxWidth: "520px",
     margin: "32px auto 0",
@@ -451,6 +619,7 @@ const styles = {
     flexDirection: "column",
     gap: "14px",
   },
+
   input: {
     padding: "15px",
     borderRadius: "10px",
@@ -459,9 +628,10 @@ const styles = {
     color: "white",
     outline: "none",
     fontFamily: "Calibri, Arial, Tahoma, sans-serif",
+    fontSize: "16px",
   },
+
   primaryButton: {
-    marginTop: "28px",
     padding: "14px 30px",
     background: gold,
     color: "#111827",
@@ -469,9 +639,10 @@ const styles = {
     borderRadius: "10px",
     cursor: "pointer",
     fontWeight: "bold",
+    fontSize: "15px",
   },
+
   outlineButton: {
-    marginTop: "28px",
     padding: "14px 30px",
     background: "transparent",
     color: gold,
@@ -479,18 +650,21 @@ const styles = {
     borderRadius: "10px",
     cursor: "pointer",
     fontWeight: "bold",
+    fontSize: "15px",
   },
+
   contactInfo: {
     marginTop: "30px",
     color: "#d1d5db",
   },
+
   footer: {
-    maxWidth: "1220px",
-    margin: "0 auto",
+    width: "100%",
     background: dark,
     borderTop: "1px solid #374151",
-    padding: "28px",
+    padding: "28px 6%",
     textAlign: "center",
     color: "#9ca3af",
+    boxSizing: "border-box",
   },
 };
