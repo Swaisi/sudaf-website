@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const images = {
   hero: "/images/hero.jpg",
@@ -14,86 +15,14 @@ const images = {
 };
 
 const services = [
-  {
-    id: "transport",
-    image: images.transport,
-    en: "Transportation Engineering & Planning",
-    ar: "هندسة وتخطيط النقل",
-    enDesc:
-      "Strategic transport planning, mobility policies, demand forecasting, and multimodal network studies.",
-    arDesc:
-      "تخطيط النقل الاستراتيجي، سياسات التنقل، التنبؤ بالطلب، ودراسات شبكات النقل متعددة الوسائط.",
-  },
-  {
-    id: "traffic",
-    image: images.traffic,
-    en: "Traffic Engineering & Impact Studies",
-    ar: "هندسة المرور ودراسات الأثر المروري",
-    enDesc:
-      "Traffic impact assessments, traffic surveys, intersection analysis, capacity studies, and traffic operations.",
-    arDesc:
-      "دراسات الأثر المروري، العدّ المروري، تحليل التقاطعات، تقييم السعة، وتحليل التشغيل المروري.",
-  },
-  {
-    id: "roads",
-    image: images.roads,
-    en: "Roads, Highways & International Corridors",
-    ar: "الطرق والطرق السريعة والممرات الدولية",
-    enDesc:
-      "Road network planning, highway studies, geometric design review, and international corridor assessment.",
-    arDesc:
-      "تخطيط شبكات الطرق، دراسات الطرق السريعة، مراجعة التصميم الهندسي، وتقييم الممرات الدولية.",
-  },
-  {
-    id: "ports",
-    image: images.ports,
-    en: "Ports & Maritime Transport",
-    ar: "الموانئ والنقل البحري",
-    enDesc:
-      "Port access planning, freight movement, logistics interface, and maritime transport connectivity.",
-    arDesc:
-      "تخطيط مداخل الموانئ، حركة البضائع، الربط اللوجستي، ودراسات الاتصال البحري.",
-  },
-  {
-    id: "rail",
-    image: images.rail,
-    en: "Railway Planning",
-    ar: "تخطيط السكك الحديدية",
-    enDesc:
-      "Rail corridor planning, station access, freight/passenger rail studies, and intermodal integration.",
-    arDesc:
-      "تخطيط مسارات السكك الحديدية، الوصول للمحطات، نقل الركاب والبضائع، والتكامل متعدد الوسائط.",
-  },
-  {
-    id: "airports",
-    image: images.airports,
-    en: "Airport & Airside Infrastructure",
-    ar: "المطارات والبنية التحتية الجوية",
-    enDesc:
-      "Airport access, landside and airside circulation, aprons, taxiways, and operational studies.",
-    arDesc:
-      "دراسات الوصول للمطارات، الحركة البرية والجوية، الساحات، ممرات الطائرات، والدراسات التشغيلية.",
-  },
-  {
-    id: "public",
-    image: images.public,
-    en: "Public Transport Planning",
-    ar: "تخطيط النقل العام",
-    enDesc:
-      "Bus networks, route planning, accessibility, service coverage, and urban mobility integration.",
-    arDesc:
-      "شبكات الحافلات، تخطيط المسارات، إمكانية الوصول، تغطية الخدمة، والتكامل مع التنقل الحضري.",
-  },
-  {
-    id: "environment",
-    image: images.environment,
-    en: "Noise, Emissions & Transport Pollution",
-    ar: "الضجيج والانبعاثات والتلوث المروري",
-    enDesc:
-      "Transport noise, emissions, air quality impacts, pollution assessment, and mitigation measures.",
-    arDesc:
-      "دراسات الضجيج، الانبعاثات، أثر جودة الهواء، تقييم التلوث، وإجراءات التخفيف.",
-  },
+  ["transport", images.transport, "Transportation Engineering & Planning", "هندسة وتخطيط النقل"],
+  ["traffic", images.traffic, "Traffic Engineering & Impact Studies", "هندسة المرور ودراسات الأثر المروري"],
+  ["roads", images.roads, "Roads, Highways & International Corridors", "الطرق والطرق السريعة والممرات الدولية"],
+  ["ports", images.ports, "Ports & Maritime Transport", "الموانئ والنقل البحري"],
+  ["rail", images.rail, "Railway Planning", "تخطيط السكك الحديدية"],
+  ["airports", images.airports, "Airport & Airside Infrastructure", "المطارات والبنية التحتية الجوية"],
+  ["public", images.public, "Public Transport Planning", "تخطيط النقل العام"],
+  ["environment", images.environment, "Noise, Emissions & Transport Pollution", "الضجيج والانبعاثات والتلوث المروري"],
 ];
 
 export default function App() {
@@ -124,7 +53,14 @@ function Header({ ar, lang, setLang }) {
     <header style={styles.header}>
       <Link to="/" style={styles.brand}>
         <img src="/logo.svg" alt="Sudaf Logo" style={styles.logoSmall} />
-        <span>{ar ? "سدف للاستشارات الهندسية" : "Sudaf Engineering"}</span>
+        <div>
+          <div style={styles.brandTitle}>
+            {ar ? "سدف للاستشارات الهندسية" : "Sudaf Engineering"}
+          </div>
+          <div style={styles.brandSub}>
+            {ar ? "تخطيط النقل والبنية التحتية" : "Transport & Infrastructure Consultancy"}
+          </div>
+        </div>
       </Link>
 
       <nav style={styles.nav}>
@@ -133,10 +69,7 @@ function Header({ ar, lang, setLang }) {
         <Link to="/projects" style={styles.navLink}>{ar ? "الخبرات" : "Projects"}</Link>
         <Link to="/contact" style={styles.navLink}>{ar ? "اتصل بنا" : "Contact"}</Link>
 
-        <button
-          onClick={() => setLang(lang === "en" ? "ar" : "en")}
-          style={styles.langButton}
-        >
+        <button onClick={() => setLang(lang === "en" ? "ar" : "en")} style={styles.langButton}>
           {lang === "en" ? "العربية" : "English"}
         </button>
       </nav>
@@ -150,71 +83,86 @@ function Home({ ar }) {
       <section
         style={{
           ...styles.hero,
-          backgroundImage: `linear-gradient(rgba(17,24,39,.72), rgba(17,24,39,.92)), url(${images.hero})`,
+          backgroundImage: `linear-gradient(rgba(17,24,39,.70), rgba(17,24,39,.92)), url(${images.hero})`,
         }}
       >
-        <img src="/logo.svg" alt="Sudaf Logo" style={styles.logoHero} />
+        <motion.img
+          src="/logo.svg"
+          alt="Sudaf Logo"
+          style={styles.logoHero}
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        />
 
-        <h1 style={styles.heroTitle}>
+        <motion.h1
+          style={styles.heroTitle}
+          initial={{ opacity: 0, y: 35 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9 }}
+        >
           {ar ? "شركة سدف للاستشارات الهندسية" : "Sudaf Engineering Consultancy"}
-        </h1>
+        </motion.h1>
 
-        <p style={styles.heroText}>
+        <motion.p
+          style={styles.heroText}
+          initial={{ opacity: 0, y: 35 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.0 }}
+        >
           {ar
             ? "استشارات هندسية متخصصة في تخطيط النقل، الدراسات المرورية، الطرق، الموانئ، المطارات، السكك الحديدية، النقل العام، والدراسات البيئية المرتبطة بالنقل."
             : "Specialized engineering consultancy in transport planning, traffic studies, roads, ports, airports, railways, public transport, logistics, and transport-related environmental studies."}
-        </p>
+        </motion.p>
 
-        <div style={styles.heroButtons}>
-          <Link to="/services">
-            <button style={styles.primaryButton}>
-              {ar ? "استعراض الخدمات" : "Explore Services"}
-            </button>
-          </Link>
-
-          <Link to="/contact">
-            <button style={styles.outlineButton}>
-              {ar ? "اتصل بنا" : "Contact Us"}
-            </button>
-          </Link>
-        </div>
+        <motion.div
+          style={styles.heroButtons}
+          initial={{ opacity: 0, y: 35 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.1 }}
+        >
+          <Link to="/services"><button style={styles.primaryButton}>{ar ? "استعراض الخدمات" : "Explore Services"}</button></Link>
+          <Link to="/contact"><button style={styles.outlineButton}>{ar ? "اتصل بنا" : "Contact Us"}</button></Link>
+        </motion.div>
       </section>
 
-      <section style={styles.section}>
-        <h2 style={styles.title}>{ar ? "عن الشركة" : "About Sudaf"}</h2>
-        <p style={styles.text}>
-          {ar
-            ? "سدف للاستشارات الهندسية شركة ليبية متخصصة في الدراسات الهندسية والتحليل الفني والتخطيط الاستراتيجي لمشاريع النقل والبنية التحتية، مع تركيز خاص على النقل متعدد الوسائط وهندسة المرور."
-            : "Sudaf Engineering Consultancy is a Libya-based engineering consultancy focused on technical studies, data-driven analysis, and strategic planning for transport and infrastructure projects, with strong emphasis on multimodal transport and traffic engineering."}
-        </p>
-      </section>
+      <Reveal>
+        <section style={styles.section}>
+          <h2 style={styles.title}>{ar ? "عن الشركة" : "About Sudaf"}</h2>
+          <p style={styles.text}>
+            {ar
+              ? "سدف للاستشارات الهندسية شركة ليبية متخصصة في الدراسات الهندسية والتحليل الفني والتخطيط الاستراتيجي لمشاريع النقل والبنية التحتية، مع تركيز خاص على النقل متعدد الوسائط وهندسة المرور."
+              : "Sudaf Engineering Consultancy is a Libya-based engineering consultancy focused on technical studies, data-driven analysis, and strategic planning for transport and infrastructure projects, with strong emphasis on multimodal transport and traffic engineering."}
+          </p>
+        </section>
+      </Reveal>
 
       <Services ar={ar} compact />
 
-      <section style={styles.sectionAlt}>
-        <h2 style={styles.title}>
-          {ar ? "نهجنا في العمل" : "Our Approach"}
-        </h2>
-        <div style={styles.approachGrid}>
-          {(ar
-            ? [
-                ["تحليل البيانات", "نعتمد على البيانات المرورية والمكانية والتشغيلية كأساس للتقييم."],
-                ["حلول عملية", "نقدم توصيات قابلة للتنفيذ ومناسبة للبيئة المحلية."],
-                ["معايير دولية", "نراعي المنهجيات والمعايير الفنية المعتمدة دوليًا."],
-              ]
-            : [
-                ["Data-Driven Analysis", "We use traffic, spatial, and operational data as the foundation for assessment."],
-                ["Practical Solutions", "We provide implementable recommendations adapted to local conditions."],
-                ["International Methods", "We align our work with recognized engineering and planning methodologies."],
-              ]
-          ).map(([title, desc]) => (
-            <div key={title} style={styles.approachBox}>
-              <h3 style={styles.cardTitle}>{title}</h3>
-              <p style={styles.cardText}>{desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <Reveal>
+        <section style={styles.sectionAlt}>
+          <h2 style={styles.title}>{ar ? "نهجنا في العمل" : "Our Approach"}</h2>
+          <div style={styles.approachGrid}>
+            {(ar
+              ? [
+                  ["تحليل البيانات", "نعتمد على البيانات المرورية والمكانية والتشغيلية كأساس للتقييم."],
+                  ["حلول عملية", "نقدم توصيات قابلة للتنفيذ ومناسبة للبيئة المحلية."],
+                  ["معايير دولية", "نراعي المنهجيات والمعايير الفنية المعتمدة دوليًا."],
+                ]
+              : [
+                  ["Data-Driven Analysis", "We use traffic, spatial, and operational data as the foundation for assessment."],
+                  ["Practical Solutions", "We provide implementable recommendations adapted to local conditions."],
+                  ["International Methods", "We align our work with recognized engineering and planning methodologies."],
+                ]
+            ).map(([title, desc]) => (
+              <div key={title} style={styles.approachBox}>
+                <h3 style={styles.cardTitle}>{title}</h3>
+                <p style={styles.cardText}>{desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </Reveal>
     </>
   );
 }
@@ -223,113 +171,73 @@ function Services({ ar, compact = false }) {
   const list = compact ? services.slice(0, 6) : services;
 
   return (
-    <section style={styles.section}>
-      <h2 style={styles.title}>
-        {ar ? "الخدمات الهندسية الرئيسية" : "Core Engineering Services"}
-      </h2>
+    <Reveal>
+      <section style={styles.section}>
+        <h2 style={styles.title}>{ar ? "الخدمات الهندسية الرئيسية" : "Core Engineering Services"}</h2>
 
-      <div style={styles.grid}>
-        {list.map((s) => (
-          <Link to={`/services/${s.id}`} key={s.id} style={styles.card}>
-            <img src={s.image} alt={ar ? s.ar : s.en} style={styles.cardImage} />
-            <div style={styles.cardBody}>
-              <h3 style={styles.cardTitle}>{ar ? s.ar : s.en}</h3>
-              <p style={styles.cardText}>{ar ? s.arDesc : s.enDesc}</p>
-              <span style={styles.readMore}>
-                {ar ? "تفاصيل الخدمة" : "View Details"}
-              </span>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </section>
+        <div style={styles.grid}>
+          {list.map(([id, image, en, arabic]) => (
+            <Link to={`/services/${id}`} key={id} style={styles.card}>
+              <img src={image} alt={ar ? arabic : en} style={styles.cardImage} />
+              <div style={styles.cardBody}>
+                <h3 style={styles.cardTitle}>{ar ? arabic : en}</h3>
+                <p style={styles.cardText}>
+                  {ar
+                    ? "دراسات فنية وتحليلية متخصصة لدعم التخطيط واتخاذ القرار."
+                    : "Specialized technical and analytical studies supporting planning and decision-making."}
+                </p>
+                <span style={styles.readMore}>{ar ? "تفاصيل الخدمة" : "View Details"}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </Reveal>
   );
 }
 
 function ServiceDetail({ ar }) {
   const id = window.location.pathname.split("/").pop();
-  const s = services.find((x) => x.id === id) || services[0];
-
-  const bullets = ar
-    ? [
-        "إعداد الدراسات الفنية والتحليلية",
-        "تحليل البيانات والتنبؤ المستقبلي",
-        "إعداد التقارير والتوصيات الفنية",
-        "دعم اتخاذ القرار والتخطيط الاستراتيجي",
-        "التكامل مع قطاعات النقل والبنية التحتية الأخرى",
-      ]
-    : [
-        "Preparation of technical and analytical studies",
-        "Data analysis and future forecasting",
-        "Technical reporting and recommendations",
-        "Decision-support and strategic planning input",
-        "Integration with other transport and infrastructure sectors",
-      ];
+  const s = services.find((x) => x[0] === id) || services[0];
 
   return (
     <section style={styles.detail}>
-      <img src={s.image} alt={ar ? s.ar : s.en} style={styles.detailImage} />
+      <img src={s[1]} alt={ar ? s[3] : s[2]} style={styles.detailImage} />
 
       <div>
-        <h1 style={styles.title}>{ar ? s.ar : s.en}</h1>
-        <p style={styles.text}>{ar ? s.arDesc : s.enDesc}</p>
+        <h1 style={styles.title}>{ar ? s[3] : s[2]}</h1>
+        <p style={styles.text}>
+          {ar
+            ? "تغطي هذه الخدمة إعداد الدراسات الفنية، تحليل البيانات، التنبؤ، إعداد التقارير، وتقديم التوصيات الفنية لدعم قرارات الجهات المالكة والمستثمرين."
+            : "This service covers technical studies, data analysis, forecasting, reporting, and recommendations to support authorities, developers, and project stakeholders."}
+        </p>
 
         <ul style={styles.list}>
-          {bullets.map((x) => (
-            <li key={x}>{x}</li>
-          ))}
+          {(ar
+            ? ["إعداد الدراسات الفنية", "تحليل البيانات والتنبؤ", "إعداد التقارير", "دعم اتخاذ القرار", "التكامل مع قطاعات النقل الأخرى"]
+            : ["Technical studies", "Data analysis and forecasting", "Technical reporting", "Decision support", "Integration with other transport sectors"]
+          ).map((x) => <li key={x}>{x}</li>)}
         </ul>
 
-        <Link to="/services">
-          <button style={styles.primaryButton}>
-            {ar ? "العودة للخدمات" : "Back to Services"}
-          </button>
-        </Link>
+        <Link to="/services"><button style={styles.primaryButton}>{ar ? "العودة للخدمات" : "Back to Services"}</button></Link>
       </div>
     </section>
   );
 }
 
 function Projects({ ar }) {
-  const projectAreas = [
-    {
-      image: images.traffic,
-      en: "Traffic Impact Assessment",
-      ar: "دراسات الأثر المروري",
-    },
-    {
-      image: images.roads,
-      en: "Road Network & Highway Studies",
-      ar: "دراسات الطرق والشبكات",
-    },
-    {
-      image: images.airports,
-      en: "Airport Infrastructure Studies",
-      ar: "دراسات البنية التحتية للمطارات",
-    },
-    {
-      image: images.ports,
-      en: "Ports, Freight & Logistics",
-      ar: "الموانئ والشحن واللوجستيات",
-    },
-  ];
-
   return (
     <section style={styles.section}>
-      <h2 style={styles.title}>
-        {ar ? "مجالات الخبرة" : "Selected Experience Areas"}
-      </h2>
+      <h2 style={styles.title}>{ar ? "مجالات الخبرة" : "Selected Experience Areas"}</h2>
 
       <div style={styles.grid}>
-        {projectAreas.map((p) => (
-          <div key={p.en} style={styles.card}>
-            <img src={p.image} alt={ar ? p.ar : p.en} style={styles.cardImage} />
+        {services.slice(0, 4).map(([id, image, en, arabic]) => (
+          <div key={id} style={styles.card}>
+            <img src={image} alt={ar ? arabic : en} style={styles.cardImage} />
             <div style={styles.cardBody}>
-              <h3 style={styles.cardTitle}>{ar ? p.ar : p.en}</h3>
+              <h3 style={styles.cardTitle}>{ar ? arabic : en}</h3>
               <p style={styles.cardText}>
-                {ar
-                  ? "دراسات وتحليلات فنية لدعم التخطيط واتخاذ القرار."
-                  : "Technical studies and analysis supporting planning and decision-making."}
+                {ar ? "دراسات وتحليلات فنية لدعم التخطيط واتخاذ القرار." : "Technical studies and analysis supporting planning and decision-making."}
               </p>
             </div>
           </div>
@@ -358,15 +266,8 @@ function Contact({ ar }) {
         <input name="email" type="email" placeholder={ar ? "البريد الإلكتروني" : "Your Email"} required style={styles.input} />
         <textarea name="message" placeholder={ar ? "الرسالة" : "Message"} rows="5" required style={styles.input} />
 
-        <button type="submit" style={styles.primaryButton}>
-          {ar ? "إرسال" : "Send Message"}
-        </button>
+        <button type="submit" style={styles.primaryButton}>{ar ? "إرسال" : "Send Message"}</button>
       </form>
-
-      <div style={styles.contactInfo}>
-        <p>Email: radwan@sudaf.ly</p>
-        <p>{ar ? "الموقع: مصراتة، ليبيا" : "Location: Misurata, Libya"}</p>
-      </div>
     </section>
   );
 }
@@ -374,9 +275,21 @@ function Contact({ ar }) {
 function Footer({ ar }) {
   return (
     <footer style={styles.footer}>
-      © {new Date().getFullYear()}{" "}
-      {ar ? "شركة سدف للاستشارات الهندسية" : "Sudaf Engineering Consultancy"}
+      © {new Date().getFullYear()} {ar ? "شركة سدف للاستشارات الهندسية" : "Sudaf Engineering Consultancy"}
     </footer>
+  );
+}
+
+function Reveal({ children }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 45 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.65 }}
+    >
+      {children}
+    </motion.div>
   );
 }
 
@@ -397,8 +310,9 @@ const styles = {
 
   header: {
     width: "100%",
-    padding: "18px 6%",
-    background: dark,
+    padding: "14px 6%",
+    background: "rgba(17,24,39,0.94)",
+    backdropFilter: "blur(14px)",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -407,7 +321,7 @@ const styles = {
     boxSizing: "border-box",
     position: "sticky",
     top: 0,
-    zIndex: 50,
+    zIndex: 100,
     borderBottom: "1px solid rgba(255,255,255,0.08)",
   },
 
@@ -418,8 +332,7 @@ const styles = {
     color: gold,
     textDecoration: "none",
     fontWeight: "bold",
-    fontSize: "clamp(18px, 4vw, 22px)",
-    lineHeight: "1.2",
+    minWidth: "220px",
   },
 
   logoSmall: {
@@ -427,6 +340,17 @@ const styles = {
     height: "48px",
     objectFit: "contain",
     flexShrink: 0,
+  },
+
+  brandTitle: {
+    fontSize: "clamp(18px, 4vw, 22px)",
+    lineHeight: "1.1",
+  },
+
+  brandSub: {
+    color: "#c9b28c",
+    fontSize: "12px",
+    marginTop: "3px",
   },
 
   nav: {
@@ -440,7 +364,7 @@ const styles = {
     color: "white",
     textDecoration: "none",
     fontWeight: "bold",
-    fontSize: "clamp(14px, 3vw, 16px)",
+    fontSize: "15px",
   },
 
   langButton: {
@@ -455,11 +379,11 @@ const styles = {
 
   hero: {
     width: "100%",
-    minHeight: "calc(100vh - 85px)",
+    minHeight: "calc(100vh - 80px)",
     backgroundSize: "cover",
     backgroundPosition: "center",
     textAlign: "center",
-    padding: "80px 6%",
+    padding: "72px 6%",
     boxSizing: "border-box",
     display: "flex",
     flexDirection: "column",
@@ -468,17 +392,16 @@ const styles = {
   },
 
   logoHero: {
-    width: "clamp(120px, 34vw, 180px)",
-    marginBottom: "26px",
+    width: "clamp(120px, 31vw, 180px)",
+    marginBottom: "24px",
   },
 
   heroTitle: {
     color: gold,
-    fontSize: "clamp(34px, 7vw, 56px)",
-    lineHeight: "1.15",
+    fontSize: "clamp(34px, 7vw, 58px)",
+    lineHeight: "1.12",
     margin: "0 0 22px",
-    maxWidth: "950px",
-    textWrap: "balance",
+    maxWidth: "980px",
   },
 
   heroText: {
@@ -490,7 +413,7 @@ const styles = {
   },
 
   heroButtons: {
-    marginTop: "28px",
+    marginTop: "30px",
     display: "flex",
     gap: "14px",
     justifyContent: "center",
@@ -651,11 +574,6 @@ const styles = {
     cursor: "pointer",
     fontWeight: "bold",
     fontSize: "15px",
-  },
-
-  contactInfo: {
-    marginTop: "30px",
-    color: "#d1d5db",
   },
 
   footer: {
