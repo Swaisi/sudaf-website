@@ -1,17 +1,138 @@
-html,
-body,
-#root {
-  width: 100%;
-  min-height: 100%;
+* {
   margin: 0;
   padding: 0;
-}
-
-body {
-  overflow-x: hidden;
-  background: #111827;
-}
-
-* {
   box-sizing: border-box;
+}
+
+body, html, #root {
+  width: 100%;
+  overflow-x: hidden;
+  font-family: Arial;
+}
+
+.app {
+  width: 100%;
+}
+
+/* HEADER */
+.header {
+  position: sticky;
+  top: 0;
+  background: #0b1c2c;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 40px;
+  align-items: center;
+  z-index: 1000;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #f5a623;
+  font-weight: bold;
+}
+
+.logo img {
+  width: 40px;
+}
+
+nav a {
+  margin: 0 15px;
+  color: white;
+  text-decoration: none;
+}
+
+/* HERO */
+.hero {
+  height: 100vh;
+  background: url("/images/hero.jpg") center/cover no-repeat;
+  position: relative;
+  width: 100vw;
+}
+
+.overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 20, 30, 0.7);
+}
+
+.hero-content {
+  position: relative;
+  color: white;
+  text-align: center;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 20px;
+}
+
+.hero-logo {
+  width: 120px;
+  margin-bottom: 20px;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  color: #f5a623;
+}
+
+/* ✅ FIX MOBILE TEXT */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 1.8rem;
+    line-height: 1.3;
+  }
+}
+
+.hero p {
+  margin-top: 20px;
+  max-width: 700px;
+  margin-inline: auto;
+}
+
+.buttons {
+  margin-top: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  background: #f5a623;
+  border: none;
+  color: black;
+}
+
+button.outline {
+  background: transparent;
+  border: 1px solid #f5a623;
+  color: white;
+}
+
+/* SERVICES */
+.services {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  padding: 50px;
+  gap: 20px;
+}
+
+.card {
+  background: #102030;
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+  transition: 0.3s;
+}
+
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.card:hover {
+  transform: translateY(-5px);
 }
