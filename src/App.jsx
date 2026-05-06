@@ -259,13 +259,77 @@ function App() {
       </section>
 
       <section className="contact-section" id="contact">
-        <h2>{ar ? "اتصل بنا" : "Contact Us"}</h2>
-        <p>
-          {ar
-            ? "للاستشارات أو طلب الدراسات الفنية أو فرص الشراكة، يمكنكم التواصل معنا."
-            : "For consultancy requests, technical studies, or partnership opportunities, contact us below."}
-        </p>
-        <a href="mailto:radwan@sudaf.ly" className="email-link">radwan@sudaf.ly</a>
+        <div className="contact-wrapper">
+          <div className="contact-info">
+            <h2>{ar ? "اتصل بنا" : "Contact Us"}</h2>
+
+            <h3>
+              {ar
+                ? "شركة سدف للاستشارات الهندسية"
+                : "Sudaf Engineering Consultancy"}
+            </h3>
+
+            <p>
+              {ar
+                ? "العنوان: ليبيا، مصراتة، شارع طرابلس، بجانب مصرف الجمهورية"
+                : "Address: Libya, Misurata, Tripoli Street, beside Jumhouria Bank"}
+            </p>
+
+            <p>{ar ? "الهاتف:" : "Phone:"} +218914054929</p>
+            <p>{ar ? "الهاتف:" : "Phone:"} +218915718567</p>
+
+            <p>{ar ? "البريد العام:" : "General Email:"} info@sudaf.ly</p>
+            <p>{ar ? "الدراسات والتصاميم:" : "Studies & Designs:"} radwan@sudaf.ly</p>
+
+            <p>
+              {ar ? "إحداثيات الموقع:" : "Coordinates:"} 32°21'47.3"N 15°04'44.4"E
+            </p>
+
+            <a
+              href="https://maps.app.goo.gl/wbtTLSKjN8kTN2269"
+              target="_blank"
+              rel="noreferrer"
+              className="map-link"
+            >
+              {ar ? "فتح الموقع على خرائط Google" : "Open Location on Google Maps"}
+            </a>
+          </div>
+
+          <form
+            className="contact-form"
+            action="https://formsubmit.co/info@sudaf.ly"
+            method="POST"
+          >
+            <input type="hidden" name="_subject" value="New inquiry from Sudaf website" />
+            <input type="hidden" name="_captcha" value="false" />
+            <input type="hidden" name="_template" value="table" />
+
+            <input
+              type="text"
+              name="name"
+              placeholder={ar ? "الاسم" : "Your Name"}
+              required
+            />
+
+            <input
+              type="email"
+              name="email"
+              placeholder={ar ? "البريد الإلكتروني" : "Your Email"}
+              required
+            />
+
+            <textarea
+              name="message"
+              rows="6"
+              placeholder={ar ? "اكتب رسالتك هنا" : "Write your message here"}
+              required
+            ></textarea>
+
+            <button type="submit">
+              {ar ? "إرسال الرسالة" : "Send Message"}
+            </button>
+          </form>
+        </div>
       </section>
 
       {selectedService && (
