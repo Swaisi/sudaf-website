@@ -163,8 +163,7 @@ function App() {
       title: "Tendering, RFP & Project Documentation",
       titleAr: "إعداد مستندات الطرح والعروض الفنية",
       desc: "Preparation of RFPs, tender documents, BOQs, method statements, HSE, QA/QC, and project schedules.",
-      descAr:
-        "إعداد مستندات الطرح، عروض التقديم، جداول الكميات، أساليب التنفيذ، خطط السلامة والجودة، والجداول الزمنية.",
+      descAr: "إعداد مستندات الطرح، عروض التقديم، جداول الكميات، أساليب التنفيذ، خطط السلامة والجودة، والجداول الزمنية.",
       img: "/images/tender-documents.jpg",
       details: [
         "Preparation of Request for Proposal (RFP), tender documents, and instructions to bidders.",
@@ -244,6 +243,7 @@ function App() {
 
         <nav>
           <a href="#home">{ar ? "الرئيسية" : "Home"}</a>
+          <a href="#about">{ar ? "من نحن" : "About Us"}</a>
           <a href="#services">{ar ? "الخدمات" : "Services"}</a>
           <a href="#projects">{ar ? "المشاريع" : "Projects"}</a>
           <a href="#contact">{ar ? "اتصل بنا" : "Contact"}</a>
@@ -277,6 +277,60 @@ function App() {
         </div>
       </section>
 
+      <section className="about-section" id="about">
+        <div className="about-container">
+          <div className="about-text">
+            <span className="section-tag">{ar ? "من نحن" : "About Us"}</span>
+
+            <h2>
+              {ar
+                ? "سدف للاستشارات الهندسية"
+                : "Sudaf Engineering Consultancy"}
+            </h2>
+
+            <p>
+              {ar
+                ? "سدف للاستشارات الهندسية هي شركة هندسية واستشارية متخصصة في مجالات هندسة النقل، وتطوير البنية التحتية، والتخطيط الهندسي، والحلول التقنية المتكاملة. تقدم الشركة خدمات استشارية احترافية في الدراسات والتصاميم الهندسية، والتخطيط الاستراتيجي، وهندسة المرور، وأنظمة النقل، والطرق، والمطارات، والموانئ، والسكك الحديدية، وتطوير مشاريع البنية التحتية باستخدام أحدث التقنيات والمعايير الهندسية الدولية."
+                : "Sudaf Engineering Consultancy is a specialized engineering and consulting firm focused on transportation engineering, infrastructure development, engineering planning, and integrated technical solutions. The company provides professional consultancy services in engineering studies, design, strategic planning, traffic engineering, transportation systems, roads, airports, ports, railways, and infrastructure development using advanced technologies and international engineering standards."}
+            </p>
+
+            <p>
+              {ar
+                ? "توفر سدف مجموعة متكاملة من الخدمات الفنية تشمل تخطيط النقل، ودراسات الأثر المروري، والمحاكاة والنمذجة المرورية، والتكامل مع أنظمة GIS، وتخطيط البنية التحتية، والتنسيق الهندسي للمشاريع. كما تدعم الشركة مشاريع القطاعين العام والخاص من خلال التحليل الفني، وإعداد المستندات الهندسية، ودراسات الجدوى، وحلول تطوير المشاريع بما يتناسب مع المتطلبات المحلية والإقليمية."
+                : "Sudaf offers comprehensive technical services covering transportation planning, traffic impact studies, traffic simulation and modeling, GIS integration, infrastructure planning, and engineering design coordination. The company also supports public and private sector projects through technical analysis, engineering documentation, feasibility studies, and project development solutions tailored to local and regional requirements."}
+            </p>
+
+            <p>
+              {ar
+                ? "كما تقدم سدف خدمات متخصصة في إعداد مستندات الطرح والمناقصات وطلبات تقديم العروض RFP، والعروض الفنية والتجارية، وجداول الكميات BOQ، وأعمال الحصر، والمواصفات الفنية، ومنهجيات التنفيذ، وخطط الجودة QA/QC، ومستندات الصحة والسلامة HSE، والمستندات الهندسية الخاصة بمشاريع البنية التحتية والإنشاءات."
+                : "In addition, Sudaf provides specialized services in the preparation of tender documents, Requests for Proposal (RFP), technical and commercial proposals, Bills of Quantities (BOQ), quantity surveying, technical specifications, execution methodologies, QA/QC plans, HSE documentation, and engineering documents for infrastructure and construction projects."}
+            </p>
+
+            <p>
+              {ar
+                ? "وتقوم الشركة كذلك بإعداد الجداول الزمنية وأنظمة تخطيط المشاريع باستخدام برامج Primavera P6 وMicrosoft Project، بما يشمل البرامج الزمنية الأساسية، ومتابعة تقدم الأعمال، وتوزيع الموارد، وتسلسل الأنشطة، والتدفقات النقدية، ودعم التحكم وإدارة المشاريع."
+                : "The company also develops project schedules and planning systems using Primavera P6 and Microsoft Project, including baseline programs, progress monitoring, resource allocation, activity sequencing, cash flow planning, and project control support."}
+            </p>
+
+            <p>
+              {ar
+                ? "تعتمد سدف للاستشارات الهندسية على كادر هندسي وفني متعدد التخصصات يمتلك خبرات في مجالات هندسة النقل، والبنية التحتية، والهندسة المدنية، والتحليل المروري، وأنظمة GIS، وتخطيط المشاريع، وحصر الكميات، وضبط الجودة QA/QC، والصحة والسلامة HSE، والإدارة الفنية للمشاريع. ويجمع فريق العمل بين الخبرة الميدانية العملية واستخدام البرامج الهندسية الحديثة والمعايير الدولية لتقديم حلول هندسية فعالة وموثوقة وذات طابع احترافي."
+                : "Sudaf Engineering Consultancy is supported by a multidisciplinary engineering and technical team with expertise in transportation engineering, infrastructure, civil engineering, traffic analysis, GIS systems, project planning, quantity surveying, QA/QC, HSE, and technical project management. The team combines practical field experience with advanced engineering software and international standards to deliver efficient, reliable, and professional engineering solutions."}
+            </p>
+
+            <p>
+              {ar
+                ? "وتسعى سدف بشكل مستمر إلى تطوير قدراتها الفنية من خلال مواكبة التقنيات الحديثة، والتطوير المهني، والتعاون مع الجهات والخبرات المحلية والدولية المتخصصة. وتلتزم الشركة بتقديم حلول هندسية حديثة وعملية ومستدامة مع الحفاظ على أعلى معايير الجودة والكفاءة الفنية والاحترافية."
+                : "Sudaf continuously seeks to strengthen its technical capacity through modern technologies, professional development, and collaboration with specialized local and international partners. The company is committed to delivering innovative, practical, and sustainable engineering solutions while maintaining high standards of quality, technical excellence, efficiency, and professional integrity."}
+            </p>
+          </div>
+
+          <div className="about-image">
+            <img src="/images/about.jpg" alt="About Sudaf" />
+          </div>
+        </div>
+      </section>
+
       <section className="services" id="services">
         {services.map((service, index) => (
           <div
@@ -294,6 +348,15 @@ function App() {
             </div>
           </div>
         ))}
+      </section>
+
+      <section className="projects-section" id="projects">
+        <h2>{ar ? "المشاريع" : "Projects"}</h2>
+        <p>
+          {ar
+            ? "سيتم قريبًا عرض نماذج من مشاريع الشركة وخبراتها الفنية في مجالات النقل والبنية التحتية والدراسات الهندسية."
+            : "Selected company projects and technical experience in transport, infrastructure, and engineering studies will be published soon."}
+        </p>
       </section>
 
       <section className="contact-section" id="contact">
@@ -315,12 +378,8 @@ function App() {
 
             <p>{ar ? "الهاتف:" : "Phone:"} +218914054929</p>
             <p>{ar ? "الهاتف:" : "Phone:"} +218915718567</p>
-
             <p>{ar ? "البريد العام:" : "General Email:"} info@sudaf.ly</p>
-            <p>
-              {ar ? "الدراسات والتصاميم:" : "Studies & Designs:"}{" "}
-              radwan@sudaf.ly
-            </p>
+            <p>{ar ? "الدراسات والتصاميم:" : "Studies & Designs:"} radwan@sudaf.ly</p>
 
             <p>
               {ar ? "إحداثيات الموقع:" : "Coordinates:"} 32°21'47.3"N

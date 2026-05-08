@@ -63,7 +63,7 @@ nav a {
   color: #ffffff;
   text-decoration: none;
   font-size: 0.95rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: 0.3s;
 }
 
@@ -75,9 +75,9 @@ nav a:hover {
   background: #d6b46a;
   color: #0c1f33;
   border: none;
-  padding: 9px 16px;
+  padding: 10px 18px;
   border-radius: 25px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   transition: 0.3s;
 }
@@ -138,7 +138,7 @@ nav a:hover {
   padding: 14px 28px;
   border-radius: 30px;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   transition: 0.3s;
 }
@@ -157,6 +157,50 @@ nav a:hover {
 .hero-buttons .outline:hover {
   background: #ffffff;
   color: #0c1f33;
+}
+
+/* About Section */
+.about-section {
+  padding: 80px 7%;
+  background: #ffffff;
+}
+
+.about-container {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 55px;
+  align-items: center;
+}
+
+.section-tag {
+  display: inline-block;
+  background: rgba(214, 180, 106, 0.15);
+  color: #b8892d;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-weight: 800;
+  margin-bottom: 18px;
+}
+
+.about-text h2 {
+  font-size: 2.4rem;
+  color: #0c1f33;
+  margin-bottom: 25px;
+}
+
+.about-text p {
+  color: #5f6c7b;
+  line-height: 2;
+  margin-bottom: 18px;
+  font-size: 1rem;
+  text-align: justify;
+}
+
+.about-image img {
+  width: 100%;
+  border-radius: 20px;
+  object-fit: cover;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
 
 /* Services */
@@ -215,8 +259,29 @@ nav a:hover {
   display: inline-block;
   margin-top: auto;
   padding-top: 16px;
-  font-weight: 700;
+  font-weight: 800;
   color: #0c5ea8;
+}
+
+/* Projects */
+.projects-section {
+  background: #ffffff;
+  padding: 75px 7%;
+  text-align: center;
+}
+
+.projects-section h2 {
+  font-size: 2.3rem;
+  color: #0c1f33;
+  margin-bottom: 15px;
+}
+
+.projects-section p {
+  color: #5f6c7b;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  max-width: 850px;
+  margin: 0 auto;
 }
 
 /* Contact */
@@ -254,7 +319,7 @@ nav a:hover {
   display: inline-block;
   margin-top: 18px;
   color: #d6b46a;
-  font-weight: 700;
+  font-weight: 800;
   text-decoration: none;
 }
 
@@ -387,7 +452,7 @@ nav a:hover {
   border: none;
   padding: 12px 28px;
   border-radius: 25px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   transition: 0.3s;
 }
@@ -402,10 +467,6 @@ nav a:hover {
   font-family: "Tahoma", "Segoe UI", Arial, sans-serif;
 }
 
-[dir="rtl"] nav {
-  flex-direction: row;
-}
-
 [dir="rtl"] .modal ul {
   padding-right: 24px;
   padding-left: 0;
@@ -413,8 +474,13 @@ nav a:hover {
 
 [dir="rtl"] .card-content,
 [dir="rtl"] .contact-info,
-[dir="rtl"] .modal {
+[dir="rtl"] .modal,
+[dir="rtl"] .about-text {
   text-align: right;
+}
+
+[dir="rtl"] .about-text p {
+  text-align: justify;
 }
 
 /* Responsive */
@@ -437,6 +503,14 @@ nav a:hover {
 
   .hero p {
     font-size: 1.05rem;
+  }
+
+  .about-container {
+    grid-template-columns: 1fr;
+  }
+
+  .about-text h2 {
+    font-size: 2rem;
   }
 
   .contact-wrapper {
@@ -464,6 +538,10 @@ nav a:hover {
 
   .hero p {
     font-size: 0.98rem;
+  }
+
+  .about-section {
+    padding: 55px 5%;
   }
 
   .card img {
