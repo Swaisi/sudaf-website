@@ -160,6 +160,34 @@ function App() {
       ],
     },
     {
+      title: "Tendering, RFP & Project Documentation",
+      titleAr: "إعداد مستندات الطرح والعروض الفنية",
+      desc: "Preparation of RFPs, tender documents, BOQs, method statements, HSE, QA/QC, and project schedules.",
+      descAr:
+        "إعداد مستندات الطرح، عروض التقديم، جداول الكميات، أساليب التنفيذ، خطط السلامة والجودة، والجداول الزمنية.",
+      img: "/images/tender-documents.jpg",
+      details: [
+        "Preparation of Request for Proposal (RFP), tender documents, and instructions to bidders.",
+        "Preparation of Bills of Quantities (BOQ), quantity take-off, measurement sheets, and pricing schedules.",
+        "Preparation of technical proposals, project execution methodology, method statements, and work procedures.",
+        "Preparation of HSE plans, risk assessments, job safety analysis, and site safety documentation.",
+        "Preparation of QA/QC plans, inspection and test plans (ITP), checklists, material submittals, and quality documentation.",
+        "Preparation of project schedules using Primavera P6 and Microsoft Project.",
+        "Baseline programs, activity sequencing, resource loading, cash flow planning, and progress monitoring reports.",
+        "Tender review, clarification registers, compliance matrices, and technical-commercial submission support.",
+      ],
+      detailsAr: [
+        "إعداد طلبات تقديم العروض RFP ومستندات الطرح وتعليمات مقدمي العروض.",
+        "إعداد جداول الكميات BOQ وأعمال الحصر والكشف والقياس وجداول التسعير.",
+        "إعداد العروض الفنية ومنهجيات التنفيذ وأساليب العمل والإجراءات التنفيذية.",
+        "إعداد خطط الصحة والسلامة والبيئة HSE وتقييم المخاطر وتحليل السلامة للأنشطة والمستندات الخاصة بالموقع.",
+        "إعداد خطط الجودة QA/QC وخطط الفحص والاختبار ITP ونماذج التفتيش واعتمادات المواد ومستندات ضبط الجودة.",
+        "إعداد الجداول الزمنية للمشاريع باستخدام Primavera P6 و Microsoft Project.",
+        "إعداد البرامج الزمنية الأساسية وتسلسل الأنشطة وتحميل الموارد والتدفقات النقدية وتقارير متابعة التقدم.",
+        "مراجعة مستندات المناقصات، إعداد سجل الاستفسارات، مصفوفة المطابقة، ودعم تجهيز العرض الفني والمالي.",
+      ],
+    },
+    {
       title: "Training & Capacity Building",
       titleAr: "التدريب وبناء القدرات",
       desc: "Professional engineering and technical training programs.",
@@ -228,11 +256,15 @@ function App() {
       <section className="hero" id="home">
         <div className="hero-content">
           <img src="/logo.svg" alt="Sudaf Logo" className="hero-logo" />
-          <h1>{ar ? "شركة سدف للاستشارات الهندسية" : "Sudaf Engineering Consultancy"}</h1>
+          <h1>
+            {ar
+              ? "شركة سدف للاستشارات الهندسية"
+              : "Sudaf Engineering Consultancy"}
+          </h1>
           <p>
             {ar
-              ? "استشارات هندسية متخصصة في تخطيط النقل، البنية التحتية، هندسة المرور، المطارات، الموانئ، السكك الحديدية، أنظمة GIS، والحلول الهندسية المتكاملة."
-              : "Specialized engineering consultancy in transport planning, infrastructure, traffic engineering, airports, ports, railways, GIS systems, and integrated engineering solutions."}
+              ? "استشارات هندسية متخصصة في تخطيط النقل، البنية التحتية، هندسة المرور، المطارات، الموانئ، السكك الحديدية، أنظمة GIS، إعداد مستندات الطرح والعروض الفنية، والحلول الهندسية المتكاملة."
+              : "Specialized engineering consultancy in transport planning, infrastructure, traffic engineering, airports, ports, railways, GIS systems, tender documentation, technical proposals, and integrated engineering solutions."}
           </p>
           <div className="hero-buttons">
             <a href="#services">
@@ -247,12 +279,18 @@ function App() {
 
       <section className="services" id="services">
         {services.map((service, index) => (
-          <div className="card" key={index} onClick={() => setSelectedService(service)}>
+          <div
+            className="card"
+            key={index}
+            onClick={() => setSelectedService(service)}
+          >
             <img src={service.img} alt={ar ? service.titleAr : service.title} />
             <div className="card-content">
               <h3>{ar ? service.titleAr : service.title}</h3>
               <p>{ar ? service.descAr : service.desc}</p>
-              <span className="read-more">{ar ? "عرض التفاصيل ←" : "View Details →"}</span>
+              <span className="read-more">
+                {ar ? "عرض التفاصيل ←" : "View Details →"}
+              </span>
             </div>
           </div>
         ))}
@@ -279,10 +317,14 @@ function App() {
             <p>{ar ? "الهاتف:" : "Phone:"} +218915718567</p>
 
             <p>{ar ? "البريد العام:" : "General Email:"} info@sudaf.ly</p>
-            <p>{ar ? "الدراسات والتصاميم:" : "Studies & Designs:"} radwan@sudaf.ly</p>
+            <p>
+              {ar ? "الدراسات والتصاميم:" : "Studies & Designs:"}{" "}
+              radwan@sudaf.ly
+            </p>
 
             <p>
-              {ar ? "إحداثيات الموقع:" : "Coordinates:"} 32°21'47.3"N 15°04'44.4"E
+              {ar ? "إحداثيات الموقع:" : "Coordinates:"} 32°21'47.3"N
+              15°04'44.4"E
             </p>
 
             <a
@@ -300,7 +342,11 @@ function App() {
             action="https://formsubmit.co/info@sudaf.ly"
             method="POST"
           >
-            <input type="hidden" name="_subject" value="New inquiry from Sudaf website" />
+            <input
+              type="hidden"
+              name="_subject"
+              value="New inquiry from Sudaf website"
+            />
             <input type="hidden" name="_captcha" value="false" />
             <input type="hidden" name="_template" value="table" />
 
@@ -325,9 +371,7 @@ function App() {
               required
             ></textarea>
 
-            <button type="submit">
-              {ar ? "إرسال الرسالة" : "Send Message"}
-            </button>
+            <button type="submit">{ar ? "إرسال الرسالة" : "Send Message"}</button>
           </form>
         </div>
       </section>
@@ -335,15 +379,20 @@ function App() {
       {selectedService && (
         <div className="modal-overlay" onClick={() => setSelectedService(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <img src={selectedService.img} alt={ar ? selectedService.titleAr : selectedService.title} />
+            <img
+              src={selectedService.img}
+              alt={ar ? selectedService.titleAr : selectedService.title}
+            />
             <h2>{ar ? selectedService.titleAr : selectedService.title}</h2>
             <p>{ar ? selectedService.descAr : selectedService.desc}</p>
 
             <h4>{ar ? "نطاق الخدمات" : "Service Scope"}</h4>
             <ul>
-              {(ar ? selectedService.detailsAr : selectedService.details).map((item, i) => (
-                <li key={i}>{item}</li>
-              ))}
+              {(ar ? selectedService.detailsAr : selectedService.details).map(
+                (item, i) => (
+                  <li key={i}>{item}</li>
+                )
+              )}
             </ul>
 
             <button onClick={() => setSelectedService(null)}>
