@@ -1,10 +1,10 @@
 import { useState } from "react";
+import { Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 
 function App() {
   const [lang, setLang] = useState("en");
   const [selectedService, setSelectedService] = useState(null);
-  const [currentPage, setCurrentPage] = useState("home");
   const ar = lang === "ar";
 
   const services = [
@@ -228,10 +228,200 @@ function App() {
     },
   ];
 
+  const ServicesPage = () => (
+    <section className="services" id="services">
+      {services.map((service, index) => (
+        <div
+          className="card"
+          key={index}
+          onClick={() => setSelectedService(service)}
+        >
+          <img src={service.img} alt={ar ? service.titleAr : service.title} />
+          <div className="card-content">
+            <h3>{ar ? service.titleAr : service.title}</h3>
+            <p>{ar ? service.descAr : service.desc}</p>
+            <span className="read-more">
+              {ar ? "عرض التفاصيل ←" : "View Details →"}
+            </span>
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+
+  const AboutPage = () => (
+    <section className="about-page">
+      <div className="about-page-container">
+        <span className="section-tag">{ar ? "من نحن" : "About Us"}</span>
+
+        <h1>
+          {ar ? "سدف للاستشارات الهندسية" : "Sudaf Engineering Consultancy"}
+        </h1>
+
+        <p>
+          {ar
+            ? "سدف للاستشارات الهندسية هي شركة هندسية واستشارية متخصصة في مجالات هندسة النقل، وتطوير البنية التحتية، والتخطيط الهندسي، والحلول التقنية المتكاملة. تقدم الشركة خدمات استشارية احترافية في الدراسات والتصاميم الهندسية، والتخطيط الاستراتيجي، وهندسة المرور، وأنظمة النقل، والطرق، والمطارات، والموانئ، والسكك الحديدية، وتطوير مشاريع البنية التحتية باستخدام أحدث التقنيات والمعايير الهندسية الدولية."
+            : "Sudaf Engineering Consultancy is a specialized engineering and consulting firm focused on transportation engineering, infrastructure development, engineering planning, and integrated technical solutions. The company provides professional consultancy services in engineering studies, design, strategic planning, traffic engineering, transportation systems, roads, airports, ports, railways, and infrastructure development using advanced technologies and international engineering standards."}
+        </p>
+
+        <p>
+          {ar
+            ? "توفر سدف مجموعة متكاملة من الخدمات الفنية تشمل تخطيط النقل، ودراسات الأثر المروري، والمحاكاة والنمذجة المرورية، والتكامل مع أنظمة GIS، وتخطيط البنية التحتية، والتنسيق الهندسي للمشاريع. كما تدعم الشركة مشاريع القطاعين العام والخاص من خلال التحليل الفني، وإعداد المستندات الهندسية، ودراسات الجدوى، وحلول تطوير المشاريع بما يتناسب مع المتطلبات المحلية والإقليمية."
+            : "Sudaf offers comprehensive technical services covering transportation planning, traffic impact studies, traffic simulation and modeling, GIS integration, infrastructure planning, and engineering design coordination. The company also supports public and private sector projects through technical analysis, engineering documentation, feasibility studies, and project development solutions tailored to local and regional requirements."}
+        </p>
+
+        <p>
+          {ar
+            ? "كما تقدم سدف خدمات متخصصة في إعداد مستندات الطرح والمناقصات وطلبات تقديم العروض RFP، والعروض الفنية والتجارية، وجداول الكميات BOQ، وأعمال الحصر، والمواصفات الفنية، ومنهجيات التنفيذ، وخطط الجودة QA/QC، ومستندات الصحة والسلامة HSE، والمستندات الهندسية الخاصة بمشاريع البنية التحتية والإنشاءات."
+            : "In addition, Sudaf provides specialized services in the preparation of tender documents, Requests for Proposal (RFP), technical and commercial proposals, Bills of Quantities (BOQ), quantity surveying, technical specifications, execution methodologies, QA/QC plans, HSE documentation, and engineering documents for infrastructure and construction projects."}
+        </p>
+
+        <p>
+          {ar
+            ? "وتقوم الشركة كذلك بإعداد الجداول الزمنية وأنظمة تخطيط المشاريع باستخدام برامج Primavera P6 وMicrosoft Project، بما يشمل البرامج الزمنية الأساسية، ومتابعة تقدم الأعمال، وتوزيع الموارد، وتسلسل الأنشطة، والتدفقات النقدية، ودعم التحكم وإدارة المشاريع."
+            : "The company also develops project schedules and planning systems using Primavera P6 and Microsoft Project, including baseline programs, progress monitoring, resource allocation, activity sequencing, cash flow planning, and project control support."}
+        </p>
+
+        <p>
+          {ar
+            ? "تعتمد سدف للاستشارات الهندسية على كادر هندسي وفني متعدد التخصصات يمتلك خبرات في مجالات هندسة النقل، والبنية التحتية، والهندسة المدنية، والتحليل المروري، وأنظمة GIS، وتخطيط المشاريع، وحصر الكميات، وضبط الجودة QA/QC، والصحة والسلامة HSE، والإدارة الفنية للمشاريع. ويجمع فريق العمل بين الخبرة الميدانية العملية واستخدام البرامج الهندسية الحديثة والمعايير الدولية لتقديم حلول هندسية فعالة وموثوقة وذات طابع احترافي."
+            : "Sudaf Engineering Consultancy is supported by a multidisciplinary engineering and technical team with expertise in transportation engineering, infrastructure, civil engineering, traffic analysis, GIS systems, project planning, quantity surveying, QA/QC, HSE, and technical project management. The team combines practical field experience with advanced engineering software and international standards to deliver efficient, reliable, and professional engineering solutions."}
+        </p>
+
+        <p>
+          {ar
+            ? "وتسعى سدف بشكل مستمر إلى تطوير قدراتها الفنية من خلال مواكبة التقنيات الحديثة، والتطوير المهني، والتعاون مع الجهات والخبرات المحلية والدولية المتخصصة. وتلتزم الشركة بتقديم حلول هندسية حديثة وعملية ومستدامة مع الحفاظ على أعلى معايير الجودة والكفاءة الفنية والاحترافية."
+            : "Sudaf continuously seeks to strengthen its technical capacity through modern technologies, professional development, and collaboration with specialized local and international partners. The company is committed to delivering innovative, practical, and sustainable engineering solutions while maintaining high standards of quality, technical excellence, efficiency, and professional integrity."}
+        </p>
+      </div>
+    </section>
+  );
+
+  const ProjectsPage = () => (
+    <section className="projects-section">
+      <h2>{ar ? "المشاريع" : "Projects"}</h2>
+      <p>
+        {ar
+          ? "سيتم قريبًا عرض نماذج من مشاريع الشركة وخبراتها الفنية في مجالات النقل والبنية التحتية والدراسات الهندسية."
+          : "Selected company projects and technical experience in transport, infrastructure, and engineering studies will be published soon."}
+      </p>
+    </section>
+  );
+
+  const ContactPage = () => (
+    <section className="contact-section">
+      <div className="contact-wrapper">
+        <div className="contact-info">
+          <h2>{ar ? "اتصل بنا" : "Contact Us"}</h2>
+
+          <h3>
+            {ar
+              ? "شركة سدف للاستشارات الهندسية"
+              : "Sudaf Engineering Consultancy"}
+          </h3>
+
+          <p>
+            {ar
+              ? "العنوان: ليبيا، مصراتة، شارع طرابلس، بجانب مصرف الجمهورية"
+              : "Address: Libya, Misurata, Tripoli Street, beside Jumhouria Bank"}
+          </p>
+
+          <p>{ar ? "الهاتف:" : "Phone:"} +218914054929</p>
+          <p>{ar ? "الهاتف:" : "Phone:"} +218915718567</p>
+          <p>{ar ? "البريد العام:" : "General Email:"} info@sudaf.ly</p>
+          <p>{ar ? "الدراسات والتصاميم:" : "Studies & Designs:"} radwan@sudaf.ly</p>
+
+          <p>
+            {ar ? "إحداثيات الموقع:" : "Coordinates:"} 32°21'47.3"N
+            15°04'44.4"E
+          </p>
+
+          <a
+            href="https://maps.app.goo.gl/wbtTLSKjN8kTN2269"
+            target="_blank"
+            rel="noreferrer"
+            className="map-link"
+          >
+            {ar ? "فتح الموقع على خرائط Google" : "Open Location on Google Maps"}
+          </a>
+        </div>
+
+        <form
+          className="contact-form"
+          action="https://formsubmit.co/info@sudaf.ly"
+          method="POST"
+        >
+          <input
+            type="hidden"
+            name="_subject"
+            value="New inquiry from Sudaf website"
+          />
+          <input type="hidden" name="_captcha" value="false" />
+          <input type="hidden" name="_template" value="table" />
+
+          <input
+            type="text"
+            name="name"
+            placeholder={ar ? "الاسم" : "Your Name"}
+            required
+          />
+
+          <input
+            type="email"
+            name="email"
+            placeholder={ar ? "البريد الإلكتروني" : "Your Email"}
+            required
+          />
+
+          <textarea
+            name="message"
+            rows="6"
+            placeholder={ar ? "اكتب رسالتك هنا" : "Write your message here"}
+            required
+          ></textarea>
+
+          <button type="submit">{ar ? "إرسال الرسالة" : "Send Message"}</button>
+        </form>
+      </div>
+    </section>
+  );
+
+  const HomePage = () => (
+    <>
+      <section className="hero">
+        <div className="hero-content">
+          <img src="/logo.svg" alt="Sudaf Logo" className="hero-logo" />
+          <h1>
+            {ar ? "شركة سدف للاستشارات الهندسية" : "Sudaf Engineering Consultancy"}
+          </h1>
+          <p>
+            {ar
+              ? "استشارات هندسية متخصصة في تخطيط النقل، البنية التحتية، هندسة المرور، المطارات، الموانئ، السكك الحديدية، أنظمة GIS، إعداد مستندات الطرح والعروض الفنية، والحلول الهندسية المتكاملة."
+              : "Specialized engineering consultancy in transport planning, infrastructure, traffic engineering, airports, ports, railways, GIS systems, tender documentation, technical proposals, and integrated engineering solutions."}
+          </p>
+
+          <div className="hero-buttons">
+            <Link to="/services">
+              <button>{ar ? "استعراض الخدمات" : "Explore Services"}</button>
+            </Link>
+
+            <Link to="/contact">
+              <button className="outline">{ar ? "اتصل بنا" : "Contact Us"}</button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <ServicesPage />
+      <ProjectsPage />
+      <ContactPage />
+    </>
+  );
+
   return (
     <div className="app" dir={ar ? "rtl" : "ltr"}>
       <header className="header">
-        <div className="logo-container" onClick={() => setCurrentPage("home")}>
+        <Link to="/" className="logo-container">
           <img src="/logo.svg" alt="Sudaf Logo" className="logo" />
           <div>
             <h2>{ar ? "سدف للاستشارات الهندسية" : "Sudaf Engineering"}</h2>
@@ -241,52 +431,28 @@ function App() {
                 : "Transport & Infrastructure Consultancy"}
             </span>
           </div>
-        </div>
+        </Link>
 
         <nav>
-          <button className="nav-link" onClick={() => setCurrentPage("home")}>
+          <Link className="nav-link" to="/">
             {ar ? "الرئيسية" : "Home"}
-          </button>
+          </Link>
 
-          <button className="nav-link" onClick={() => setCurrentPage("about")}>
+          <Link className="nav-link" to="/about">
             {ar ? "من نحن" : "About Us"}
-          </button>
+          </Link>
 
-          <button
-            className="nav-link"
-            onClick={() => {
-              setCurrentPage("home");
-              setTimeout(() => {
-                document.getElementById("services")?.scrollIntoView();
-              }, 50);
-            }}
-          >
+          <Link className="nav-link" to="/services">
             {ar ? "الخدمات" : "Services"}
-          </button>
+          </Link>
 
-          <button
-            className="nav-link"
-            onClick={() => {
-              setCurrentPage("home");
-              setTimeout(() => {
-                document.getElementById("projects")?.scrollIntoView();
-              }, 50);
-            }}
-          >
+          <Link className="nav-link" to="/projects">
             {ar ? "المشاريع" : "Projects"}
-          </button>
+          </Link>
 
-          <button
-            className="nav-link"
-            onClick={() => {
-              setCurrentPage("home");
-              setTimeout(() => {
-                document.getElementById("contact")?.scrollIntoView();
-              }, 50);
-            }}
-          >
+          <Link className="nav-link" to="/contact">
             {ar ? "اتصل بنا" : "Contact"}
-          </button>
+          </Link>
 
           <button className="lang-btn" onClick={() => setLang(ar ? "en" : "ar")}>
             {ar ? "English" : "العربية"}
@@ -294,210 +460,13 @@ function App() {
         </nav>
       </header>
 
-      {currentPage === "home" && (
-        <>
-          <section className="hero" id="home">
-            <div className="hero-content">
-              <img src="/logo.svg" alt="Sudaf Logo" className="hero-logo" />
-              <h1>
-                {ar
-                  ? "شركة سدف للاستشارات الهندسية"
-                  : "Sudaf Engineering Consultancy"}
-              </h1>
-              <p>
-                {ar
-                  ? "استشارات هندسية متخصصة في تخطيط النقل، البنية التحتية، هندسة المرور، المطارات، الموانئ، السكك الحديدية، أنظمة GIS، إعداد مستندات الطرح والعروض الفنية، والحلول الهندسية المتكاملة."
-                  : "Specialized engineering consultancy in transport planning, infrastructure, traffic engineering, airports, ports, railways, GIS systems, tender documentation, technical proposals, and integrated engineering solutions."}
-              </p>
-              <div className="hero-buttons">
-                <button
-                  onClick={() =>
-                    document.getElementById("services")?.scrollIntoView()
-                  }
-                >
-                  {ar ? "استعراض الخدمات" : "Explore Services"}
-                </button>
-                <button
-                  className="outline"
-                  onClick={() =>
-                    document.getElementById("contact")?.scrollIntoView()
-                  }
-                >
-                  {ar ? "اتصل بنا" : "Contact Us"}
-                </button>
-              </div>
-            </div>
-          </section>
-
-          <section className="services" id="services">
-            {services.map((service, index) => (
-              <div
-                className="card"
-                key={index}
-                onClick={() => setSelectedService(service)}
-              >
-                <img
-                  src={service.img}
-                  alt={ar ? service.titleAr : service.title}
-                />
-                <div className="card-content">
-                  <h3>{ar ? service.titleAr : service.title}</h3>
-                  <p>{ar ? service.descAr : service.desc}</p>
-                  <span className="read-more">
-                    {ar ? "عرض التفاصيل ←" : "View Details →"}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </section>
-
-          <section className="projects-section" id="projects">
-            <h2>{ar ? "المشاريع" : "Projects"}</h2>
-            <p>
-              {ar
-                ? "سيتم قريبًا عرض نماذج من مشاريع الشركة وخبراتها الفنية في مجالات النقل والبنية التحتية والدراسات الهندسية."
-                : "Selected company projects and technical experience in transport, infrastructure, and engineering studies will be published soon."}
-            </p>
-          </section>
-
-          <section className="contact-section" id="contact">
-            <div className="contact-wrapper">
-              <div className="contact-info">
-                <h2>{ar ? "اتصل بنا" : "Contact Us"}</h2>
-
-                <h3>
-                  {ar
-                    ? "شركة سدف للاستشارات الهندسية"
-                    : "Sudaf Engineering Consultancy"}
-                </h3>
-
-                <p>
-                  {ar
-                    ? "العنوان: ليبيا، مصراتة، شارع طرابلس، بجانب مصرف الجمهورية"
-                    : "Address: Libya, Misurata, Tripoli Street, beside Jumhouria Bank"}
-                </p>
-
-                <p>{ar ? "الهاتف:" : "Phone:"} +218914054929</p>
-                <p>{ar ? "الهاتف:" : "Phone:"} +218915718567</p>
-                <p>{ar ? "البريد العام:" : "General Email:"} info@sudaf.ly</p>
-                <p>
-                  {ar ? "الدراسات والتصاميم:" : "Studies & Designs:"}{" "}
-                  radwan@sudaf.ly
-                </p>
-
-                <p>
-                  {ar ? "إحداثيات الموقع:" : "Coordinates:"} 32°21'47.3"N
-                  15°04'44.4"E
-                </p>
-
-                <a
-                  href="https://maps.app.goo.gl/wbtTLSKjN8kTN2269"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="map-link"
-                >
-                  {ar
-                    ? "فتح الموقع على خرائط Google"
-                    : "Open Location on Google Maps"}
-                </a>
-              </div>
-
-              <form
-                className="contact-form"
-                action="https://formsubmit.co/info@sudaf.ly"
-                method="POST"
-              >
-                <input
-                  type="hidden"
-                  name="_subject"
-                  value="New inquiry from Sudaf website"
-                />
-                <input type="hidden" name="_captcha" value="false" />
-                <input type="hidden" name="_template" value="table" />
-
-                <input
-                  type="text"
-                  name="name"
-                  placeholder={ar ? "الاسم" : "Your Name"}
-                  required
-                />
-
-                <input
-                  type="email"
-                  name="email"
-                  placeholder={ar ? "البريد الإلكتروني" : "Your Email"}
-                  required
-                />
-
-                <textarea
-                  name="message"
-                  rows="6"
-                  placeholder={ar ? "اكتب رسالتك هنا" : "Write your message here"}
-                  required
-                ></textarea>
-
-                <button type="submit">
-                  {ar ? "إرسال الرسالة" : "Send Message"}
-                </button>
-              </form>
-            </div>
-          </section>
-        </>
-      )}
-
-      {currentPage === "about" && (
-        <section className="about-page">
-          <div className="about-page-container">
-            <button className="back-btn" onClick={() => setCurrentPage("home")}>
-              {ar ? "← الرجوع للرئيسية" : "← Back to Home"}
-            </button>
-
-            <span className="section-tag">{ar ? "من نحن" : "About Us"}</span>
-
-            <h1>
-              {ar
-                ? "سدف للاستشارات الهندسية"
-                : "Sudaf Engineering Consultancy"}
-            </h1>
-
-            <p>
-              {ar
-                ? "سدف للاستشارات الهندسية هي شركة هندسية واستشارية متخصصة في مجالات هندسة النقل، وتطوير البنية التحتية، والتخطيط الهندسي، والحلول التقنية المتكاملة. تقدم الشركة خدمات استشارية احترافية في الدراسات والتصاميم الهندسية، والتخطيط الاستراتيجي، وهندسة المرور، وأنظمة النقل، والطرق، والمطارات، والموانئ، والسكك الحديدية، وتطوير مشاريع البنية التحتية باستخدام أحدث التقنيات والمعايير الهندسية الدولية."
-                : "Sudaf Engineering Consultancy is a specialized engineering and consulting firm focused on transportation engineering, infrastructure development, engineering planning, and integrated technical solutions. The company provides professional consultancy services in engineering studies, design, strategic planning, traffic engineering, transportation systems, roads, airports, ports, railways, and infrastructure development using advanced technologies and international engineering standards."}
-            </p>
-
-            <p>
-              {ar
-                ? "توفر سدف مجموعة متكاملة من الخدمات الفنية تشمل تخطيط النقل، ودراسات الأثر المروري، والمحاكاة والنمذجة المرورية، والتكامل مع أنظمة GIS، وتخطيط البنية التحتية، والتنسيق الهندسي للمشاريع. كما تدعم الشركة مشاريع القطاعين العام والخاص من خلال التحليل الفني، وإعداد المستندات الهندسية، ودراسات الجدوى، وحلول تطوير المشاريع بما يتناسب مع المتطلبات المحلية والإقليمية."
-                : "Sudaf offers comprehensive technical services covering transportation planning, traffic impact studies, traffic simulation and modeling, GIS integration, infrastructure planning, and engineering design coordination. The company also supports public and private sector projects through technical analysis, engineering documentation, feasibility studies, and project development solutions tailored to local and regional requirements."}
-            </p>
-
-            <p>
-              {ar
-                ? "كما تقدم سدف خدمات متخصصة في إعداد مستندات الطرح والمناقصات وطلبات تقديم العروض RFP، والعروض الفنية والتجارية، وجداول الكميات BOQ، وأعمال الحصر، والمواصفات الفنية، ومنهجيات التنفيذ، وخطط الجودة QA/QC، ومستندات الصحة والسلامة HSE، والمستندات الهندسية الخاصة بمشاريع البنية التحتية والإنشاءات."
-                : "In addition, Sudaf provides specialized services in the preparation of tender documents, Requests for Proposal (RFP), technical and commercial proposals, Bills of Quantities (BOQ), quantity surveying, technical specifications, execution methodologies, QA/QC plans, HSE documentation, and engineering documents for infrastructure and construction projects."}
-            </p>
-
-            <p>
-              {ar
-                ? "وتقوم الشركة كذلك بإعداد الجداول الزمنية وأنظمة تخطيط المشاريع باستخدام برامج Primavera P6 وMicrosoft Project، بما يشمل البرامج الزمنية الأساسية، ومتابعة تقدم الأعمال، وتوزيع الموارد، وتسلسل الأنشطة، والتدفقات النقدية، ودعم التحكم وإدارة المشاريع."
-                : "The company also develops project schedules and planning systems using Primavera P6 and Microsoft Project, including baseline programs, progress monitoring, resource allocation, activity sequencing, cash flow planning, and project control support."}
-            </p>
-
-            <p>
-              {ar
-                ? "تعتمد سدف للاستشارات الهندسية على كادر هندسي وفني متعدد التخصصات يمتلك خبرات في مجالات هندسة النقل، والبنية التحتية، والهندسة المدنية، والتحليل المروري، وأنظمة GIS، وتخطيط المشاريع، وحصر الكميات، وضبط الجودة QA/QC، والصحة والسلامة HSE، والإدارة الفنية للمشاريع. ويجمع فريق العمل بين الخبرة الميدانية العملية واستخدام البرامج الهندسية الحديثة والمعايير الدولية لتقديم حلول هندسية فعالة وموثوقة وذات طابع احترافي."
-                : "Sudaf Engineering Consultancy is supported by a multidisciplinary engineering and technical team with expertise in transportation engineering, infrastructure, civil engineering, traffic analysis, GIS systems, project planning, quantity surveying, QA/QC, HSE, and technical project management. The team combines practical field experience with advanced engineering software and international standards to deliver efficient, reliable, and professional engineering solutions."}
-            </p>
-
-            <p>
-              {ar
-                ? "وتسعى سدف بشكل مستمر إلى تطوير قدراتها الفنية من خلال مواكبة التقنيات الحديثة، والتطوير المهني، والتعاون مع الجهات والخبرات المحلية والدولية المتخصصة. وتلتزم الشركة بتقديم حلول هندسية حديثة وعملية ومستدامة مع الحفاظ على أعلى معايير الجودة والكفاءة الفنية والاحترافية."
-                : "Sudaf continuously seeks to strengthen its technical capacity through modern technologies, professional development, and collaboration with specialized local and international partners. The company is committed to delivering innovative, practical, and sustainable engineering solutions while maintaining high standards of quality, technical excellence, efficiency, and professional integrity."}
-            </p>
-          </div>
-        </section>
-      )}
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/services" element={<ServicesPage />} />
+        <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+      </Routes>
 
       {selectedService && (
         <div className="modal-overlay" onClick={() => setSelectedService(null)}>
