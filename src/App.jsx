@@ -4,6 +4,7 @@ import "./App.css";
 function App() {
   const [lang, setLang] = useState("en");
   const [selectedService, setSelectedService] = useState(null);
+  const [currentPage, setCurrentPage] = useState("home");
   const ar = lang === "ar";
 
   const services = [
@@ -163,7 +164,8 @@ function App() {
       title: "Tendering, RFP & Project Documentation",
       titleAr: "إعداد مستندات الطرح والعروض الفنية",
       desc: "Preparation of RFPs, tender documents, BOQs, method statements, HSE, QA/QC, and project schedules.",
-      descAr: "إعداد مستندات الطرح، عروض التقديم، جداول الكميات، أساليب التنفيذ، خطط السلامة والجودة، والجداول الزمنية.",
+      descAr:
+        "إعداد مستندات الطرح، عروض التقديم، جداول الكميات، أساليب التنفيذ، خطط السلامة والجودة، والجداول الزمنية.",
       img: "/images/tender-documents.jpg",
       details: [
         "Preparation of Request for Proposal (RFP), tender documents, and instructions to bidders.",
@@ -229,7 +231,7 @@ function App() {
   return (
     <div className="app" dir={ar ? "rtl" : "ltr"}>
       <header className="header">
-        <div className="logo-container">
+        <div className="logo-container" onClick={() => setCurrentPage("home")}>
           <img src="/logo.svg" alt="Sudaf Logo" className="logo" />
           <div>
             <h2>{ar ? "سدف للاستشارات الهندسية" : "Sudaf Engineering"}</h2>
@@ -242,51 +244,221 @@ function App() {
         </div>
 
         <nav>
-          <a href="#home">{ar ? "الرئيسية" : "Home"}</a>
-          <a href="#about">{ar ? "من نحن" : "About Us"}</a>
-          <a href="#services">{ar ? "الخدمات" : "Services"}</a>
-          <a href="#projects">{ar ? "المشاريع" : "Projects"}</a>
-          <a href="#contact">{ar ? "اتصل بنا" : "Contact"}</a>
+          <button className="nav-link" onClick={() => setCurrentPage("home")}>
+            {ar ? "الرئيسية" : "Home"}
+          </button>
+
+          <button className="nav-link" onClick={() => setCurrentPage("about")}>
+            {ar ? "من نحن" : "About Us"}
+          </button>
+
+          <button
+            className="nav-link"
+            onClick={() => {
+              setCurrentPage("home");
+              setTimeout(() => {
+                document.getElementById("services")?.scrollIntoView();
+              }, 50);
+            }}
+          >
+            {ar ? "الخدمات" : "Services"}
+          </button>
+
+          <button
+            className="nav-link"
+            onClick={() => {
+              setCurrentPage("home");
+              setTimeout(() => {
+                document.getElementById("projects")?.scrollIntoView();
+              }, 50);
+            }}
+          >
+            {ar ? "المشاريع" : "Projects"}
+          </button>
+
+          <button
+            className="nav-link"
+            onClick={() => {
+              setCurrentPage("home");
+              setTimeout(() => {
+                document.getElementById("contact")?.scrollIntoView();
+              }, 50);
+            }}
+          >
+            {ar ? "اتصل بنا" : "Contact"}
+          </button>
+
           <button className="lang-btn" onClick={() => setLang(ar ? "en" : "ar")}>
             {ar ? "English" : "العربية"}
           </button>
         </nav>
       </header>
 
-      <section className="hero" id="home">
-        <div className="hero-content">
-          <img src="/logo.svg" alt="Sudaf Logo" className="hero-logo" />
-          <h1>
-            {ar
-              ? "شركة سدف للاستشارات الهندسية"
-              : "Sudaf Engineering Consultancy"}
-          </h1>
-          <p>
-            {ar
-              ? "استشارات هندسية متخصصة في تخطيط النقل، البنية التحتية، هندسة المرور، المطارات، الموانئ، السكك الحديدية، أنظمة GIS، إعداد مستندات الطرح والعروض الفنية، والحلول الهندسية المتكاملة."
-              : "Specialized engineering consultancy in transport planning, infrastructure, traffic engineering, airports, ports, railways, GIS systems, tender documentation, technical proposals, and integrated engineering solutions."}
-          </p>
-          <div className="hero-buttons">
-            <a href="#services">
-              <button>{ar ? "استعراض الخدمات" : "Explore Services"}</button>
-            </a>
-            <a href="#contact">
-              <button className="outline">{ar ? "اتصل بنا" : "Contact Us"}</button>
-            </a>
-          </div>
-        </div>
-      </section>
+      {currentPage === "home" && (
+        <>
+          <section className="hero" id="home">
+            <div className="hero-content">
+              <img src="/logo.svg" alt="Sudaf Logo" className="hero-logo" />
+              <h1>
+                {ar
+                  ? "شركة سدف للاستشارات الهندسية"
+                  : "Sudaf Engineering Consultancy"}
+              </h1>
+              <p>
+                {ar
+                  ? "استشارات هندسية متخصصة في تخطيط النقل، البنية التحتية، هندسة المرور، المطارات، الموانئ، السكك الحديدية، أنظمة GIS، إعداد مستندات الطرح والعروض الفنية، والحلول الهندسية المتكاملة."
+                  : "Specialized engineering consultancy in transport planning, infrastructure, traffic engineering, airports, ports, railways, GIS systems, tender documentation, technical proposals, and integrated engineering solutions."}
+              </p>
+              <div className="hero-buttons">
+                <button
+                  onClick={() =>
+                    document.getElementById("services")?.scrollIntoView()
+                  }
+                >
+                  {ar ? "استعراض الخدمات" : "Explore Services"}
+                </button>
+                <button
+                  className="outline"
+                  onClick={() =>
+                    document.getElementById("contact")?.scrollIntoView()
+                  }
+                >
+                  {ar ? "اتصل بنا" : "Contact Us"}
+                </button>
+              </div>
+            </div>
+          </section>
 
-      <section className="about-section" id="about">
-        <div className="about-container">
-          <div className="about-text">
+          <section className="services" id="services">
+            {services.map((service, index) => (
+              <div
+                className="card"
+                key={index}
+                onClick={() => setSelectedService(service)}
+              >
+                <img
+                  src={service.img}
+                  alt={ar ? service.titleAr : service.title}
+                />
+                <div className="card-content">
+                  <h3>{ar ? service.titleAr : service.title}</h3>
+                  <p>{ar ? service.descAr : service.desc}</p>
+                  <span className="read-more">
+                    {ar ? "عرض التفاصيل ←" : "View Details →"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </section>
+
+          <section className="projects-section" id="projects">
+            <h2>{ar ? "المشاريع" : "Projects"}</h2>
+            <p>
+              {ar
+                ? "سيتم قريبًا عرض نماذج من مشاريع الشركة وخبراتها الفنية في مجالات النقل والبنية التحتية والدراسات الهندسية."
+                : "Selected company projects and technical experience in transport, infrastructure, and engineering studies will be published soon."}
+            </p>
+          </section>
+
+          <section className="contact-section" id="contact">
+            <div className="contact-wrapper">
+              <div className="contact-info">
+                <h2>{ar ? "اتصل بنا" : "Contact Us"}</h2>
+
+                <h3>
+                  {ar
+                    ? "شركة سدف للاستشارات الهندسية"
+                    : "Sudaf Engineering Consultancy"}
+                </h3>
+
+                <p>
+                  {ar
+                    ? "العنوان: ليبيا، مصراتة، شارع طرابلس، بجانب مصرف الجمهورية"
+                    : "Address: Libya, Misurata, Tripoli Street, beside Jumhouria Bank"}
+                </p>
+
+                <p>{ar ? "الهاتف:" : "Phone:"} +218914054929</p>
+                <p>{ar ? "الهاتف:" : "Phone:"} +218915718567</p>
+                <p>{ar ? "البريد العام:" : "General Email:"} info@sudaf.ly</p>
+                <p>
+                  {ar ? "الدراسات والتصاميم:" : "Studies & Designs:"}{" "}
+                  radwan@sudaf.ly
+                </p>
+
+                <p>
+                  {ar ? "إحداثيات الموقع:" : "Coordinates:"} 32°21'47.3"N
+                  15°04'44.4"E
+                </p>
+
+                <a
+                  href="https://maps.app.goo.gl/wbtTLSKjN8kTN2269"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="map-link"
+                >
+                  {ar
+                    ? "فتح الموقع على خرائط Google"
+                    : "Open Location on Google Maps"}
+                </a>
+              </div>
+
+              <form
+                className="contact-form"
+                action="https://formsubmit.co/info@sudaf.ly"
+                method="POST"
+              >
+                <input
+                  type="hidden"
+                  name="_subject"
+                  value="New inquiry from Sudaf website"
+                />
+                <input type="hidden" name="_captcha" value="false" />
+                <input type="hidden" name="_template" value="table" />
+
+                <input
+                  type="text"
+                  name="name"
+                  placeholder={ar ? "الاسم" : "Your Name"}
+                  required
+                />
+
+                <input
+                  type="email"
+                  name="email"
+                  placeholder={ar ? "البريد الإلكتروني" : "Your Email"}
+                  required
+                />
+
+                <textarea
+                  name="message"
+                  rows="6"
+                  placeholder={ar ? "اكتب رسالتك هنا" : "Write your message here"}
+                  required
+                ></textarea>
+
+                <button type="submit">
+                  {ar ? "إرسال الرسالة" : "Send Message"}
+                </button>
+              </form>
+            </div>
+          </section>
+        </>
+      )}
+
+      {currentPage === "about" && (
+        <section className="about-page">
+          <div className="about-page-container">
+            <button className="back-btn" onClick={() => setCurrentPage("home")}>
+              {ar ? "← الرجوع للرئيسية" : "← Back to Home"}
+            </button>
+
             <span className="section-tag">{ar ? "من نحن" : "About Us"}</span>
 
-            <h2>
+            <h1>
               {ar
                 ? "سدف للاستشارات الهندسية"
                 : "Sudaf Engineering Consultancy"}
-            </h2>
+            </h1>
 
             <p>
               {ar
@@ -324,116 +496,8 @@ function App() {
                 : "Sudaf continuously seeks to strengthen its technical capacity through modern technologies, professional development, and collaboration with specialized local and international partners. The company is committed to delivering innovative, practical, and sustainable engineering solutions while maintaining high standards of quality, technical excellence, efficiency, and professional integrity."}
             </p>
           </div>
-
-          <div className="about-image">
-            <img src="/images/about.jpg" alt="About Sudaf" />
-          </div>
-        </div>
-      </section>
-
-      <section className="services" id="services">
-        {services.map((service, index) => (
-          <div
-            className="card"
-            key={index}
-            onClick={() => setSelectedService(service)}
-          >
-            <img src={service.img} alt={ar ? service.titleAr : service.title} />
-            <div className="card-content">
-              <h3>{ar ? service.titleAr : service.title}</h3>
-              <p>{ar ? service.descAr : service.desc}</p>
-              <span className="read-more">
-                {ar ? "عرض التفاصيل ←" : "View Details →"}
-              </span>
-            </div>
-          </div>
-        ))}
-      </section>
-
-      <section className="projects-section" id="projects">
-        <h2>{ar ? "المشاريع" : "Projects"}</h2>
-        <p>
-          {ar
-            ? "سيتم قريبًا عرض نماذج من مشاريع الشركة وخبراتها الفنية في مجالات النقل والبنية التحتية والدراسات الهندسية."
-            : "Selected company projects and technical experience in transport, infrastructure, and engineering studies will be published soon."}
-        </p>
-      </section>
-
-      <section className="contact-section" id="contact">
-        <div className="contact-wrapper">
-          <div className="contact-info">
-            <h2>{ar ? "اتصل بنا" : "Contact Us"}</h2>
-
-            <h3>
-              {ar
-                ? "شركة سدف للاستشارات الهندسية"
-                : "Sudaf Engineering Consultancy"}
-            </h3>
-
-            <p>
-              {ar
-                ? "العنوان: ليبيا، مصراتة، شارع طرابلس، بجانب مصرف الجمهورية"
-                : "Address: Libya, Misurata, Tripoli Street, beside Jumhouria Bank"}
-            </p>
-
-            <p>{ar ? "الهاتف:" : "Phone:"} +218914054929</p>
-            <p>{ar ? "الهاتف:" : "Phone:"} +218915718567</p>
-            <p>{ar ? "البريد العام:" : "General Email:"} info@sudaf.ly</p>
-            <p>{ar ? "الدراسات والتصاميم:" : "Studies & Designs:"} radwan@sudaf.ly</p>
-
-            <p>
-              {ar ? "إحداثيات الموقع:" : "Coordinates:"} 32°21'47.3"N
-              15°04'44.4"E
-            </p>
-
-            <a
-              href="https://maps.app.goo.gl/wbtTLSKjN8kTN2269"
-              target="_blank"
-              rel="noreferrer"
-              className="map-link"
-            >
-              {ar ? "فتح الموقع على خرائط Google" : "Open Location on Google Maps"}
-            </a>
-          </div>
-
-          <form
-            className="contact-form"
-            action="https://formsubmit.co/info@sudaf.ly"
-            method="POST"
-          >
-            <input
-              type="hidden"
-              name="_subject"
-              value="New inquiry from Sudaf website"
-            />
-            <input type="hidden" name="_captcha" value="false" />
-            <input type="hidden" name="_template" value="table" />
-
-            <input
-              type="text"
-              name="name"
-              placeholder={ar ? "الاسم" : "Your Name"}
-              required
-            />
-
-            <input
-              type="email"
-              name="email"
-              placeholder={ar ? "البريد الإلكتروني" : "Your Email"}
-              required
-            />
-
-            <textarea
-              name="message"
-              rows="6"
-              placeholder={ar ? "اكتب رسالتك هنا" : "Write your message here"}
-              required
-            ></textarea>
-
-            <button type="submit">{ar ? "إرسال الرسالة" : "Send Message"}</button>
-          </form>
-        </div>
-      </section>
+        </section>
+      )}
 
       {selectedService && (
         <div className="modal-overlay" onClick={() => setSelectedService(null)}>
