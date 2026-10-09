@@ -3,6 +3,7 @@ import { Routes, Route, Link, NavLink, useLocation } from "react-router-dom";
 import { services, contact, pillars, tools, about } from "./data";
 import { Icon, WhatsAppIcon } from "./icons";
 import RoundaboutSim from "./RoundaboutSim";
+import RoundaboutTool from "./RoundaboutTool";
 import { pages, pagePath, SITE_URL } from "./seo";
 import "./App.css";
 
@@ -89,6 +90,7 @@ const navItems = [
   { path: "about", en: "About Us", ar: "من نحن" },
   { path: "services", en: "Services", ar: "الخدمات" },
   { path: "projects", en: "Projects", ar: "المشاريع" },
+  { path: "tools", en: "Tools", ar: "أدوات هندسية" },
   { path: "contact", en: "Contact", ar: "اتصل بنا" },
 ];
 
@@ -832,6 +834,29 @@ function ContactPage() {
   );
 }
 
+function ToolsPage() {
+  const { ar } = useLang();
+
+  return (
+    <>
+      <PageHeader
+        title={ar ? "أدوات هندسية" : "Engineering Tools"}
+        subtitle={
+          ar
+            ? "أدوات تفاعلية لتصميم الدوّارات وفق المعيار البريطاني DMRB والدليل الأمريكي FHWA / NCHRP 672."
+            : "Interactive roundabout design tools based on the UK DMRB and the US FHWA / NCHRP 672 guidance."
+        }
+      />
+      <section className="section">
+        <div className="container">
+          <RoundaboutTool ar={ar} />
+        </div>
+      </section>
+      <CtaBand />
+    </>
+  );
+}
+
 function NotFoundPage() {
   const { ar, lang } = useLang();
 
@@ -852,6 +877,7 @@ const pageComponents = {
   services: ServicesPage,
   projects: ProjectsPage,
   contact: ContactPage,
+  tools: ToolsPage,
 };
 
 function App() {

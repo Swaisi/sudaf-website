@@ -60,6 +60,20 @@ export const pages = [
     },
   },
   {
+    key: "tools",
+    path: "tools",
+    en: {
+      title: "Roundabout Design Tools – DMRB & NCHRP 672 | Sudaf Engineering",
+      description:
+        "Free roundabout design tools: Kimber (TRL LR942) entry capacity with a DMRB CD 116 QA/QC checklist, and FHWA / NCHRP 672 fastest-path speeds with HCM capacity, delay and LOS.",
+    },
+    ar: {
+      title: "أدوات تصميم الدوّارات – DMRB وNCHRP 672 | سدف للاستشارات الهندسية",
+      description:
+        "أدوات مجانية لتصميم الدوّارات: سعة المدخل وفق نموذج Kimber مع قائمة فحص جودة حسب DMRB CD 116، وسرعات المسار الأسرع وفق FHWA / NCHRP 672 مع السعة والتأخير ومستوى الخدمة حسب HCM.",
+    },
+  },
+  {
     key: "contact",
     path: "contact",
     en: {
