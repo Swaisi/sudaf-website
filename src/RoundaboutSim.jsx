@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import TrendChart from "./TrendChart";
+import { drawEnvironment } from "./drawEnvironment";
 import {
   ARMS, DECK_HALF, LANES, PATHS, R, RING_W, SIZE,
   createSim, geometry, inSide, isMain, sample, setMode, stats, step,
@@ -44,6 +45,9 @@ const armPoint = (alpha, along, off) => {
 
 // Static ground layer: carriageways, island landscaping and markings.
 function drawGround(ctx) {
+  const roadPaths = [...PATHS.ring.o.flat(), ...PATHS.ring.i.flat(), ...PATHS.slip];
+  drawEnvironment(ctx, SIZE, roadPaths, { C, R, ringW: RING_W, deckHalf: DECK_HALF });
+
   ctx.lineCap = "butt";
   ctx.lineJoin = "round";
 
