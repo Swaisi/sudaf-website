@@ -226,7 +226,80 @@ export const contact = {
     { display: "+218 91 405 4929", tel: "+218914054929" },
     { display: "+218 91 571 8567", tel: "+218915718567" },
   ],
+  whatsapp: "https://wa.me/218914054929",
   email: "info@sudaf.ly",
   studiesEmail: "radwan@sudaf.ly",
   mapUrl: "https://maps.app.goo.gl/wbtTLSKjN8kTN2269",
 };
+
+// "Why Sudaf" pillars on the home page; icon names map to src/icons.jsx.
+export const pillars = [
+  {
+    icon: "globe",
+    title: "International Standards",
+    titleAr: "معايير دولية",
+    desc: "Studies and designs prepared in line with recognized international engineering codes and best practice.",
+    descAr: "دراسات وتصاميم وفق المعايير والأكواد الهندسية الدولية المعتمدة وأفضل الممارسات.",
+  },
+  {
+    icon: "chart",
+    title: "Advanced Modeling",
+    titleAr: "نمذجة متقدمة",
+    desc: "Traffic simulation and analysis using PTV VISSIM, SIDRA, SUMO, and Synchro.",
+    descAr: "محاكاة وتحليل مروري باستخدام PTV VISSIM وSIDRA وSUMO وSynchro.",
+  },
+  {
+    icon: "users",
+    title: "Multidisciplinary Team",
+    titleAr: "فريق متعدد التخصصات",
+    desc: "Transport, civil, GIS, QA/QC, HSE, and project planning expertise under one roof.",
+    descAr: "خبرات في النقل والهندسة المدنية وGIS والجودة والسلامة وتخطيط المشاريع تحت سقف واحد.",
+  },
+  {
+    icon: "layers",
+    title: "End-to-End Delivery",
+    titleAr: "خدمة متكاملة",
+    desc: "From feasibility and design to tender documents, schedules, and project control.",
+    descAr: "من دراسات الجدوى والتصميم إلى مستندات الطرح والجداول الزمنية والتحكم بالمشاريع.",
+  },
+];
+
+export const tools = [
+  "PTV VISSIM",
+  "SIDRA",
+  "SUMO",
+  "Synchro",
+  "GIS",
+  "AutoCAD",
+  "Civil 3D",
+  "Primavera P6",
+  "MS Project",
+];
+
+// About page paragraphs.
+export const about = [
+  {
+    ar: "سدف للاستشارات الهندسية هي شركة هندسية واستشارية متخصصة في مجالات هندسة النقل، وتطوير البنية التحتية، والتخطيط الهندسي، والحلول التقنية المتكاملة. تقدم الشركة خدمات استشارية احترافية في الدراسات والتصاميم الهندسية، والتخطيط الاستراتيجي، وهندسة المرور، وأنظمة النقل، والطرق، والمطارات، والموانئ، والسكك الحديدية، وتطوير مشاريع البنية التحتية باستخدام أحدث التقنيات والمعايير الهندسية الدولية.",
+    en: "Sudaf Engineering Consultancy is a specialized engineering and consulting firm focused on transportation engineering, infrastructure development, engineering planning, and integrated technical solutions. The company provides professional consultancy services in engineering studies, design, strategic planning, traffic engineering, transportation systems, roads, airports, ports, railways, and infrastructure development using advanced technologies and international engineering standards.",
+  },
+  {
+    ar: "توفر سدف مجموعة متكاملة من الخدمات الفنية تشمل تخطيط النقل، ودراسات الأثر المروري، والمحاكاة والنمذجة المرورية، والتكامل مع أنظمة GIS، وتخطيط البنية التحتية، والتنسيق الهندسي للمشاريع. كما تدعم الشركة مشاريع القطاعين العام والخاص من خلال التحليل الفني، وإعداد المستندات الهندسية، ودراسات الجدوى، وحلول تطوير المشاريع بما يتناسب مع المتطلبات المحلية والإقليمية.",
+    en: "Sudaf offers comprehensive technical services covering transportation planning, traffic impact studies, traffic simulation and modeling, GIS integration, infrastructure planning, and engineering design coordination. The company also supports public and private sector projects through technical analysis, engineering documentation, feasibility studies, and project development solutions tailored to local and regional requirements.",
+  },
+  {
+    ar: "كما تقدم سدف خدمات متخصصة في إعداد مستندات الطرح والمناقصات وطلبات تقديم العروض RFP، والعروض الفنية والتجارية، وجداول الكميات BOQ، وأعمال الحصر، والمواصفات الفنية، ومنهجيات التنفيذ، وخطط الجودة QA/QC، ومستندات الصحة والسلامة HSE، والمستندات الهندسية الخاصة بمشاريع البنية التحتية والإنشاءات.",
+    en: "In addition, Sudaf provides specialized services in the preparation of tender documents, Requests for Proposal (RFP), technical and commercial proposals, Bills of Quantities (BOQ), quantity surveying, technical specifications, execution methodologies, QA/QC plans, HSE documentation, and engineering documents for infrastructure and construction projects.",
+  },
+  {
+    ar: "وتقوم الشركة كذلك بإعداد الجداول الزمنية وأنظمة تخطيط المشاريع باستخدام برامج Primavera P6 وMicrosoft Project، بما يشمل البرامج الزمنية الأساسية، ومتابعة تقدم الأعمال، وتوزيع الموارد، وتسلسل الأنشطة، والتدفقات النقدية، ودعم التحكم وإدارة المشاريع.",
+    en: "The company also develops project schedules and planning systems using Primavera P6 and Microsoft Project, including baseline programs, progress monitoring, resource allocation, activity sequencing, cash flow planning, and project control support.",
+  },
+  {
+    ar: "تعتمد سدف للاستشارات الهندسية على كادر هندسي وفني متعدد التخصصات يمتلك خبرات في مجالات هندسة النقل، والبنية التحتية، والهندسة المدنية، والتحليل المروري، وأنظمة GIS، وتخطيط المشاريع، وحصر الكميات، وضبط الجودة QA/QC، والصحة والسلامة HSE، والإدارة الفنية للمشاريع. ويجمع فريق العمل بين الخبرة الميدانية العملية واستخدام البرامج الهندسية الحديثة والمعايير الدولية لتقديم حلول هندسية فعالة وموثوقة وذات طابع احترافي.",
+    en: "Sudaf Engineering Consultancy is supported by a multidisciplinary engineering and technical team with expertise in transportation engineering, infrastructure, civil engineering, traffic analysis, GIS systems, project planning, quantity surveying, QA/QC, HSE, and technical project management. The team combines practical field experience with advanced engineering software and international standards to deliver efficient, reliable, and professional engineering solutions.",
+  },
+  {
+    ar: "وتسعى سدف بشكل مستمر إلى تطوير قدراتها الفنية من خلال مواكبة التقنيات الحديثة، والتطوير المهني، والتعاون مع الجهات والخبرات المحلية والدولية المتخصصة. وتلتزم الشركة بتقديم حلول هندسية حديثة وعملية ومستدامة مع الحفاظ على أعلى معايير الجودة والكفاءة الفنية والاحترافية.",
+    en: "Sudaf continuously seeks to strengthen its technical capacity through modern technologies, professional development, and collaboration with specialized local and international partners. The company is committed to delivering innovative, practical, and sustainable engineering solutions while maintaining high standards of quality, technical excellence, efficiency, and professional integrity.",
+  },
+];
