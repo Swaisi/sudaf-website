@@ -4,7 +4,7 @@ import { useState } from "react";
 // data: [{ t, value }] oldest first; t in seconds.
 export default function TrendChart({ title, unit, data, minMax, format = (v) => v, ariaLabel }) {
   const [hover, setHover] = useState(null);
-  const W = 200, H = 54, PAD_T = 4, PAD_B = 4;
+  const W = 200, H = 40, PAD_T = 3, PAD_B = 3;
   const n = data.length;
   const max = Math.max(minMax, ...data.map((d) => d.value));
   const x = (i) => (n > 1 ? (i / (n - 1)) * W : W);

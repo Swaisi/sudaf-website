@@ -425,16 +425,23 @@ export default function RoundaboutSim({ ar }) {
         ))}
       </div>
 
-      <canvas
-        ref={canvasRef}
-        className="sim-canvas"
-        role="img"
-        aria-label={
-          ar
-            ? "محاكاة حيّة لتقاطع دوّار بجسر علوي للطريق الرئيسي، ومسارات انعطاف حر لليمين، ومركبات متنوعة من سيارات وحافلات وشاحنات"
-            : "Live simulation of a grade-separated roundabout with a flyover on the main road, free right-turn slip lanes, and a mixed fleet of cars, buses and trucks"
-        }
-      />
+      <div className="sim-stage">
+        <canvas
+          ref={canvasRef}
+          className="sim-canvas"
+          role="img"
+          aria-label={
+            ar
+              ? "محاكاة حيّة لتقاطع دوّار بجسر علوي للطريق الرئيسي، ومسارات انعطاف حر لليمين، ومركبات متنوعة من سيارات وحافلات وشاحنات"
+              : "Live simulation of a grade-separated roundabout with a flyover on the main road, free right-turn slip lanes, and a mixed fleet of cars, buses and trucks"
+          }
+        />
+        <div className="sim-legend overlay" aria-hidden="true">
+          <span>{ar ? "متوقف" : "Stopped"}</span>
+          <i />
+          <span>{ar ? "سرعة حرة" : "Free flow"}</span>
+        </div>
+      </div>
 
       <figcaption className="sim-foot">
         <dl className="sim-stats">
@@ -477,11 +484,7 @@ export default function RoundaboutSim({ ar }) {
             ariaLabel={ar ? "عدد المركبات المنتظرة خلال آخر 90 ثانية" : "Queued vehicles over the last 90 seconds"}
           />
         </div>
-        <div className="sim-legend" aria-hidden="true">
-          <span>{ar ? "متوقف" : "Stopped"}</span>
-          <i />
-          <span>{ar ? "سرعة حرة" : "Free flow"}</span>
-        </div>
+
       </figcaption>
     </figure>
   );
