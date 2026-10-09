@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Routes, Route, Link, NavLink, useLocation } from "react-router-dom";
-import { services, contact, pillars, tools, about } from "./data";
+import { services, contact, pillars, tools, about, process, faqs } from "./data";
 import { Icon, WhatsAppIcon } from "./icons";
 import RoundaboutSim from "./RoundaboutSim";
 import RoundaboutTool from "./RoundaboutTool";
@@ -54,8 +54,12 @@ function usePageMeta() {
 }
 
 function ScrollToTop() {
-  const { pathname } = useLocation();
-  useEffect(() => window.scrollTo(0, 0), [pathname]);
+  const { pathname, hash } = useLocation();
+  useEffect(() => {
+    const target = hash && document.getElementById(hash.slice(1));
+    if (target) target.scrollIntoView();
+    else window.scrollTo(0, 0);
+  }, [pathname, hash]);
   return null;
 }
 
@@ -162,6 +166,21 @@ function Footer() {
 
   return (
     <footer className="footer">
+      <div className="container footer-cta">
+        <span className="footer-coords" dir="ltr">32°21′47″N · 15°04′44″E — Misurata, Libya</span>
+        <h2>{ar ? "لنُهندس مشروعك القادم." : "Let’s engineer your next project."}</h2>
+        <div className="footer-cta-actions">
+          <Link to={pagePath("contact", lang)} className="btn">
+            {ar ? "اطلب استشارة" : "Request a Consultation"}
+            <ArrowBadge />
+          </Link>
+          <a href={contact.whatsapp} target="_blank" rel="noreferrer" className="btn outline">
+            <WhatsAppIcon size={18} />
+            {ar ? "واتساب" : "WhatsApp"}
+          </a>
+        </div>
+      </div>
+
       <div className="container footer-grid">
         <div>
           <div className="footer-brand">
@@ -251,43 +270,6 @@ function PageHeader({ title, subtitle }) {
   );
 }
 
-function SectionHeading({ tag, title, text, center }) {
-  return (
-    <div className={`section-heading reveal ${center ? "center" : ""}`}>
-      <span className="eyebrow">{tag}</span>
-      <h2>{title}</h2>
-      {text && <p>{text}</p>}
-    </div>
-  );
-}
-
-function CtaBand() {
-  const { ar, lang } = useLang();
-  return (
-    <section className="cta-band">
-      <div className="container cta-inner reveal">
-        <div>
-          <h2>{ar ? "لديك مشروع؟" : "Have a project in mind?"}</h2>
-          <p>
-            {ar
-              ? "تحدّث مع فريقنا الهندسي حول متطلبات الدراسة أو التصميم أو مستندات الطرح."
-              : "Talk to our engineering team about your study, design, or tender requirements."}
-          </p>
-        </div>
-        <div className="cta-actions">
-          <Link to={pagePath("contact", lang)} className="btn">
-            {ar ? "اطلب استشارة" : "Request a Consultation"}
-          </Link>
-          <a href={contact.whatsapp} target="_blank" rel="noreferrer" className="btn outline">
-            <WhatsAppIcon size={18} />
-            {ar ? "واتساب" : "WhatsApp"}
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function ServiceModal({ service, onClose }) {
   const { ar, lang } = useLang();
 
@@ -357,51 +339,221 @@ function ServiceModal({ service, onClose }) {
   );
 }
 
-function ServicesGrid({ items }) {
+function ArrowBadge() {
+  return (
+    <span className="btn-ic" aria-hidden="true">
+      <Icon name="arrow" size={16} className="flip-rtl" />
+    </span>
+  );
+}
+
+function SectionLabel({ index, label }) {
+  return (
+    <div className="section-label reveal">
+      <span className="idx">{index}</span>
+      <span>{label}</span>
+    </div>
+  );
+}
+
+function NumbersBand() {
   const { ar } = useLang();
-  const [selectedService, setSelectedService] = useState(null);
+  const items = [
+    { n: services.length, en: "Specialized engineering service areas", ar: "مجالًا هندسيًا متخصصًا" },
+    { n: 5, en: "Transport sectors — roads, ports, rail, airports and urban mobility", ar: "قطاعات نقل: الطرق والموانئ والسكك والمطارات والنقل الحضري" },
+    { n: tools.length, en: "Modeling, design and planning platforms", ar: "برامج للنمذجة والتصميم والتخطيط" },
+  ];
+  return (
+    <section className="numbers">
+      <div className="container numbers-inner">
+        <div className="numbers-intro reveal">
+          <SectionLabel index="01" label={ar ? "سدف بالأرقام" : "Sudaf by the numbers"} />
+          <h2>
+            {ar
+              ? "خبرة متعددة التخصصات تحت سقف واحد"
+              : "Multidisciplinary expertise under one roof"}
+          </h2>
+        </div>
+        <ul className="numbers-list">
+          {items.map((it) => (
+            <li key={it.en} className="reveal">
+              <strong className="masked">{it.n}</strong>
+              <span>{ar ? it.ar : it.en}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+function ServiceIndex() {
+  const { ar, lang } = useLang();
+  const [active, setActive] = useState(0);
+  const s = services[active];
+  const details = ar ? s.detailsAr : s.details;
 
   return (
-    <>
-      <div className="services-grid">
-        {items.map((service) => (
-          <button
-            className="card reveal"
-            key={service.title}
-            onClick={() => setSelectedService(service)}
-          >
-            <div className="card-media">
-              <img
-                src={service.img}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                width="1200"
-                height="800"
-              />
-              <span className="card-index">
-                {String(services.indexOf(service) + 1).padStart(2, "0")}
-              </span>
+    <section className="section svc-index-section">
+      <div className="container">
+        <SectionLabel index="02" label={ar ? "خدماتنا" : "What we do"} />
+        <div className="svc-index-head reveal">
+          <h2>{ar ? "خدمات هندسية متكاملة" : "Integrated engineering services"}</h2>
+          <p>
+            {ar
+              ? "من الدراسات الاستراتيجية إلى التصميم التفصيلي ومستندات الطرح، نغطي دورة حياة مشاريع النقل والبنية التحتية كاملة."
+              : "From strategic studies to detailed design and tender documents, we cover the full lifecycle of transport and infrastructure projects."}
+          </p>
+        </div>
+
+        <div className="svc-index">
+          <ol className="svc-list" role="tablist" aria-orientation="vertical">
+            {services.map((item, i) => (
+              <li key={item.title}>
+                <button
+                  role="tab"
+                  aria-selected={i === active}
+                  aria-controls="svc-preview"
+                  className={i === active ? "active" : ""}
+                  onMouseEnter={() => setActive(i)}
+                  onFocus={() => setActive(i)}
+                  onClick={() => setActive(i)}
+                >
+                  <span className="n">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="t">{ar ? item.titleAr : item.title}</span>
+                  <Icon name="arrow" size={18} className="flip-rtl" />
+                </button>
+              </li>
+            ))}
+          </ol>
+
+          <div className="svc-preview" id="svc-preview" role="tabpanel" aria-live="polite">
+            <div className="svc-frame">
+              {services.map((item, i) => (
+                <img
+                  key={item.title}
+                  src={item.img.replace("/images/", "/images/duo/")}
+                  alt=""
+                  loading="lazy"
+                  className={i === active ? "on" : ""}
+                  width="1000"
+                  height="667"
+                />
+              ))}
+              <span className="svc-frame-num" aria-hidden="true">{String(active + 1).padStart(2, "0")}</span>
             </div>
-            <div className="card-content">
-              <h3>{ar ? service.titleAr : service.title}</h3>
-              <p>{ar ? service.descAr : service.desc}</p>
-              <span className="read-more">
-                {ar ? "عرض التفاصيل" : "View Details"}
-                <Icon name="arrow" size={18} className="flip-rtl" />
+            <h3>{ar ? s.titleAr : s.title}</h3>
+            <p>{ar ? s.descAr : s.desc}</p>
+            <ul className="check-list">
+              {details.slice(0, 3).map((d) => (
+                <li key={d}>
+                  <Icon name="check" size={18} />
+                  <span>{d}</span>
+                </li>
+              ))}
+            </ul>
+            <Link to={`${pagePath("services", lang)}#service-${active + 1}`} className="btn dark">
+              {ar ? "النطاق الكامل للخدمة" : "Full scope of service"}
+              <ArrowBadge />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ProcessSection() {
+  const { ar } = useLang();
+  return (
+    <section className="section process-section">
+      <div className="container">
+        <SectionLabel index="03" label={ar ? "منهجية العمل" : "How we work"} />
+        <h2 className="process-title reveal">
+          {ar ? "من البيانات إلى التسليم" : "From data to delivery"}
+        </h2>
+        <ol className="process">
+          {process.map((step, i) => (
+            <li key={step.title} className="reveal" style={{ transitionDelay: `${i * 90}ms` }}>
+              <span className="process-num">{String(i + 1).padStart(2, "0")}</span>
+              <span className="process-icon">
+                <Icon name={step.icon} size={22} />
               </span>
+              <h3>{ar ? step.titleAr : step.title}</h3>
+              <p>{ar ? step.descAr : step.desc}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+function PillarsSection() {
+  const { ar } = useLang();
+  return (
+    <section className="section pillars-section">
+      <div className="container">
+        <SectionLabel index="04" label={ar ? "لماذا سدف" : "Why Sudaf"} />
+        <h2 className="pillars-title reveal">
+          {ar ? "خبرة فنية تبني الثقة" : "Technical expertise you can rely on"}
+        </h2>
+        <div className="pillars">
+          {pillars.map((p) => (
+            <div className="pillar reveal" key={p.title}>
+              <div className="pillar-icon">
+                <Icon name={p.icon} size={24} />
+              </div>
+              <h3>{ar ? p.titleAr : p.title}</h3>
+              <p>{ar ? p.descAr : p.desc}</p>
             </div>
-          </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ToolsMarquee() {
+  const { ar } = useLang();
+  const row = [...tools, ...tools];
+  return (
+    <section className="marquee" aria-label={ar ? "البرامج التي نعتمد عليها" : "Software we work with"}>
+      <div className="marquee-track" dir="ltr">
+        {[0, 1].map((k) => (
+          <ul key={k} aria-hidden={k === 1}>
+            {row.map((t, i) => (
+              <li key={i}>{t}</li>
+            ))}
+          </ul>
         ))}
       </div>
+    </section>
+  );
+}
 
-      {selectedService && (
-        <ServiceModal
-          service={selectedService}
-          onClose={() => setSelectedService(null)}
-        />
-      )}
-    </>
+function FaqSection() {
+  const { ar } = useLang();
+  return (
+    <section className="section faq-section">
+      <div className="container faq-layout">
+        <div className="faq-intro reveal">
+          <SectionLabel index="05" label={ar ? "أسئلة شائعة" : "FAQ"} />
+          <h2>{ar ? "أسئلة يطرحها عملاؤنا" : "Questions our clients ask"}</h2>
+        </div>
+        <div className="faq-list reveal">
+          {faqs.map((f, i) => (
+            <details key={f.q} open={i === 0}>
+              <summary>
+                <span>{ar ? f.qAr : f.q}</span>
+                <span className="faq-ic" aria-hidden="true" />
+              </summary>
+              <p>{ar ? f.aAr : f.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -432,6 +584,7 @@ function HomePage() {
             <div className="hero-buttons">
               <Link to={pagePath("contact", lang)} className="btn">
                 {ar ? "اطلب استشارة" : "Request a Consultation"}
+                <ArrowBadge />
               </Link>
               <Link to={pagePath("services", lang)} className="btn outline">
                 {ar ? "خدماتنا" : "Our Services"}
@@ -441,90 +594,14 @@ function HomePage() {
 
           <RoundaboutSim ar={ar} />
         </div>
-
-        <div className="container">
-          <ul className="hero-facts">
-            <li>
-              <strong>{services.length}</strong>
-              <span>{ar ? "مجالًا هندسيًا متخصصًا" : "Specialized service areas"}</span>
-            </li>
-            <li>
-              <strong>{ar ? "٥" : "5"}</strong>
-              <span>
-                {ar
-                  ? "قطاعات نقل: طرق، موانئ، سكك، مطارات، نقل حضري"
-                  : "Transport sectors: roads, ports, rail, airports, urban"}
-              </span>
-            </li>
-            <li>
-              <strong>P6</strong>
-              <span>
-                {ar
-                  ? "تخطيط ومتابعة المشاريع وإعداد الجداول الزمنية"
-                  : "Project planning & control with Primavera P6 and MS Project"}
-              </span>
-            </li>
-          </ul>
-        </div>
       </section>
 
-      <section className="section">
-        <div className="container">
-          <SectionHeading
-            tag={ar ? "خدماتنا" : "What We Do"}
-            title={ar ? "خدمات هندسية متكاملة" : "Integrated Engineering Services"}
-            text={
-              ar
-                ? "من الدراسات الاستراتيجية إلى التصميم التفصيلي ومستندات الطرح، نغطي دورة حياة مشاريع النقل والبنية التحتية."
-                : "From strategic studies to detailed design and tender documents, we cover the full lifecycle of transport and infrastructure projects."
-            }
-          />
-          <ServicesGrid items={services.slice(0, 6)} />
-          <div className="section-more reveal">
-            <Link to={pagePath("services", lang)} className="btn dark">
-              {ar ? `عرض جميع الخدمات (${services.length})` : `View All ${services.length} Services`}
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="section alt">
-        <div className="container">
-          <SectionHeading
-            tag={ar ? "لماذا سدف" : "Why Sudaf"}
-            title={ar ? "خبرة فنية تبني الثقة" : "Technical Expertise You Can Rely On"}
-            center
-          />
-          <div className="pillars">
-            {pillars.map((p) => (
-              <div className="pillar reveal" key={p.title}>
-                <div className="pillar-icon">
-                  <Icon name={p.icon} size={26} />
-                </div>
-                <h3>{ar ? p.titleAr : p.title}</h3>
-                <p>{ar ? p.descAr : p.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="tools">
-        <div className="container tools-inner reveal">
-          <span className="tools-label">
-            {ar ? "البرامج والأدوات التي نعتمد عليها" : "Software & tools we work with"}
-          </span>
-          <ul>
-            {tools.map((t) => (
-              <li key={t} dir="ltr">
-                {t}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <CtaBand />
+      <NumbersBand />
+      <ServiceIndex />
+      <ProcessSection />
+      <PillarsSection />
+      <ToolsMarquee />
+      <FaqSection />
     </>
   );
 }
@@ -565,7 +642,6 @@ function AboutPage() {
           </aside>
         </div>
       </section>
-      <CtaBand />
     </>
   );
 }
@@ -669,7 +745,6 @@ function ServicesPage() {
         <ServiceModal service={selectedService} onClose={() => setSelectedService(null)} />
       )}
 
-      <CtaBand />
     </>
   );
 }
@@ -852,7 +927,6 @@ function ToolsPage() {
           <RoundaboutTool ar={ar} />
         </div>
       </section>
-      <CtaBand />
     </>
   );
 }
