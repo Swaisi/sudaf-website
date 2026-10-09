@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import TrendChart from "./TrendChart";
 import {
   ARMS, DECK_HALF, LANES, PATHS, R, RING_W, SIZE,
   createSim, geometry, inSide, isMain, sample, setMode, stats, step,
@@ -50,10 +51,10 @@ function drawGround(ctx) {
   ctx.fillStyle = ASPHALT;
   for (let a = 0; a < 4; a++) {
     const alpha = ARMS[a];
-    const inner = isMain(a) ? LANES.ring(a) - LANE_W / 2 - 1 : 0;
-    // ring lanes run all the way in; slip lanes only until they peel off
+    const inner = isMain(a) ? LANES.i(a) - LANE_W / 2 - 1 : 0;
+    // entry/exit lanes run all the way in; slip lanes only until they peel off
     const bands = [
-      [R, LANES.ring(a) + LANE_W / 2 + 1],
+      [R, LANES.o(a) + LANE_W / 2 + 1],
       [SLIP_D, LANES.slip(a) + LANE_W / 2 + 1],
     ];
     for (const [from, outer] of bands) {
@@ -69,14 +70,14 @@ function drawGround(ctx) {
   // Lane surfaces along every movement, plus the circulating carriageway
   ctx.strokeStyle = ASPHALT;
   ctx.lineWidth = LANE_W + 2;
-  PATHS.ring.forEach((row) => row.forEach((p) => strokePath(ctx, p)));
+  for (const lane of ["o", "i"]) PATHS.ring[lane].forEach((row) => row.forEach((p) => strokePath(ctx, p)));
   PATHS.slip.forEach((p) => strokePath(ctx, p));
   ctx.lineWidth = RING_W + 4;
   ctx.beginPath();
   ctx.arc(C, C, R, 0, Math.PI * 2);
   ctx.stroke();
 
-  // Ring edge lines
+  // Ring edge lines and the dashed line between the two circulating lanes
   ctx.strokeStyle = "rgba(255,255,255,0.22)";
   ctx.lineWidth = 1;
   for (const r of [R - RING_W / 2 - 2, R + RING_W / 2 + 2]) {
@@ -84,6 +85,12 @@ function drawGround(ctx) {
     ctx.arc(C, C, r, 0, Math.PI * 2);
     ctx.stroke();
   }
+  ctx.strokeStyle = "rgba(255,255,255,0.4)";
+  ctx.setLineDash([8, 8]);
+  ctx.beginPath();
+  ctx.arc(C, C, R, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
 
   // Landscaped central island
   const islandR = R - RING_W / 2 - 5;
@@ -123,18 +130,19 @@ function drawGround(ctx) {
   for (let a = 0; a < 4; a++) {
     const alpha = ARMS[a];
     const u = [Math.cos(alpha), Math.sin(alpha)], side = inSide(alpha);
-    const ringOff = LANES.ring(a), slipOff = LANES.slip(a);
+    const offI = LANES.i(a), offO = LANES.o(a), offS = LANES.slip(a);
 
-    // Dashed separators between ring lane and slip lane
+    // Dashed lane lines: between the two entry/exit lanes, and beside the slip lane
     ctx.strokeStyle = "rgba(255,255,255,0.35)";
     ctx.lineWidth = 1;
     ctx.setLineDash([7, 7]);
     for (const sign of [1, -1]) {
-      const off = sign * (ringOff + slipOff) / 2;
-      ctx.beginPath();
-      ctx.moveTo(...armPoint(alpha, SIZE, off));
-      ctx.lineTo(...armPoint(alpha, SLIP_D, off));
-      ctx.stroke();
+      for (const [off, until] of [[(offI + offO) / 2, STOP_R + 4], [(offO + offS) / 2, SLIP_D]]) {
+        ctx.beginPath();
+        ctx.moveTo(...armPoint(alpha, SIZE, sign * off));
+        ctx.lineTo(...armPoint(alpha, until, sign * off));
+        ctx.stroke();
+      }
     }
     ctx.setLineDash([]);
 
@@ -143,24 +151,24 @@ function drawGround(ctx) {
       ctx.fillStyle = "rgba(214,180,106,0.22)";
       ctx.beginPath();
       ctx.moveTo(...armPoint(alpha, STOP_R - 2, 0));
-      ctx.lineTo(...armPoint(alpha, STOP_R + 56, 4));
-      ctx.lineTo(...armPoint(alpha, SIZE, 3));
-      ctx.lineTo(...armPoint(alpha, SIZE, -3));
-      ctx.lineTo(...armPoint(alpha, STOP_R + 56, -4));
+      ctx.lineTo(...armPoint(alpha, STOP_R + 56, 3.5));
+      ctx.lineTo(...armPoint(alpha, SIZE, 2.5));
+      ctx.lineTo(...armPoint(alpha, SIZE, -2.5));
+      ctx.lineTo(...armPoint(alpha, STOP_R + 56, -3.5));
       ctx.closePath();
       ctx.fill();
     }
 
-    // Give-way "shark teeth" across the entry lane
+    // Give-way "shark teeth" across both entry lanes
     ctx.fillStyle = "rgba(255,255,255,0.6)";
-    for (let k = -2; k <= 2; k++) {
-      const off = ringOff + k * 4.4;
+    for (let k = -4; k <= 4; k++) {
+      const off = (offI + offO) / 2 + k * 2.9;
       const bx = C + u[0] * (STOP_R + 1) + side[0] * off;
       const by = C + u[1] * (STOP_R + 1) + side[1] * off;
       ctx.beginPath();
-      ctx.moveTo(bx - side[0] * 1.8, by - side[1] * 1.8);
-      ctx.lineTo(bx + side[0] * 1.8, by + side[1] * 1.8);
-      ctx.lineTo(bx + u[0] * 5, by + u[1] * 5);
+      ctx.moveTo(bx - side[0] * 1.2, by - side[1] * 1.2);
+      ctx.lineTo(bx + side[0] * 1.2, by + side[1] * 1.2);
+      ctx.lineTo(bx + u[0] * 4, by + u[1] * 4);
       ctx.closePath();
       ctx.fill();
     }
@@ -253,14 +261,35 @@ function drawVehicle(ctx, v) {
   ctx.restore();
 }
 
-function warmSim(mode) {
+const HISTORY_S = 90;
+
+// Advance the simulation and sample delay / queue once per simulated second.
+function advance(sim, dt) {
+  step(sim, dt);
+  if (sim.time - (sim.lastSample || 0) >= 1) {
+    sim.lastSample = sim.time;
+    const st = stats(sim);
+    sim.history = (sim.history || []).concat({ t: sim.time, delay: st.delay, queued: st.queued }).slice(-HISTORY_S);
+  }
+}
+
+// A fresh scenario starts from typical demand and is fast-forwarded until its
+// state has developed: `ff` steps are played back as a short time-lapse.
+function newSim(mode) {
   const sim = createSim(Date.now() % 100000);
   setMode(sim, mode);
-  sim.demand = 1; // start from typical demand, then let the scenario develop
-  const seconds = mode === "jam" ? 100 : 60;
-  for (let i = 0; i < seconds * 30; i++) step(sim, 1 / 30);
+  sim.demand = 1;
+  sim.ff = (mode === "jam" ? 100 : 60) * 30;
   return sim;
 }
+
+function fastForward(sim, maxSteps) {
+  const k = Math.min(sim.ff, maxSteps);
+  for (let i = 0; i < k; i++) advance(sim, 1 / 30);
+  sim.ff -= k;
+}
+
+const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const SCENARIOS = [
   { id: "free", en: "Free flow", ar: "تدفق حر" },
@@ -272,15 +301,15 @@ export default function RoundaboutSim({ ar }) {
   const canvasRef = useRef(null);
   const simRef = useRef(null);
   const [mode, setModeState] = useState("peak");
-  const [hud, setHud] = useState({ vehicles: 0, meanKmh: 0, queued: 0, delay: 0, los: "A" });
+  const [hud, setHud] = useState({ vehicles: 0, meanKmh: 0, queued: 0, delay: 0, los: "A", history: [] });
 
   const choose = (id) => {
     setModeState(id);
     if (!simRef.current) return;
-    // Load the scenario fresh and pre-run it so its steady state is visible right away.
-    const sim = warmSim(id);
-    Object.assign(simRef.current, sim);
-    setHud(stats(simRef.current));
+    // Load the scenario fresh; the animation loop fast-forwards it as a time-lapse.
+    const sim = newSim(id);
+    if (reducedMotion()) fastForward(sim, Infinity);
+    Object.assign(simRef.current, sim, { history: [], lastSample: 0 });
   };
 
   useEffect(() => {
@@ -303,7 +332,8 @@ export default function RoundaboutSim({ ar }) {
     const ground = layer(drawGround);
     const deck = layer(drawDeck);
 
-    const sim = warmSim("peak");
+    const sim = newSim("peak");
+    fastForward(sim, 20 * 30); // enough for a populated first frame
     simRef.current = sim;
 
     const render = () => {
@@ -314,10 +344,10 @@ export default function RoundaboutSim({ ar }) {
       for (const v of sim.vehicles) if (v.path.level === 1 && v.x !== undefined) drawVehicle(ctx, v);
     };
 
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
+    if (reducedMotion()) {
+      fastForward(sim, Infinity);
       render();
-      setHud(stats(sim));
+      setHud({ ...stats(sim), history: sim.history || [], ff: sim.ff > 0 });
       return;
     }
 
@@ -325,13 +355,16 @@ export default function RoundaboutSim({ ar }) {
     const frame = (t) => {
       const dt = Math.min(0.05, (t - last) / 1000 || 0);
       last = t;
-      const sub = Math.ceil(dt / (1 / 60));
-      for (let i = 0; i < sub; i++) step(sim, dt / sub);
+      if (sim.ff > 0) fastForward(sim, 90);
+      else {
+        const sub = Math.ceil(dt / (1 / 60));
+        for (let i = 0; i < sub; i++) advance(sim, dt / sub);
+      }
       render();
       hudTimer += dt;
-      if (hudTimer > 0.5) {
+      if (hudTimer > 0.5 || sim.ff > 0) {
         hudTimer = 0;
-        setHud(stats(sim));
+        setHud({ ...stats(sim), history: sim.history || [], ff: sim.ff > 0 });
       }
       raf = visible ? requestAnimationFrame(frame) : 0;
     };
@@ -370,7 +403,9 @@ export default function RoundaboutSim({ ar }) {
           <span className="sim-dot" aria-hidden="true" />
           {ar ? "محاكاة مرورية حيّة" : "Live traffic microsimulation"}
         </span>
-        <span className="sim-model" dir="ltr">IDM · Gap acceptance</span>
+        <span className="sim-model" dir="ltr">
+          {hud.ff ? (ar ? "⏩ تسريع زمني" : "⏩ Time-lapse") : "IDM · Gap acceptance"}
+        </span>
       </div>
 
       <div className="sim-modes" role="group" aria-label={ar ? "سيناريو الطلب المروري" : "Traffic demand scenario"}>
@@ -422,6 +457,22 @@ export default function RoundaboutSim({ ar }) {
             <dd>{hud.queued}</dd>
           </div>
         </dl>
+        <div className="sim-trends">
+          <TrendChart
+            title={ar ? "متوسط التأخير" : "Average delay"}
+            unit={ar ? "ث/مركبة" : "s/veh"}
+            minMax={20}
+            data={hud.history.map((h) => ({ t: h.t, value: h.delay }))}
+            ariaLabel={ar ? "متوسط تأخير التحكم خلال آخر 90 ثانية" : "Average control delay over the last 90 seconds"}
+          />
+          <TrendChart
+            title={ar ? "المركبات المنتظرة" : "Queued vehicles"}
+            unit={ar ? "مركبة" : "veh"}
+            minMax={8}
+            data={hud.history.map((h) => ({ t: h.t, value: h.queued }))}
+            ariaLabel={ar ? "عدد المركبات المنتظرة خلال آخر 90 ثانية" : "Queued vehicles over the last 90 seconds"}
+          />
+        </div>
         <div className="sim-legend" aria-hidden="true">
           <span>{ar ? "متوقف" : "Stopped"}</span>
           <i />

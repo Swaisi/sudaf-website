@@ -1,6 +1,8 @@
 // Grade-separated roundabout ("throughabout") microsimulation for the home hero.
 // - North–south main road crosses the centre on a flyover (2 lanes each way).
-// - At-grade single-lane roundabout serves turning and east–west traffic.
+// - At-grade two-lane roundabout serves turning and east–west traffic.
+//   Lane choice: left turns / U-turns use the inner lane, through traffic mostly
+//   the outer lane. Inner-lane vehicles give way to the outer lane when exiting.
 // - Free-flow right-turn slip lanes at every corner (added lane on the exit).
 // - Right-hand traffic, counter-clockwise circulation.
 // - IDM car following; critical-gap acceptance at give-way lines.
@@ -9,8 +11,9 @@
 
 export const SIZE = 560;
 const C = SIZE / 2;
-export const R = 130; // circulating lane centre-line radius
-export const RING_W = 28;
+export const R = 130; // centre of the two-lane circulating carriageway
+export const RING_W = 30;
+export const RADIUS = { o: R + 7, i: R - 7 }; // outer / inner lane centre-lines
 const FAR = SIZE / 2 + 140; // spawn / despawn distance from centre (off-canvas so queues can grow)
 const STOP_R = R + RING_W / 2 + 7; // give-way line distance along the arm axis
 const SLIP_D = 252; // where slip lanes leave / rejoin the arm axis
@@ -19,9 +22,11 @@ export const M_PER_PX = 0.25;
 
 export const ARMS = [0, Math.PI / 2, Math.PI, -Math.PI / 2]; // E, S, W, N (screen, y down)
 export const isMain = (arm) => arm === 1 || arm === 3; // N–S main road
+// Lateral offsets from the arm axis: inner entry/exit lane, outer entry/exit lane, slip lane.
 export const LANES = {
-  ring: (arm) => (isMain(arm) ? 40 : 12),
-  slip: (arm) => (isMain(arm) ? 52 : 24),
+  i: (arm) => (isMain(arm) ? 40 : 11),
+  o: (arm) => (isMain(arm) ? 52 : 23),
+  slip: (arm) => (isMain(arm) ? 64 : 35),
   fly: [8, 20],
 };
 
@@ -38,8 +43,9 @@ export const TYPES = {
 const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
 const mul = (a, k) => [a[0] * k, a[1] * k];
 const unit = (ang) => [Math.cos(ang), Math.sin(ang)];
-const ringPt = (th) => [C + R * Math.cos(th), C + R * Math.sin(th)];
+const ringPt = (th, r) => [C + r * Math.cos(th), C + r * Math.sin(th)];
 const ccwTan = (th) => [Math.sin(th), -Math.cos(th)];
+const distC = (p) => Math.hypot(p[0] - C, p[1] - C);
 
 // Inbound vehicles keep right: for heading h the right-hand side is (-h.y, h.x).
 export const inSide = (alpha) => {
@@ -72,11 +78,12 @@ function finish(pts, extra) {
   return { pts, cum, length: cum[cum.length - 1], ...extra };
 }
 
-function ringPath(from, to) {
+function ringPath(from, to, lane) {
   const alpha = ARMS[from], beta = ARMS[to];
-  const offIn = LANES.ring(from), offOut = LANES.ring(to);
-  const thJ = alpha - (Math.asin(offIn / R) + 0.24);
-  let thX = beta + Math.asin(offOut / R) + 0.24;
+  const r = RADIUS[lane];
+  const offIn = LANES[lane](from), offOut = LANES[lane](to);
+  const thJ = alpha - (Math.asin(offIn / r) + 0.24);
+  let thX = beta + Math.asin(offOut / r) + 0.24;
   while (thX >= thJ) thX -= 2 * Math.PI;
   if (thJ - thX < 0.6) thX -= 2 * Math.PI;
 
@@ -86,26 +93,37 @@ function ringPath(from, to) {
   line(a0, a1, pts);
   const iStop = pts.length - 1;
 
-  const j = ringPt(thJ);
-  const u = unit(alpha);
-  cubic(a1, add(a1, mul(u, -12)), add(j, mul(ccwTan(thJ), -16)), j, 14, pts);
+  const j = ringPt(thJ, r);
+  cubic(a1, add(a1, mul(unit(alpha), -12)), add(j, mul(ccwTan(thJ), -16)), j, 16, pts);
   const iRingIn = pts.length - 1;
 
   const arc = thJ - thX;
-  const n = Math.ceil((arc * R) / 3);
-  for (let i = 1; i <= n; i++) pts.push(ringPt(thJ - (arc * i) / n));
+  const n = Math.ceil((arc * r) / 3);
+  for (let i = 1; i <= n; i++) pts.push(ringPt(thJ - (arc * i) / n, r));
   const iRingOut = pts.length - 1;
 
-  const x = ringPt(thX);
-  const w = unit(beta);
+  const x = ringPt(thX, r);
   const b1 = armPt(beta, STOP_R, outSide(beta), offOut);
-  cubic(x, add(x, mul(ccwTan(thX), 16)), add(b1, mul(w, -12)), b1, 14, pts);
+  cubic(x, add(x, mul(ccwTan(thX), 16)), add(b1, mul(unit(beta), -12)), b1, 16, pts);
+  const iExitEnd = pts.length - 1;
   line(b1, armPt(beta, FAR, outSide(beta), offOut), pts);
 
-  const path = finish(pts, { level: 0, join: j });
+  const path = finish(pts, { level: 0, lane, join: j });
   path.sStop = path.cum[iStop];
   path.sRingIn = path.cum[iRingIn];
   path.sRingOut = path.cum[iRingOut];
+  path.sExitEnd = path.cum[iExitEnd];
+
+  // Conflict points with circulating traffic.
+  path.entryConflicts = [{ pt: j, lane }];
+  if (lane === "i") {
+    // the entry curve cuts across the outer lane
+    const k = pts.findIndex((p, idx) => idx > iStop && distC(p) <= RADIUS.o);
+    path.entryConflicts.unshift({ pt: pts[k], lane: "o" });
+    // the exit curve cuts across the outer lane
+    const q = pts.findIndex((p, idx) => idx > iRingOut && distC(p) >= RADIUS.o);
+    path.exitConflict = { pt: pts[q], lane: "o" };
+  }
   return path;
 }
 
@@ -130,17 +148,24 @@ function flyPath(from, lane) {
 }
 
 export const PATHS = {
-  ring: ARMS.map((_, f) => ARMS.map((__, t) => ringPath(f, t))),
+  ring: {
+    o: ARMS.map((_, f) => ARMS.map((__, t) => ringPath(f, t, "o"))),
+    i: ARMS.map((_, f) => ARMS.map((__, t) => ringPath(f, t, "i"))),
+  },
   slip: ARMS.map((_, f) => slipPath(f)),
   fly: [1, 3].map((f) => [flyPath(f, 0), flyPath(f, 1)]),
 };
 
-// Destinations for traffic using the at-grade ring (right turns use slip lanes,
-// N–S through traffic uses the flyover).
-function ringExit(from, rnd) {
+// Lane choice: outer lane for through traffic; inner lane for left turns,
+// U-turns and some through traffic. Right turns use the slip lanes.
+const exitArm = (from, k) => (from - k + 8) % 4;
+function outerExit(from) {
+  return exitArm(from, 2);
+}
+function innerExit(from, rnd) {
   const r = rnd();
-  const k = isMain(from) ? (r < 0.15 ? 2 : r < 0.88 ? 3 : 4) : r < 0.58 ? 2 : r < 0.92 ? 3 : 4;
-  return (from - k + 8) % 4;
+  const k = isMain(from) ? (r < 0.85 ? 3 : 4) : r < 0.35 ? 2 : r < 0.88 ? 3 : 4;
+  return exitArm(from, k);
 }
 
 function pickType(rnd) {
@@ -148,11 +173,12 @@ function pickType(rnd) {
   return r < 0.68 ? "car" : r < 0.8 ? "van" : r < 0.89 ? "bus" : "truck";
 }
 
-// Lane sources with demand in veh/s at peak.
+// Lane sources with demand in veh/s at typical peak.
 const SOURCES = [];
 for (let arm = 0; arm < 4; arm++) {
   const main = isMain(arm);
-  SOURCES.push({ key: `r${arm}`, rate: main ? 0.15 : 0.3, path: (rnd) => PATHS.ring[arm][ringExit(arm, rnd)] });
+  SOURCES.push({ key: `o${arm}`, rate: main ? 0.04 : 0.2, path: () => PATHS.ring.o[arm][outerExit(arm)] });
+  SOURCES.push({ key: `i${arm}`, rate: main ? 0.13 : 0.17, path: (rnd) => PATHS.ring.i[arm][innerExit(arm, rnd)] });
   SOURCES.push({ key: `s${arm}`, rate: main ? 0.07 : 0.1, path: () => PATHS.slip[arm] });
   if (main) {
     const fi = arm === 1 ? 0 : 1;
@@ -185,27 +211,41 @@ function idmAccel(v, v0, a, gap, dv) {
   return a * (free - Math.pow(sStar / Math.max(gap, 0.5), 2));
 }
 
+// Demand multiplier per scenario: free flow, typical peak, oversaturated.
+export const MODES = { free: 0.35, peak: 0.62, jam: 3.2 };
+
 export function createSim(seed = 7) {
   let state = (seed % 2147483646) + 1;
   const rnd = () => ((state = (state * 16807) % 2147483647) / 2147483647);
   return { vehicles: [], time: 0, nextId: 0, rnd, acc: {}, exited: 0, mode: "peak", demand: 1, delays: [] };
 }
 
-// Demand multiplier per scenario: free flow (LOS A), typical peak, oversaturated.
-export const MODES = { free: 0.35, peak: 0.75, jam: 3.2 };
-
 export function setMode(sim, mode) {
   sim.mode = mode;
   sim.delays = [];
 }
 
-const inRing = (v) => v.path.sRingIn !== undefined && v.s > v.path.sRingIn - 4 && v.s < v.path.sRingOut;
+// On the circular arc itself (not on the entry or exit curves).
+const onArc = (v) => v.path.lane && v.s > v.path.sRingIn && v.s < v.path.sRingOut;
+// Anywhere a circulating vehicle can block others: entry curve to end of exit curve.
+const inRingZone = (v) => v.path.lane && v.s > v.path.sRingIn - 20 && v.s < v.path.sExitEnd;
+
+function conflictAt(vehicles, self, { pt, lane }, crit) {
+  const reach = V0.ring * crit + 18;
+  return vehicles.some((o) => {
+    if (o === self || o.path.level !== 0 || !(inRingZone(o) || (o.committed && o.s < o.path.sRingIn))) return false;
+    const dx = pt[0] - o.x, dy = pt[1] - o.y;
+    const d = Math.hypot(dx, dy);
+    if (d < 11 + o.type.len / 2) return true; // physically occupying the conflict area
+    // approaching in the conflicting lane
+    return onArc(o) && o.path.lane === lane && d < reach && dx * o.hx + dy * o.hy > 0.35 * d;
+  });
+}
 
 export function step(sim, dt) {
   const { vehicles, rnd } = sim;
   sim.time += dt;
 
-  // Smoothly move demand toward the scenario target so queues build or dissipate naturally.
   const target = MODES[sim.mode] * (1 + 0.15 * Math.sin(sim.time / 15));
   sim.demand += (target - sim.demand) * Math.min(1, dt * 0.8);
   const peak = Math.max(0.2, sim.demand);
@@ -228,74 +268,92 @@ export function step(sim, dt) {
       s: type.len / 2,
       v: 40 * type.v0f,
       committed: false,
+      exitCommitted: false,
       stuck: 0,
     });
   }
 
-  for (const v of vehicles) Object.assign(v, sample(v.path, v.s));
+  for (const v of vehicles) {
+    Object.assign(v, sample(v.path, v.s));
+    v.theta = Math.atan2(v.y - C, v.x - C);
+  }
 
   for (const v of vehicles) {
     const p = v.path;
     let v0;
     if (p.level === 1) v0 = V0.fly;
     else if (p.slip) v0 = V0.slip;
-    else if (inRing(v)) v0 = V0.ring;
+    else if (v.s > p.sRingIn - 4 && v.s < p.sRingOut) v0 = V0.ring;
     else if (v.s > p.sRingOut) v0 = V0.approach;
     else v0 = Math.max(V0.ring, V0.approach - Math.max(0, v.s - (p.sStop - 60)) * 0.3);
     v0 *= v.type.v0f;
 
-    // Leader: nearest vehicle ahead, same level, same lane, same direction.
+    // Leader search. Two vehicles on the arc: same lane only, arc distance.
+    // Otherwise: nearest vehicle ahead, same level, same lane, same direction.
     let gap = Infinity, dv = 0;
+    const vArc = onArc(v);
     for (const o of vehicles) {
       if (o === v || o.path.level !== p.level) continue;
-      const rx = o.x - v.x, ry = o.y - v.y;
-      const ahead = rx * v.hx + ry * v.hy;
-      if (ahead <= 0 || ahead > 100) continue;
-      const lateral = Math.abs(-rx * v.hy + ry * v.hx);
-      if (lateral > 5 + ahead * 0.06) continue;
-      if (o.hx * v.hx + o.hy * v.hy < 0.55) continue;
+      let ahead;
+      if (vArc && onArc(o)) {
+        if (o.path.lane !== p.lane) continue;
+        let dth = v.theta - o.theta; // counter-clockwise = decreasing angle
+        if (dth < 0) dth += 2 * Math.PI;
+        ahead = dth * RADIUS[p.lane];
+        if (ahead <= 0 || ahead > 100) continue;
+      } else {
+        const rx = o.x - v.x, ry = o.y - v.y;
+        ahead = rx * v.hx + ry * v.hy;
+        if (ahead <= 0 || ahead > 100) continue;
+        const lateral = Math.abs(-rx * v.hy + ry * v.hx);
+        if (lateral > 5 + ahead * 0.05) continue;
+        if (o.hx * v.hx + o.hy * v.hy < 0.55) continue;
+      }
       const g = ahead - (v.type.len + o.type.len) / 2;
       if (g < gap) {
         gap = g;
         dv = v.v - o.v;
       }
     }
-    if (v.stuck > 5) gap = Infinity; // fail-safe against rare mutual blocking
+    if (v.stuck > 15) gap = Infinity; // fail-safe against rare mutual blocking
+
+    const stopAt = (dist) => {
+      if (dist < gap) {
+        gap = Math.max(dist - 1, 0);
+        dv = v.v;
+      }
+    };
 
     // Give way to circulating traffic until the critical gap is available.
     if (p.sStop !== undefined && !v.committed) {
       const toLine = p.sStop - (v.s + v.type.len / 2); // measured from the front bumper
       if (toLine < 50) {
-        const j = p.join;
-        const reach = V0.ring * v.type.crit + 18;
-        const conflict = vehicles.some((o) => {
-          if (o === v || o.path.level !== 0 || !(inRing(o) || (o.committed && o.s < o.path.sRingIn))) return false;
-          const dx = j[0] - o.x, dy = j[1] - o.y;
-          const d = Math.hypot(dx, dy);
-          if (d < 12 + o.type.len / 2) return true;
-          return d < reach && dx * o.hx + dy * o.hy > 0.35 * d;
-        });
-        if (conflict) {
-          if (toLine < gap) {
-            gap = Math.max(toLine - 1, 0);
-            dv = v.v;
-          }
-        } else if (toLine < 6) {
-          v.committed = true;
-        }
+        const blocked = p.entryConflicts.some((c) => conflictAt(vehicles, v, c, v.type.crit));
+        if (blocked) stopAt(toLine);
+        else if (toLine < 6) v.committed = true;
+      }
+    }
+
+    // Inner-lane vehicles give way to the outer lane before crossing it to exit.
+    if (p.exitConflict && !v.exitCommitted && v.s > p.sRingIn) {
+      const toExit = p.sRingOut - (v.s + v.type.len / 2);
+      if (toExit < 40) {
+        if (v.stuck < 10 && conflictAt(vehicles, v, p.exitConflict, 1.6)) stopAt(toExit);
+        else if (toExit < 4) v.exitCommitted = true;
       }
     }
 
     v.accel = Math.max(-IDM.b * 2.5, idmAccel(v.v, v0, v.type.a, gap, dv));
     // Control delay for roundabout users: time lost relative to desired speed.
-    if (p.sStop !== undefined && v.s < p.sRingOut) v.delay = (v.delay || 0) + dt * Math.max(0, 1 - v.v / v0);
+    if (p.lane && v.s < p.sRingOut) v.delay = (v.delay || 0) + dt * Math.max(0, 1 - v.v / v0);
   }
 
   for (const v of vehicles) {
     v.v = Math.max(0, v.v + v.accel * dt);
     v.s += v.v * dt;
     if (v.path.sStop === undefined || v.s + v.type.len / 2 >= v.path.sStop + 1) v.committed = true;
-    v.stuck = v.v < 0.5 && v.committed && v.path.level === 0 && !v.path.slip && v.s < v.path.sRingOut ? v.stuck + dt : 0;
+    if (v.path.sRingOut !== undefined && v.s + v.type.len / 2 >= v.path.sRingOut + 1) v.exitCommitted = true;
+    v.stuck = v.v < 0.5 && v.committed && v.path.lane && v.s < v.path.sRingOut ? v.stuck + dt : 0;
   }
 
   for (const v of vehicles) {
