@@ -1,255 +1,264 @@
-import { useState } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Routes, Route, Link, NavLink, useLocation } from "react-router-dom";
+import { services, contact } from "./data";
+import { pages, pagePath, SITE_URL } from "./seo";
 import "./App.css";
 
-function App() {
-  const [lang, setLang] = useState("en");
-  const [selectedService, setSelectedService] = useState(null);
-  const ar = lang === "ar";
+// Language comes from the URL: "/ar/..." is Arabic, everything else English.
+function useLang() {
+  const { pathname } = useLocation();
+  const ar = pathname === "/ar" || pathname.startsWith("/ar/");
+  return { ar, lang: ar ? "ar" : "en" };
+}
 
-  const services = [
-    {
-      title: "Transportation Engineering & Planning",
-      titleAr: "هندسة وتخطيط النقل",
-      desc: "Advanced transport planning, mobility systems, and infrastructure strategies.",
-      descAr: "تخطيط النقل، أنظمة الحركة، واستراتيجيات البنية التحتية.",
-      img: "/images/transport.jpg",
-      details: [
-        "Transport master plans and strategic mobility studies.",
-        "Travel demand forecasting and network assessment.",
-        "Public transport integration and multimodal planning.",
-        "Accessibility, mobility, and urban transport policy support.",
-      ],
-      detailsAr: [
-        "إعداد مخططات النقل الرئيسية والدراسات الاستراتيجية للحركة.",
-        "التنبؤ بالطلب المروري وتقييم شبكات النقل.",
-        "دمج النقل العام والتخطيط متعدد الوسائط.",
-        "دعم سياسات الوصول والحركة والنقل الحضري.",
-      ],
-    },
-    {
-      title: "Traffic Engineering & Impact Studies",
-      titleAr: "هندسة المرور ودراسات الأثر المروري",
-      desc: "Comprehensive traffic analysis, modeling, and impact assessment.",
-      descAr: "تحليل مروري شامل، نمذجة، ودراسات أثر مروري.",
-      img: "/images/traffic.jpg",
-      details: [
-        "Traffic impact assessments for developments and infrastructure projects.",
-        "Intersection capacity and level-of-service analysis.",
-        "Traffic surveys, turning counts, queue and delay studies.",
-        "Signalized intersections, roundabouts, and access management review.",
-      ],
-      detailsAr: [
-        "دراسات الأثر المروري للمشاريع التطويرية والبنية التحتية.",
-        "تحليل سعة التقاطعات ومستوى الخدمة.",
-        "العدّ المروري، حركات الالتفاف، الطوابير، والتأخير.",
-        "مراجعة الإشارات المرورية والدوارات وإدارة المداخل.",
-      ],
-    },
-    {
-      title: "Roads, Highways & Corridors",
-      titleAr: "الطرق والطرق السريعة والممرات الدولية",
-      desc: "Design and planning of road networks and international corridors.",
-      descAr: "تخطيط وتصميم شبكات الطرق والممرات الدولية.",
-      img: "/images/road.jpg",
-      details: [
-        "Road network planning and geometric design review.",
-        "Highway corridors and strategic route studies.",
-        "Pavement planning and road infrastructure integration.",
-        "Access roads, junctions, and corridor development studies.",
-      ],
-      detailsAr: [
-        "تخطيط شبكات الطرق ومراجعة التصميم الهندسي.",
-        "دراسات الطرق السريعة والممرات الاستراتيجية.",
-        "تخطيط الرصف وربط البنية التحتية للطرق.",
-        "دراسات المداخل والتقاطعات وتطوير الممرات.",
-      ],
-    },
-    {
-      title: "Ports & Maritime Transport",
-      titleAr: "الموانئ والنقل البحري",
-      desc: "Specialized studies supporting maritime infrastructure and logistics.",
-      descAr: "دراسات متخصصة للبنية التحتية البحرية واللوجستية.",
-      img: "/images/port.jpg",
-      details: [
-        "Port access and freight movement studies.",
-        "Logistics interface between ports, roads, and industrial areas.",
-        "Heavy vehicle circulation and terminal connectivity.",
-        "Maritime transport planning and cargo movement assessment.",
-      ],
-      detailsAr: [
-        "دراسات مداخل الموانئ وحركة البضائع.",
-        "الربط اللوجستي بين الموانئ والطرق والمناطق الصناعية.",
-        "تحليل حركة الشاحنات الثقيلة وربط المحطات.",
-        "تخطيط النقل البحري وتقييم حركة الشحن.",
-      ],
-    },
-    {
-      title: "Railway Planning",
-      titleAr: "تخطيط السكك الحديدية",
-      desc: "Rail systems planning, alignment design, and operational studies.",
-      descAr: "تخطيط أنظمة السكك الحديدية والمسارات والتشغيل.",
-      img: "/images/railway.jpg",
-      details: [
-        "Railway corridor planning and route assessment.",
-        "Passenger and freight rail system studies.",
-        "Station access and intermodal connectivity.",
-        "Integration of railway systems with ports, roads, and urban areas.",
-      ],
-      detailsAr: [
-        "تخطيط ممرات السكك الحديدية وتقييم المسارات.",
-        "دراسات نقل الركاب والبضائع بالسكك الحديدية.",
-        "دراسة الوصول للمحطات والربط متعدد الوسائط.",
-        "دمج السكك الحديدية مع الموانئ والطرق والمناطق الحضرية.",
-      ],
-    },
-    {
-      title: "Airport & Airside Infrastructure",
-      titleAr: "المطارات والبنية التحتية الجوية",
-      desc: "Airport planning, apron design, and aviation infrastructure.",
-      descAr: "تخطيط المطارات والساحات والبنية التحتية الجوية.",
-      img: "/images/airport.jpg",
-      details: [
-        "Airport access and landside/airside circulation studies.",
-        "Apron, taxiway, and operational infrastructure planning.",
-        "Passenger, cargo, and service movement assessment.",
-        "Technical support for aviation-related infrastructure projects.",
-      ],
-      detailsAr: [
-        "دراسات الوصول للمطارات وحركة الجانب الأرضي والجوي.",
-        "تخطيط الساحات وممرات الطائرات والبنية التشغيلية.",
-        "تقييم حركة الركاب والبضائع والخدمات.",
-        "الدعم الفني لمشاريع البنية التحتية المرتبطة بالطيران.",
-      ],
-    },
-    {
-      title: "Traffic Simulation & Modeling",
-      titleAr: "المحاكاة والنمذجة المرورية",
-      desc: "Advanced simulation using PTV VISSIM, SIDRA, SUMO, and other platforms.",
-      descAr: "محاكاة مرورية متقدمة باستخدام VISSIM وSIDRA وSUMO وغيرها.",
-      img: "/images/traffic-simulation.jpg",
-      details: [
-        "Microscopic and macroscopic traffic simulation.",
-        "PTV VISSIM, SIDRA, SUMO, Synchro and similar platforms.",
-        "Signal optimization and operational scenario testing.",
-        "Congestion analysis, queue assessment, and visual simulation outputs.",
-      ],
-      detailsAr: [
-        "محاكاة مرورية مجهرية وكلية للظواهر المرورية.",
-        "استخدام برامج مثل PTV VISSIM وSIDRA وSUMO وSynchro.",
-        "تحسين الإشارات واختبار السيناريوهات التشغيلية.",
-        "تحليل الازدحام والطوابير وإخراج نماذج مرئية للمحاكاة.",
-      ],
-    },
-    {
-      title: "Infrastructure & GIS Integration",
-      titleAr: "البنية التحتية والتكامل مع GIS",
-      desc: "Integrated infrastructure solutions fully connected with GIS systems.",
-      descAr: "حلول بنية تحتية متكاملة مرتبطة بأنظمة GIS.",
-      img: "/images/infrastructure-gis.jpg",
-      details: [
-        "Stormwater drainage, sewer networks, and road infrastructure planning.",
-        "GIS-based infrastructure mapping and spatial analysis.",
-        "Utility coordination and infrastructure database development.",
-        "Integration of civil engineering design outputs with digital maps.",
-      ],
-      detailsAr: [
-        "تخطيط شبكات تصريف مياه الأمطار والصرف الصحي والطرق.",
-        "إعداد خرائط البنية التحتية والتحليل المكاني باستخدام GIS.",
-        "تنسيق المرافق وإعداد قواعد بيانات البنية التحتية.",
-        "ربط مخرجات التصميم المدني بالخرائط الرقمية.",
-      ],
-    },
-    {
-      title: "Tendering, RFP & Project Documentation",
-      titleAr: "إعداد مستندات الطرح والعروض الفنية",
-      desc: "Preparation of RFPs, tender documents, BOQs, method statements, HSE, QA/QC, and project schedules.",
-      descAr:
-        "إعداد مستندات الطرح، عروض التقديم، جداول الكميات، أساليب التنفيذ، خطط السلامة والجودة، والجداول الزمنية.",
-      img: "/images/tender-documents.jpg",
-      details: [
-        "Preparation of Request for Proposal (RFP), tender documents, and instructions to bidders.",
-        "Preparation of Bills of Quantities (BOQ), quantity take-off, measurement sheets, and pricing schedules.",
-        "Preparation of technical proposals, project execution methodology, method statements, and work procedures.",
-        "Preparation of HSE plans, risk assessments, job safety analysis, and site safety documentation.",
-        "Preparation of QA/QC plans, inspection and test plans (ITP), checklists, material submittals, and quality documentation.",
-        "Preparation of project schedules using Primavera P6 and Microsoft Project.",
-        "Baseline programs, activity sequencing, resource loading, cash flow planning, and progress monitoring reports.",
-        "Tender review, clarification registers, compliance matrices, and technical-commercial submission support.",
-      ],
-      detailsAr: [
-        "إعداد طلبات تقديم العروض RFP ومستندات الطرح وتعليمات مقدمي العروض.",
-        "إعداد جداول الكميات BOQ وأعمال الحصر والكشف والقياس وجداول التسعير.",
-        "إعداد العروض الفنية ومنهجيات التنفيذ وأساليب العمل والإجراءات التنفيذية.",
-        "إعداد خطط الصحة والسلامة والبيئة HSE وتقييم المخاطر وتحليل السلامة للأنشطة والمستندات الخاصة بالموقع.",
-        "إعداد خطط الجودة QA/QC وخطط الفحص والاختبار ITP ونماذج التفتيش واعتمادات المواد ومستندات ضبط الجودة.",
-        "إعداد الجداول الزمنية للمشاريع باستخدام Primavera P6 و Microsoft Project.",
-        "إعداد البرامج الزمنية الأساسية وتسلسل الأنشطة وتحميل الموارد والتدفقات النقدية وتقارير متابعة التقدم.",
-        "مراجعة مستندات المناقصات، إعداد سجل الاستفسارات، مصفوفة المطابقة، ودعم تجهيز العرض الفني والمالي.",
-      ],
-    },
-    {
-      title: "Training & Capacity Building",
-      titleAr: "التدريب وبناء القدرات",
-      desc: "Professional engineering and technical training programs.",
-      descAr: "برامج تدريب هندسية وفنية احترافية.",
-      img: "/images/training.jpg",
-      details: [
-        "Training in GIS, AutoCAD, Civil 3D, and surveying applications.",
-        "Transportation engineering and traffic planning courses.",
-        "Traffic modeling software training including VISSIM, SIDRA, and SUMO.",
-        "Practical workshops based on real engineering projects.",
-      ],
-      detailsAr: [
-        "دورات في GIS وAutoCAD وCivil 3D وتطبيقات الرفع المساحي.",
-        "دورات في هندسة وتخطيط النقل والتحليل المروري.",
-        "تدريب على برامج النمذجة المرورية مثل VISSIM وSIDRA وSUMO.",
-        "ورش عملية مبنية على مشاريع هندسية واقعية.",
-      ],
-    },
-    {
-      title: "Building & Structural Engineering",
-      titleAr: "تصميم المباني والمنشآت",
-      desc: "Design and technical studies for buildings and structural systems.",
-      descAr: "تصميم ودراسات فنية للمباني والأنظمة الإنشائية.",
-      img: "/images/building.jpg",
-      details: [
-        "Conceptual and detailed design support for buildings and civil structures.",
-        "Reinforced concrete and steel structure design coordination.",
-        "Structural review, quantity assessment, and technical documentation.",
-        "Integration with site development, roads, utilities, and infrastructure works.",
-      ],
-      detailsAr: [
-        "دعم التصميم الابتدائي والتفصيلي للمباني والمنشآت المدنية.",
-        "تنسيق تصميم المنشآت الخرسانية والمعدنية.",
-        "المراجعة الإنشائية وحصر الكميات وإعداد المستندات الفنية.",
-        "الربط مع أعمال الموقع والطرق والمرافق والبنية التحتية.",
-      ],
-    },
-  ];
+function stripLang(pathname) {
+  return pathname.replace(/^\/ar(\/|$)/, "/").replace(/^\/+|\/+$/g, "");
+}
 
-  const ServicesPage = () => (
-    <section className="services" id="services">
-      {services.map((service, index) => (
-        <div
-          className="card"
-          key={index}
-          onClick={() => setSelectedService(service)}
-        >
-          <img src={service.img} alt={ar ? service.titleAr : service.title} />
-          <div className="card-content">
-            <h3>{ar ? service.titleAr : service.title}</h3>
-            <p>{ar ? service.descAr : service.desc}</p>
-            <span className="read-more">
-              {ar ? "عرض التفاصيل ←" : "View Details →"}
-            </span>
-          </div>
+function setMeta(selector, attr, value) {
+  const el = document.head.querySelector(selector);
+  if (el) el.setAttribute(attr, value);
+}
+
+// Keeps <title>, description, canonical, and <html lang/dir> in sync with the route.
+function usePageMeta() {
+  const { pathname } = useLocation();
+  const { ar, lang } = useLang();
+
+  useEffect(() => {
+    const path = stripLang(pathname);
+    const page = pages.find((p) => p.path === path);
+    const meta = page
+      ? page[lang]
+      : {
+          title: ar ? "الصفحة غير موجودة | سدف" : "Page Not Found | Sudaf",
+          description: "",
+        };
+
+    document.documentElement.lang = lang;
+    document.documentElement.dir = ar ? "rtl" : "ltr";
+    document.title = meta.title;
+    setMeta('meta[name="description"]', "content", meta.description);
+    setMeta('meta[property="og:title"]', "content", meta.title);
+    setMeta('meta[property="og:description"]', "content", meta.description);
+    setMeta('meta[name="robots"]', "content", page ? "index, follow" : "noindex");
+    if (page) {
+      const url = SITE_URL + pagePath(page.path, lang);
+      setMeta('link[rel="canonical"]', "href", url);
+      setMeta('meta[property="og:url"]', "content", url);
+    }
+  }, [pathname, ar, lang]);
+}
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => window.scrollTo(0, 0), [pathname]);
+  return null;
+}
+
+const navItems = [
+  { path: "", en: "Home", ar: "الرئيسية" },
+  { path: "about", en: "About Us", ar: "من نحن" },
+  { path: "services", en: "Services", ar: "الخدمات" },
+  { path: "projects", en: "Projects", ar: "المشاريع" },
+  { path: "contact", en: "Contact", ar: "اتصل بنا" },
+];
+
+function Header() {
+  const { ar, lang } = useLang();
+  const { pathname } = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => setMenuOpen(false), [pathname]);
+
+  const otherLangPath = pagePath(stripLang(pathname), ar ? "en" : "ar");
+
+  return (
+    <header className="header">
+      <Link to={pagePath("", lang)} className="logo-container">
+        <img src="/logo.svg" alt="Sudaf Logo" className="logo" />
+        <div>
+          <h2>{ar ? "سدف للاستشارات الهندسية" : "Sudaf Engineering"}</h2>
+          <span>
+            {ar
+              ? "استشارات النقل والبنية التحتية"
+              : "Transport & Infrastructure Consultancy"}
+          </span>
         </div>
-      ))}
-    </section>
-  );
+      </Link>
 
-  const AboutPage = () => (
+      <button
+        className={`menu-btn ${menuOpen ? "open" : ""}`}
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label={ar ? "القائمة" : "Menu"}
+        aria-expanded={menuOpen}
+      >
+        <span />
+        <span />
+        <span />
+      </button>
+
+      <nav className={menuOpen ? "open" : ""}>
+        {navItems.map((item) => (
+          <NavLink
+            key={item.path}
+            className="nav-link"
+            to={pagePath(item.path, lang)}
+            end
+          >
+            {ar ? item.ar : item.en}
+          </NavLink>
+        ))}
+
+        <Link className="lang-btn" to={otherLangPath} hrefLang={ar ? "en" : "ar"}>
+          {ar ? "English" : "العربية"}
+        </Link>
+      </nav>
+    </header>
+  );
+}
+
+function Footer() {
+  const { ar, lang } = useLang();
+
+  return (
+    <footer className="footer">
+      <div className="footer-grid">
+        <div>
+          <img src="/logo.svg" alt="Sudaf Logo" className="footer-logo" />
+          <h3>{ar ? "سدف للاستشارات الهندسية" : "Sudaf Engineering Consultancy"}</h3>
+          <p>
+            {ar
+              ? "استشارات هندسية متخصصة في النقل والبنية التحتية والحلول الهندسية المتكاملة."
+              : "Specialized engineering consultancy in transport, infrastructure, and integrated engineering solutions."}
+          </p>
+        </div>
+
+        <div>
+          <h4>{ar ? "روابط سريعة" : "Quick Links"}</h4>
+          <ul>
+            {navItems.map((item) => (
+              <li key={item.path}>
+                <Link to={pagePath(item.path, lang)}>{ar ? item.ar : item.en}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h4>{ar ? "تواصل معنا" : "Get in Touch"}</h4>
+          <ul>
+            <li>{ar ? "مصراتة، ليبيا" : "Misurata, Libya"}</li>
+            {contact.phones.map((phone) => (
+              <li key={phone.tel}>
+                <a href={`tel:${phone.tel}`} dir="ltr">
+                  {phone.display}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a href={`mailto:${contact.email}`}>{contact.email}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <p className="copyright">
+        © {new Date().getFullYear()}{" "}
+        {ar
+          ? "سدف للاستشارات الهندسية. جميع الحقوق محفوظة."
+          : "Sudaf Engineering Consultancy. All rights reserved."}
+      </p>
+    </footer>
+  );
+}
+
+function ServiceModal({ service, onClose }) {
+  const { ar } = useLang();
+
+  useEffect(() => {
+    const onKey = (e) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <img src={service.img} alt={ar ? service.titleAr : service.title} />
+        <h2>{ar ? service.titleAr : service.title}</h2>
+        <p>{ar ? service.descAr : service.desc}</p>
+
+        <h4>{ar ? "نطاق الخدمات" : "Service Scope"}</h4>
+        <ul>
+          {(ar ? service.detailsAr : service.details).map((item, i) => (
+            <li key={i}>{item}</li>
+          ))}
+        </ul>
+
+        <button onClick={onClose} autoFocus>
+          {ar ? "إغلاق" : "Close"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ServicesPage() {
+  const { ar } = useLang();
+  const [selectedService, setSelectedService] = useState(null);
+
+  return (
+    <>
+      <section className="services" id="services">
+        {services.map((service, index) => (
+          <button
+            className="card"
+            key={index}
+            onClick={() => setSelectedService(service)}
+          >
+            <img
+              src={service.img}
+              alt={ar ? service.titleAr : service.title}
+              loading="lazy"
+              decoding="async"
+              width="1200"
+              height="800"
+            />
+            <div className="card-content">
+              <h3>{ar ? service.titleAr : service.title}</h3>
+              <p>{ar ? service.descAr : service.desc}</p>
+              <span className="read-more">
+                {ar ? "عرض التفاصيل ←" : "View Details →"}
+              </span>
+            </div>
+          </button>
+        ))}
+      </section>
+
+      {selectedService && (
+        <ServiceModal
+          service={selectedService}
+          onClose={() => setSelectedService(null)}
+        />
+      )}
+    </>
+  );
+}
+
+function AboutPage() {
+  const { ar } = useLang();
+
+  return (
     <section className="about-page">
       <div className="about-page-container">
         <span className="section-tag">{ar ? "من نحن" : "About Us"}</span>
@@ -296,8 +305,12 @@ function App() {
       </div>
     </section>
   );
+}
 
-  const ProjectsPage = () => (
+function ProjectsPage() {
+  const { ar } = useLang();
+
+  return (
     <section className="projects-section">
       <h2>{ar ? "المشاريع" : "Projects"}</h2>
       <p>
@@ -307,8 +320,12 @@ function App() {
       </p>
     </section>
   );
+}
 
-  const ContactPage = () => (
+function ContactPage() {
+  const { ar } = useLang();
+
+  return (
     <section className="contact-section">
       <div className="contact-wrapper">
         <div className="contact-info">
@@ -326,18 +343,30 @@ function App() {
               : "Address: Libya, Misurata, Tripoli Street, beside Jumhouria Bank"}
           </p>
 
-          <p>{ar ? "الهاتف:" : "Phone:"} +218914054929</p>
-          <p>{ar ? "الهاتف:" : "Phone:"} +218915718567</p>
-          <p>{ar ? "البريد العام:" : "General Email:"} info@sudaf.ly</p>
-          <p>{ar ? "الدراسات والتصاميم:" : "Studies & Designs:"} radwan@sudaf.ly</p>
+          {contact.phones.map((phone) => (
+            <p key={phone.tel}>
+              {ar ? "الهاتف:" : "Phone:"}{" "}
+              <a href={`tel:${phone.tel}`} dir="ltr">
+                {phone.display}
+              </a>
+            </p>
+          ))}
+          <p>
+            {ar ? "البريد العام:" : "General Email:"}{" "}
+            <a href={`mailto:${contact.email}`}>{contact.email}</a>
+          </p>
+          <p>
+            {ar ? "الدراسات والتصاميم:" : "Studies & Designs:"}{" "}
+            <a href={`mailto:${contact.studiesEmail}`}>{contact.studiesEmail}</a>
+          </p>
 
           <p>
-            {ar ? "إحداثيات الموقع:" : "Coordinates:"} 32°21'47.3"N
-            15°04'44.4"E
+            {ar ? "إحداثيات الموقع:" : "Coordinates:"}{" "}
+            <span dir="ltr">32°21'47.3"N 15°04'44.4"E</span>
           </p>
 
           <a
-            href="https://maps.app.goo.gl/wbtTLSKjN8kTN2269"
+            href={contact.mapUrl}
             target="_blank"
             rel="noreferrer"
             className="map-link"
@@ -348,7 +377,7 @@ function App() {
 
         <form
           className="contact-form"
-          action="https://formsubmit.co/info@sudaf.ly"
+          action={`https://formsubmit.co/${contact.email}`}
           method="POST"
         >
           <input
@@ -363,6 +392,7 @@ function App() {
             type="text"
             name="name"
             placeholder={ar ? "الاسم" : "Your Name"}
+            aria-label={ar ? "الاسم" : "Your Name"}
             required
           />
 
@@ -370,6 +400,7 @@ function App() {
             type="email"
             name="email"
             placeholder={ar ? "البريد الإلكتروني" : "Your Email"}
+            aria-label={ar ? "البريد الإلكتروني" : "Your Email"}
             required
           />
 
@@ -377,6 +408,7 @@ function App() {
             name="message"
             rows="6"
             placeholder={ar ? "اكتب رسالتك هنا" : "Write your message here"}
+            aria-label={ar ? "الرسالة" : "Message"}
             required
           ></textarea>
 
@@ -385,8 +417,12 @@ function App() {
       </div>
     </section>
   );
+}
 
-  const HomePage = () => (
+function HomePage() {
+  const { ar, lang } = useLang();
+
+  return (
     <>
       <section className="hero">
         <div className="hero-content">
@@ -401,12 +437,12 @@ function App() {
           </p>
 
           <div className="hero-buttons">
-            <Link to="/services">
-              <button>{ar ? "استعراض الخدمات" : "Explore Services"}</button>
+            <Link to={pagePath("services", lang)} className="btn">
+              {ar ? "استعراض الخدمات" : "Explore Services"}
             </Link>
 
-            <Link to="/contact">
-              <button className="outline">{ar ? "اتصل بنا" : "Contact Us"}</button>
+            <Link to={pagePath("contact", lang)} className="btn outline">
+              {ar ? "اتصل بنا" : "Contact Us"}
             </Link>
           </div>
         </div>
@@ -417,82 +453,54 @@ function App() {
       <ContactPage />
     </>
   );
+}
+
+function NotFoundPage() {
+  const { ar, lang } = useLang();
+
+  return (
+    <section className="not-found">
+      <h1>404</h1>
+      <p>{ar ? "عذرًا، هذه الصفحة غير موجودة." : "Sorry, this page does not exist."}</p>
+      <Link to={pagePath("", lang)} className="btn">
+        {ar ? "العودة للرئيسية" : "Back to Home"}
+      </Link>
+    </section>
+  );
+}
+
+const pageComponents = {
+  home: HomePage,
+  about: AboutPage,
+  services: ServicesPage,
+  projects: ProjectsPage,
+  contact: ContactPage,
+};
+
+function App() {
+  const { ar } = useLang();
+  usePageMeta();
 
   return (
     <div className="app" dir={ar ? "rtl" : "ltr"}>
-      <header className="header">
-        <Link to="/" className="logo-container">
-          <img src="/logo.svg" alt="Sudaf Logo" className="logo" />
-          <div>
-            <h2>{ar ? "سدف للاستشارات الهندسية" : "Sudaf Engineering"}</h2>
-            <span>
-              {ar
-                ? "استشارات النقل والبنية التحتية"
-                : "Transport & Infrastructure Consultancy"}
-            </span>
-          </div>
-        </Link>
+      <ScrollToTop />
+      <Header />
 
-        <nav>
-          <Link className="nav-link" to="/">
-            {ar ? "الرئيسية" : "Home"}
-          </Link>
+      <main>
+        <Routes>
+          {["en", "ar"].flatMap((lang) =>
+            pages.map(({ key, path }) => {
+              const Page = pageComponents[key];
+              return (
+                <Route key={lang + key} path={pagePath(path, lang)} element={<Page />} />
+              );
+            })
+          )}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </main>
 
-          <Link className="nav-link" to="/about">
-            {ar ? "من نحن" : "About Us"}
-          </Link>
-
-          <Link className="nav-link" to="/services">
-            {ar ? "الخدمات" : "Services"}
-          </Link>
-
-          <Link className="nav-link" to="/projects">
-            {ar ? "المشاريع" : "Projects"}
-          </Link>
-
-          <Link className="nav-link" to="/contact">
-            {ar ? "اتصل بنا" : "Contact"}
-          </Link>
-
-          <button className="lang-btn" onClick={() => setLang(ar ? "en" : "ar")}>
-            {ar ? "English" : "العربية"}
-          </button>
-        </nav>
-      </header>
-
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/services" element={<ServicesPage />} />
-        <Route path="/projects" element={<ProjectsPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-      </Routes>
-
-      {selectedService && (
-        <div className="modal-overlay" onClick={() => setSelectedService(null)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <img
-              src={selectedService.img}
-              alt={ar ? selectedService.titleAr : selectedService.title}
-            />
-            <h2>{ar ? selectedService.titleAr : selectedService.title}</h2>
-            <p>{ar ? selectedService.descAr : selectedService.desc}</p>
-
-            <h4>{ar ? "نطاق الخدمات" : "Service Scope"}</h4>
-            <ul>
-              {(ar ? selectedService.detailsAr : selectedService.details).map(
-                (item, i) => (
-                  <li key={i}>{item}</li>
-                )
-              )}
-            </ul>
-
-            <button onClick={() => setSelectedService(null)}>
-              {ar ? "إغلاق" : "Close"}
-            </button>
-          </div>
-        </div>
-      )}
+      <Footer />
     </div>
   );
 }
