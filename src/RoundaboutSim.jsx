@@ -1,14 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { ARMS, LANE, R, RING_W, SIZE, createSim, geometry, inLaneOffset, stats, step } from "./sim/roundabout";
+import {
+  ARMS, DECK_HALF, LANES, PATHS, R, RING_W, SIZE,
+  createSim, geometry, inSide, isMain, sample, setMode, stats, step,
+} from "./sim/roundabout";
 
-const { C, FAR, STOP_R, vMax } = geometry;
-const ROAD_W = LANE * 2 + 16;
+const { C, STOP_R, SLIP_D, vMax } = geometry;
+const ASPHALT = "#1d3249";
+const LANE_W = 13;
 
 // slow -> fast: red, amber, gold, pale gold
 const STOPS = [
   [0, [229, 72, 77]],
-  [0.35, [245, 165, 36]],
-  [0.7, [214, 180, 106]],
+  [0.3, [245, 165, 36]],
+  [0.65, [214, 180, 106]],
   [1, [246, 233, 200]],
 ];
 
@@ -24,86 +28,138 @@ function speedColor(ratio) {
   return "rgb(246,233,200)";
 }
 
-function drawRoads(ctx, logo) {
-  ctx.lineCap = "butt";
+const LOS_COLORS = { A: "#3ddc84", B: "#8fd14f", C: "#d6c94a", D: "#f5a524", E: "#f07a2a", F: "#e5484d" };
 
-  // Arms
-  ctx.strokeStyle = "#1d3249";
-  ctx.lineWidth = ROAD_W;
-  for (const a of ARMS) {
-    ctx.beginPath();
-    ctx.moveTo(C + Math.cos(a) * R, C + Math.sin(a) * R);
-    ctx.lineTo(C + Math.cos(a) * FAR, C + Math.sin(a) * FAR);
-    ctx.stroke();
+function strokePath(ctx, path) {
+  ctx.beginPath();
+  path.pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+  ctx.stroke();
+}
+
+const armPoint = (alpha, along, off) => {
+  const u = [Math.cos(alpha), Math.sin(alpha)], s = inSide(alpha);
+  return [C + u[0] * along + s[0] * off, C + u[1] * along + s[1] * off];
+};
+
+// Static ground layer: carriageways, island landscaping and markings.
+function drawGround(ctx) {
+  ctx.lineCap = "butt";
+  ctx.lineJoin = "round";
+
+  // Arm carriageways (both directions, ring and slip lanes)
+  ctx.fillStyle = ASPHALT;
+  for (let a = 0; a < 4; a++) {
+    const alpha = ARMS[a];
+    const inner = isMain(a) ? LANES.ring(a) - LANE_W / 2 - 1 : 0;
+    // ring lanes run all the way in; slip lanes only until they peel off
+    const bands = [
+      [R, LANES.ring(a) + LANE_W / 2 + 1],
+      [SLIP_D, LANES.slip(a) + LANE_W / 2 + 1],
+    ];
+    for (const [from, outer] of bands) {
+      for (const sign of [1, -1]) {
+        const p = [armPoint(alpha, from, sign * inner), armPoint(alpha, SIZE, sign * inner), armPoint(alpha, SIZE, sign * outer), armPoint(alpha, from, sign * outer)];
+        ctx.beginPath();
+        p.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+        ctx.fill();
+      }
+    }
   }
 
-  // Circulating carriageway
-  ctx.lineWidth = RING_W + 6;
+  // Lane surfaces along every movement, plus the circulating carriageway
+  ctx.strokeStyle = ASPHALT;
+  ctx.lineWidth = LANE_W + 2;
+  PATHS.ring.forEach((row) => row.forEach((p) => strokePath(ctx, p)));
+  PATHS.slip.forEach((p) => strokePath(ctx, p));
+  ctx.lineWidth = RING_W + 4;
   ctx.beginPath();
   ctx.arc(C, C, R, 0, Math.PI * 2);
   ctx.stroke();
 
-  // Edge lines of the ring
+  // Ring edge lines
   ctx.strokeStyle = "rgba(255,255,255,0.22)";
   ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(C, C, R - RING_W / 2 - 3, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Central island
-  ctx.fillStyle = "rgba(214,180,106,0.10)";
-  ctx.strokeStyle = "rgba(214,180,106,0.65)";
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.arc(C, C, R - RING_W / 2 - 8, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
-  ctx.strokeStyle = "rgba(214,180,106,0.25)";
-  ctx.setLineDash([2, 6]);
-  ctx.beginPath();
-  ctx.arc(C, C, R - RING_W / 2 - 22, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  if (logo?.complete && logo.naturalWidth) {
-    const h = 92, w = (logo.naturalWidth / logo.naturalHeight) * h;
-    ctx.globalAlpha = 0.9;
-    ctx.drawImage(logo, C - w / 2, C - h / 2, w, h);
-    ctx.globalAlpha = 1;
+  for (const r of [R - RING_W / 2 - 2, R + RING_W / 2 + 2]) {
+    ctx.beginPath();
+    ctx.arc(C, C, r, 0, Math.PI * 2);
+    ctx.stroke();
   }
 
-  for (const a of ARMS) {
-    const u = [Math.cos(a), Math.sin(a)];
-    const rIn = inLaneOffset(a);
+  // Landscaped central island
+  const islandR = R - RING_W / 2 - 5;
+  const grass = ctx.createRadialGradient(C, C, 10, C, C, islandR);
+  grass.addColorStop(0, "#2f6b45");
+  grass.addColorStop(1, "#24563a");
+  ctx.fillStyle = grass;
+  ctx.beginPath();
+  ctx.arc(C, C, islandR, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "rgba(214,180,106,0.7)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
 
-    // Splitter island between entry and exit lanes
-    ctx.fillStyle = "rgba(214,180,106,0.18)";
+  // Trees and flower beds (deterministic layout)
+  let seed = 3;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < 46; i++) {
+    const ang = rnd() * Math.PI * 2;
+    const rad = 30 + rnd() * (islandR - 42);
+    const x = C + Math.cos(ang) * rad, y = C + Math.sin(ang) * rad;
+    if (Math.abs(x - C) < DECK_HALF + 8) continue;
+    const big = rnd() < 0.55;
+    ctx.fillStyle = big ? "rgba(26,72,44,0.95)" : rnd() < 0.5 ? "rgba(214,120,160,0.75)" : "rgba(214,180,106,0.7)";
     ctx.beginPath();
-    ctx.moveTo(C + u[0] * (STOP_R + 2), C + u[1] * (STOP_R + 2));
-    ctx.lineTo(C + u[0] * (STOP_R + 46) + rIn[0] * 3, C + u[1] * (STOP_R + 46) + rIn[1] * 3);
-    ctx.lineTo(C + u[0] * (STOP_R + 46) - rIn[0] * 3, C + u[1] * (STOP_R + 46) - rIn[1] * 3);
-    ctx.closePath();
+    ctx.arc(x, y, big ? 5 + rnd() * 4 : 2.2, 0, Math.PI * 2);
     ctx.fill();
+    if (big) {
+      ctx.fillStyle = "rgba(90,150,95,0.55)";
+      ctx.beginPath();
+      ctx.arc(x - 1.5, y - 1.5, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
 
-    // Centre line beyond the splitter
-    ctx.strokeStyle = "rgba(255,255,255,0.28)";
+  // Arm markings
+  for (let a = 0; a < 4; a++) {
+    const alpha = ARMS[a];
+    const u = [Math.cos(alpha), Math.sin(alpha)], side = inSide(alpha);
+    const ringOff = LANES.ring(a), slipOff = LANES.slip(a);
+
+    // Dashed separators between ring lane and slip lane
+    ctx.strokeStyle = "rgba(255,255,255,0.35)";
     ctx.lineWidth = 1;
-    ctx.setLineDash([8, 8]);
-    ctx.beginPath();
-    ctx.moveTo(C + u[0] * (STOP_R + 50), C + u[1] * (STOP_R + 50));
-    ctx.lineTo(C + u[0] * FAR, C + u[1] * FAR);
-    ctx.stroke();
+    ctx.setLineDash([7, 7]);
+    for (const sign of [1, -1]) {
+      const off = sign * (ringOff + slipOff) / 2;
+      ctx.beginPath();
+      ctx.moveTo(...armPoint(alpha, SIZE, off));
+      ctx.lineTo(...armPoint(alpha, SLIP_D, off));
+      ctx.stroke();
+    }
     ctx.setLineDash([]);
 
-    // Give-way "shark teeth" across the entry lane
-    ctx.fillStyle = "rgba(255,255,255,0.55)";
-    for (let k = -2; k <= 2; k++) {
-      const off = LANE + k * 4.4;
-      const bx = C + u[0] * (STOP_R + 1) + rIn[0] * off;
-      const by = C + u[1] * (STOP_R + 1) + rIn[1] * off;
+    // Splitter island / median
+    if (!isMain(a)) {
+      ctx.fillStyle = "rgba(214,180,106,0.22)";
       ctx.beginPath();
-      ctx.moveTo(bx - rIn[0] * 1.8, by - rIn[1] * 1.8);
-      ctx.lineTo(bx + rIn[0] * 1.8, by + rIn[1] * 1.8);
+      ctx.moveTo(...armPoint(alpha, STOP_R - 2, 0));
+      ctx.lineTo(...armPoint(alpha, STOP_R + 56, 4));
+      ctx.lineTo(...armPoint(alpha, SIZE, 3));
+      ctx.lineTo(...armPoint(alpha, SIZE, -3));
+      ctx.lineTo(...armPoint(alpha, STOP_R + 56, -4));
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Give-way "shark teeth" across the entry lane
+    ctx.fillStyle = "rgba(255,255,255,0.6)";
+    for (let k = -2; k <= 2; k++) {
+      const off = ringOff + k * 4.4;
+      const bx = C + u[0] * (STOP_R + 1) + side[0] * off;
+      const by = C + u[1] * (STOP_R + 1) + side[1] * off;
+      ctx.beginPath();
+      ctx.moveTo(bx - side[0] * 1.8, by - side[1] * 1.8);
+      ctx.lineTo(bx + side[0] * 1.8, by + side[1] * 1.8);
       ctx.lineTo(bx + u[0] * 5, by + u[1] * 5);
       ctx.closePath();
       ctx.fill();
@@ -111,26 +167,121 @@ function drawRoads(ctx, logo) {
   }
 }
 
-function drawVehicles(ctx, sim) {
-  for (const v of sim.vehicles) {
-    if (v.x === undefined) continue;
-    const ang = Math.atan2(v.hy, v.hx);
-    ctx.save();
-    ctx.translate(v.x, v.y);
-    ctx.rotate(ang);
-    ctx.fillStyle = speedColor(v.v / vMax);
+// Flyover deck with shadow, parapets and lane markings.
+function drawDeck(ctx) {
+  ctx.fillStyle = "rgba(0,0,0,0.38)";
+  ctx.fillRect(C - DECK_HALF + 9, 0, DECK_HALF * 2, SIZE);
+
+  const g = ctx.createLinearGradient(C - DECK_HALF, 0, C + DECK_HALF, 0);
+  g.addColorStop(0, "#2c4766");
+  g.addColorStop(0.5, "#32506f");
+  g.addColorStop(1, "#2c4766");
+  ctx.fillStyle = g;
+  ctx.fillRect(C - DECK_HALF, 0, DECK_HALF * 2, SIZE);
+
+  // Parapets
+  ctx.fillStyle = "rgba(230,236,245,0.75)";
+  ctx.fillRect(C - DECK_HALF, 0, 2.5, SIZE);
+  ctx.fillRect(C + DECK_HALF - 2.5, 0, 2.5, SIZE);
+
+  // Median (double gold line) and lane lines
+  ctx.fillStyle = "rgba(214,180,106,0.9)";
+  ctx.fillRect(C - 2, 0, 1.2, SIZE);
+  ctx.fillRect(C + 0.8, 0, 1.2, SIZE);
+  ctx.strokeStyle = "rgba(255,255,255,0.45)";
+  ctx.lineWidth = 1;
+  ctx.setLineDash([9, 9]);
+  for (const x of [C - 14, C + 14]) {
     ctx.beginPath();
-    ctx.roundRect(-7.5, -3.8, 15, 7.6, 2.2);
-    ctx.fill();
-    ctx.fillStyle = "rgba(12,31,51,0.55)";
-    ctx.fillRect(2, -2.8, 2.8, 5.6); // windscreen
-    ctx.restore();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, SIZE);
+    ctx.stroke();
   }
+  ctx.setLineDash([]);
+
+  // Expansion joints where the deck passes over the ring
+  ctx.fillStyle = "rgba(255,255,255,0.18)";
+  for (const y of [C - R - RING_W, C + R + RING_W]) ctx.fillRect(C - DECK_HALF, y, DECK_HALF * 2, 1.5);
 }
+
+// Draws a body segment that follows the path between two arc-length positions.
+function segment(ctx, path, sFront, sRear, width, fill, radius = 2) {
+  const f = sample(path, sFront), r = sample(path, sRear);
+  const dx = f.x - r.x, dy = f.y - r.y;
+  const len = Math.hypot(dx, dy) || 1;
+  ctx.save();
+  ctx.translate((f.x + r.x) / 2, (f.y + r.y) / 2);
+  ctx.rotate(Math.atan2(dy, dx));
+  ctx.fillStyle = fill;
+  ctx.beginPath();
+  ctx.roundRect(-len / 2, -width / 2, len, width, radius);
+  ctx.fill();
+  return len; // caller restores
+}
+
+function drawVehicle(ctx, v) {
+  const { len, w } = v.type;
+  const body = speedColor(v.v / vMax);
+  const front = v.s + len / 2, rear = v.s - len / 2;
+  const glass = "rgba(12,31,51,0.6)";
+
+  if (v.kind === "truck") {
+    // Trailer, then cab — each follows the path so the rig articulates on curves.
+    const tl = segment(ctx, v.path, front - 10, rear, w, "rgba(226,232,240,0.92)", 1.5);
+    ctx.fillStyle = body;
+    ctx.fillRect(-tl / 2 + 2, -w / 2 + 1.5, tl - 4, w - 3);
+    ctx.restore();
+    const cl = segment(ctx, v.path, front, front - 9, w - 0.6, body, 2);
+    ctx.fillStyle = glass;
+    ctx.fillRect(cl / 2 - 3.2, -w / 2 + 1.2, 2.2, w - 2.4);
+    ctx.restore();
+    return;
+  }
+
+  const l = segment(ctx, v.path, front, rear, w, body, v.kind === "bus" ? 2.5 : 2.2);
+  if (v.kind === "bus") {
+    ctx.fillStyle = "rgba(255,255,255,0.35)";
+    ctx.fillRect(-l / 2 + 3, -w / 2 + 1.6, l - 7, w - 3.2); // roof panel
+    ctx.fillStyle = glass;
+    ctx.fillRect(l / 2 - 3, -w / 2 + 1.2, 2, w - 2.4);
+  } else {
+    ctx.fillStyle = glass;
+    ctx.fillRect(l * 0.12, -w / 2 + 1.1, l * 0.18, w - 2.2); // windscreen
+    if (v.kind === "van") ctx.fillRect(-l / 2 + 1.5, -w / 2 + 1.4, l * 0.5, w - 2.8);
+    else ctx.fillRect(-l * 0.38, -w / 2 + 1.4, l * 0.14, w - 2.8);
+  }
+  ctx.restore();
+}
+
+function warmSim(mode) {
+  const sim = createSim(Date.now() % 100000);
+  setMode(sim, mode);
+  sim.demand = 1; // start from typical demand, then let the scenario develop
+  const seconds = mode === "jam" ? 100 : 60;
+  for (let i = 0; i < seconds * 30; i++) step(sim, 1 / 30);
+  return sim;
+}
+
+const SCENARIOS = [
+  { id: "free", en: "Free flow", ar: "تدفق حر" },
+  { id: "peak", en: "Peak hour", ar: "ساعة الذروة" },
+  { id: "jam", en: "Congestion", ar: "ازدحام" },
+];
 
 export default function RoundaboutSim({ ar }) {
   const canvasRef = useRef(null);
-  const [hud, setHud] = useState({ vehicles: 0, meanKmh: 0, queued: 0 });
+  const simRef = useRef(null);
+  const [mode, setModeState] = useState("peak");
+  const [hud, setHud] = useState({ vehicles: 0, meanKmh: 0, queued: 0, delay: 0, los: "A" });
+
+  const choose = (id) => {
+    setModeState(id);
+    if (!simRef.current) return;
+    // Load the scenario fresh and pre-run it so its steady state is visible right away.
+    const sim = warmSim(id);
+    Object.assign(simRef.current, sim);
+    setHud(stats(simRef.current));
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -140,21 +291,31 @@ export default function RoundaboutSim({ ar }) {
     canvas.height = SIZE * dpr;
     ctx.scale(dpr, dpr);
 
-    const logo = new Image();
-    logo.src = "/logo.svg";
+    const layer = (draw) => {
+      const c = document.createElement("canvas");
+      c.width = SIZE * dpr;
+      c.height = SIZE * dpr;
+      const x = c.getContext("2d");
+      x.scale(dpr, dpr);
+      draw(x);
+      return c;
+    };
+    const ground = layer(drawGround);
+    const deck = layer(drawDeck);
 
-    const sim = createSim(Date.now() % 100000);
-    for (let i = 0; i < 40 * 30; i++) step(sim, 1 / 30); // warm up so the scene starts busy
+    const sim = warmSim("peak");
+    simRef.current = sim;
 
     const render = () => {
       ctx.clearRect(0, 0, SIZE, SIZE);
-      drawRoads(ctx, logo);
-      drawVehicles(ctx, sim);
+      ctx.drawImage(ground, 0, 0, SIZE, SIZE);
+      for (const v of sim.vehicles) if (v.path.level === 0 && v.x !== undefined) drawVehicle(ctx, v);
+      ctx.drawImage(deck, 0, 0, SIZE, SIZE);
+      for (const v of sim.vehicles) if (v.path.level === 1 && v.x !== undefined) drawVehicle(ctx, v);
     };
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
-      logo.onload = render;
       render();
       setHud(stats(sim));
       return;
@@ -174,7 +335,6 @@ export default function RoundaboutSim({ ar }) {
       }
       raf = visible ? requestAnimationFrame(frame) : 0;
     };
-
     const start = () => {
       if (!raf && visible && !document.hidden) {
         last = performance.now();
@@ -213,22 +373,43 @@ export default function RoundaboutSim({ ar }) {
         <span className="sim-model" dir="ltr">IDM · Gap acceptance</span>
       </div>
 
+      <div className="sim-modes" role="group" aria-label={ar ? "سيناريو الطلب المروري" : "Traffic demand scenario"}>
+        {SCENARIOS.map((s) => (
+          <button
+            key={s.id}
+            className={`sim-mode ${mode === s.id ? "active" : ""} ${s.id}`}
+            aria-pressed={mode === s.id}
+            onClick={() => choose(s.id)}
+          >
+            {ar ? s.ar : s.en}
+          </button>
+        ))}
+      </div>
+
       <canvas
         ref={canvasRef}
         className="sim-canvas"
         role="img"
         aria-label={
           ar
-            ? "محاكاة حيّة لدوّار مروري بمسار واحد، تتوقف فيها المركبات عند خط إفساح الطريق حتى تتوفر فجوة مناسبة في حركة الدوّار"
-            : "Live simulation of a single-lane roundabout where vehicles wait at the give-way line until an acceptable gap appears in circulating traffic"
+            ? "محاكاة حيّة لتقاطع دوّار بجسر علوي للطريق الرئيسي، ومسارات انعطاف حر لليمين، ومركبات متنوعة من سيارات وحافلات وشاحنات"
+            : "Live simulation of a grade-separated roundabout with a flyover on the main road, free right-turn slip lanes, and a mixed fleet of cars, buses and trucks"
         }
       />
 
       <figcaption className="sim-foot">
         <dl className="sim-stats">
           <div>
-            <dt>{ar ? "المركبات" : "Vehicles"}</dt>
-            <dd>{hud.vehicles}</dd>
+            <dt>{ar ? "مستوى الخدمة" : "LOS"}</dt>
+            <dd>
+              <span className="los" style={{ background: LOS_COLORS[hud.los] }}>{hud.los}</span>
+            </dd>
+          </div>
+          <div>
+            <dt>{ar ? "متوسط التأخير" : "Avg. delay"}</dt>
+            <dd>
+              {hud.delay} <small>{ar ? "ث/مركبة" : "s/veh"}</small>
+            </dd>
           </div>
           <div>
             <dt>{ar ? "متوسط السرعة" : "Mean speed"}</dt>

@@ -1767,3 +1767,70 @@ main {
     gap: 16px;
   }
 }
+
+.sim-modes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 4px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.sim-mode {
+  min-height: 36px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: var(--font-head);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sim-mode:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.sim-mode.active {
+  color: var(--navy-800);
+}
+
+.sim-mode.free.active {
+  background: #3ddc84;
+}
+
+.sim-mode.peak.active {
+  background: var(--gold-500);
+}
+
+.sim-mode.jam.active {
+  background: #e5484d;
+  color: #ffffff;
+}
+
+.los {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 26px;
+  border-radius: 6px;
+  color: var(--navy-900);
+  font-size: 1rem;
+  transition: background 0.4s;
+}
+
+@media (max-width: 680px) {
+  .sim-stats {
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .sim-stats dd {
+    font-size: 1.02rem;
+  }
+}
