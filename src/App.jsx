@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Routes, Route, Link, NavLink, useLocation } from "react-router-dom";
 import { services, contact, pillars, tools, about } from "./data";
 import { Icon, WhatsAppIcon } from "./icons";
@@ -97,6 +97,13 @@ function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => setMenuOpen(false), [pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e) => e.key === "Escape" && setMenuOpen(false);
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
 
   const otherLangPath = pagePath(stripLang(pathname), ar ? "en" : "ar");
 
@@ -281,13 +288,32 @@ function CtaBand() {
 function ServiceModal({ service, onClose }) {
   const { ar, lang } = useLang();
 
+  const dialogRef = useRef(null);
+
   useEffect(() => {
-    const onKey = (e) => e.key === "Escape" && onClose();
+    const opener = document.activeElement;
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+      // Keep Tab focus inside the dialog
+      if (e.key === "Tab" && dialogRef.current) {
+        const focusable = dialogRef.current.querySelectorAll("a[href], button");
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      opener?.focus?.();
     };
   }, [onClose]);
 
@@ -295,6 +321,7 @@ function ServiceModal({ service, onClose }) {
     <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal"
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
@@ -539,23 +566,104 @@ function AboutPage() {
 }
 
 function ServicesPage() {
-  const { ar } = useLang();
+  const { ar, lang } = useLang();
+  const [selectedService, setSelectedService] = useState(null);
 
   return (
     <>
-      <PageHeader
-        title={ar ? "خدماتنا" : "Our Services"}
-        subtitle={
-          ar
-            ? "اضغط على أي خدمة لعرض نطاق العمل بالتفصيل."
-            : "Select any service to view its detailed scope of work."
-        }
-      />
-      <section className="section">
+      <section className="services-hero">
         <div className="container">
-          <ServicesGrid items={services} />
+          <nav className="breadcrumb" aria-label="Breadcrumb">
+            <Link to={pagePath("", lang)}>{ar ? "الرئيسية" : "Home"}</Link>
+            <span aria-hidden="true">/</span>
+            <span>{ar ? "خدماتنا" : "Our Services"}</span>
+          </nav>
+          <span className="eyebrow light">
+            {ar ? `${services.length} مجالًا تخصصيًا` : `${services.length} Areas of Expertise`}
+          </span>
+          <h1>
+            {ar
+              ? "خدمات هندسية بمعايير دولية"
+              : "Engineering Services to International Standards"}
+          </h1>
+          <p className="services-hero-text">
+            {ar
+              ? "من التخطيط الاستراتيجي والنمذجة المرورية إلى التصميم ومستندات الطرح، نقدم لعملائنا خبرة متكاملة في كل مراحل المشروع."
+              : "From strategic planning and traffic modeling to design and tender documentation, we bring integrated expertise to every stage of your project."}
+          </p>
+
+          <ul className="service-index">
+            {services.map((s, i) => (
+              <li key={s.title}>
+                <a href={`#service-${i + 1}`}>
+                  <span>{String(i + 1).padStart(2, "0")}</span>
+                  {ar ? s.titleAr : s.title}
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
+
+      <section className="service-rows">
+        <div className="container">
+          {services.map((service, i) => {
+            const details = ar ? service.detailsAr : service.details;
+            const extra = details.length - 4;
+            return (
+              <article
+                className={`service-row reveal ${i % 2 ? "reverse" : ""}`}
+                id={`service-${i + 1}`}
+                key={service.title}
+              >
+                <div className="service-row-media">
+                  <img
+                    src={service.img}
+                    alt=""
+                    loading={i < 2 ? "eager" : "lazy"}
+                    decoding="async"
+                    width="1200"
+                    height="800"
+                  />
+                </div>
+
+                <div className="service-row-body">
+                  <span className="service-num" aria-hidden="true">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h2>{ar ? service.titleAr : service.title}</h2>
+                  <p className="service-desc">{ar ? service.descAr : service.desc}</p>
+
+                  <ul className="check-list">
+                    {details.slice(0, 4).map((item) => (
+                      <li key={item}>
+                        <Icon name="check" size={18} />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="service-actions">
+                    <button className="btn dark" onClick={() => setSelectedService(service)}>
+                      {ar ? "النطاق الكامل للخدمة" : "Full Scope of Service"}
+                      {extra > 0 && <span className="more-count">+{extra}</span>}
+                    </button>
+                    <Link to={pagePath("contact", lang)} className="text-link">
+                      {ar ? "اطلب عرضًا" : "Request a Proposal"}
+                      <Icon name="arrow" size={18} className="flip-rtl" />
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      {selectedService && (
+        <ServiceModal service={selectedService} onClose={() => setSelectedService(null)} />
+      )}
+
       <CtaBand />
     </>
   );
@@ -751,9 +859,12 @@ function App() {
   return (
     <div className="app" dir={ar ? "rtl" : "ltr"}>
       <ScrollToTop />
+      <a href="#main" className="skip-link">
+        {ar ? "انتقل إلى المحتوى" : "Skip to main content"}
+      </a>
       <Header />
 
-      <main>
+      <main id="main" tabIndex="-1">
         <Routes>
           {["en", "ar"].flatMap((lang) =>
             pages.map(({ key, path }) => {
