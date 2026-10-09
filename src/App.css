@@ -1619,3 +1619,151 @@ main {
     width: 100%;
   }
 }
+
+/* =========================
+   HERO SIMULATION
+========================= */
+
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.sim-panel {
+  background: rgba(8, 23, 42, 0.62);
+  border: 1px solid rgba(214, 180, 106, 0.3);
+  border-radius: 18px;
+  padding: 16px 16px 14px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+}
+
+.sim-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 0 4px 10px;
+  font-size: 0.82rem;
+}
+
+.sim-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-head);
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.sim-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3ddc84;
+  box-shadow: 0 0 0 0 rgba(61, 220, 132, 0.6);
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  70% {
+    box-shadow: 0 0 0 8px rgba(61, 220, 132, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(61, 220, 132, 0);
+  }
+}
+
+.sim-model {
+  color: var(--gold-500);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+}
+
+.sim-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  background: radial-gradient(circle at 50% 50%, rgba(20, 48, 77, 0.55), rgba(8, 23, 42, 0.2));
+}
+
+.sim-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 4px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 10px;
+}
+
+.sim-stats {
+  display: flex;
+  gap: 22px;
+}
+
+.sim-stats dt {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.sim-stats dd {
+  font-family: var(--font-head);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+  min-width: 2.2em;
+}
+
+.sim-stats small {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+.sim-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.sim-legend i {
+  width: 80px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #e5484d, #f5a524 35%, #d6b46a 70%, #f6e9c8);
+}
+
+[dir="rtl"] .sim-legend i {
+  transform: scaleX(-1);
+}
+
+@media (max-width: 1080px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .sim-panel {
+    max-width: 520px;
+  }
+}
+
+@media (max-width: 680px) {
+  .sim-panel {
+    padding: 12px 10px 10px;
+  }
+
+  .sim-stats {
+    gap: 16px;
+  }
+}

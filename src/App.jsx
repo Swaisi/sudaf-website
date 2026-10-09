@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Routes, Route, Link, NavLink, useLocation } from "react-router-dom";
 import { services, contact, pillars, tools, about } from "./data";
 import { Icon, WhatsAppIcon } from "./icons";
+import RoundaboutSim from "./RoundaboutSim";
 import { pages, pagePath, SITE_URL } from "./seo";
 import "./App.css";
 
@@ -435,6 +436,8 @@ function HomePage() {
               </Link>
             </div>
           </div>
+
+          <RoundaboutSim ar={ar} />
         </div>
 
         <div className="container">
