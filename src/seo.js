@@ -51,12 +51,12 @@ export const pages = [
     en: {
       title: "Projects | Sudaf Engineering Consultancy",
       description:
-        "Case studies by the Sudaf engineering team: Coastal Road × Heavy Transport Road interchange alternatives, Road 8–18 grade-separated junction, and a port and steel-plant traffic impact assessment in Misurata.",
+        "Case studies by the Sudaf engineering team: Coastal Road × Heavy Transport Road interchange alternatives, Road 8–18 grade-separated junction, GIS-based infrastructure for Al-Sukairat, and a port and steel-plant traffic impact assessment in Misurata.",
     },
     ar: {
       title: "المشاريع | سدف للاستشارات الهندسية",
       description:
-        "دراسات حالة من أعمال فريق سدف الهندسي: بدائل جسر تقاطع الطريق الساحلي مع طريق النقل الثقيل، وجسر تقاطع الطريق 8-18، ودراسة الأثر المروري لمصنع الحديد والميناء في مصراتة.",
+        "دراسات حالة من أعمال فريق سدف الهندسي: بدائل جسر تقاطع الطريق الساحلي مع طريق النقل الثقيل، وجسر تقاطع الطريق 8-18، والبنية التحتية لمنطقة السكيرات بنظم GIS، ودراسة الأثر المروري لمصنع الحديد والميناء في مصراتة.",
     },
   },
   {

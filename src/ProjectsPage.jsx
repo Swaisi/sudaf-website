@@ -30,6 +30,36 @@ function InterchangeIcon({ shape }) {
   );
 }
 
+const LAYER_TINTS = ["#6b7f95", "#c9a35a", "#4f9bd6", "#8b6b4a", "#3fa58c", "#e0b84a", "#d97a4a", "#b05a5a"];
+
+// Stacked GIS data layers (isometric), first layer at the bottom.
+function LayerStack({ layers, ar }) {
+  const n = layers.length;
+  const gap = 24;
+  const H = 66 + (n - 1) * gap;
+  const tile = (y) => `M150,${y} L280,${y + 30} L150,${y + 60} L20,${y + 30} Z`;
+  return (
+    <figure className="layer-stack">
+      <svg viewBox={`0 0 300 ${H}`} aria-hidden="true">
+        {layers.map((l, i) => {
+          const y = (n - 1 - i) * gap + 2;
+          const c = LAYER_TINTS[i % LAYER_TINTS.length];
+          return <path key={i} d={tile(y)} fill={c} fillOpacity="0.3" stroke={c} strokeWidth="1.5" />;
+        })}
+      </svg>
+      <ol className="layer-list">
+        {layers
+          .map((l, i) => ({ l, i }))
+          .reverse()
+          .map(({ l, i }) => (
+            <li key={i} style={{ "--c": LAYER_TINTS[i % LAYER_TINTS.length] }}>{ar ? l.ar : l.en}</li>
+          ))}
+      </ol>
+      <figcaption>{ar ? "طبقات قاعدة البيانات المكانية (GIS)" : "GIS geodatabase layers"}</figcaption>
+    </figure>
+  );
+}
+
 // One measure (delay) per chart, single hue; the recommended option carries the accent.
 function DelayChart({ rows, ar }) {
   const max = Math.max(...rows.map((r) => r.delay || 0)) * 1.15;
@@ -87,6 +117,12 @@ function CaseStudy({ p, i, ar }) {
             <dt>{ar ? "الموقع" : "Location"}</dt>
             <dd>{ar ? p.cityAr : p.city}</dd>
           </div>
+          {p.status && (
+            <div>
+              <dt>{ar ? "الحالة" : "Status"}</dt>
+              <dd>{ar ? p.statusAr : p.status}</dd>
+            </div>
+          )}
           {p.year && (
             <div>
               <dt>{ar ? "السنة" : "Year"}</dt>
@@ -127,6 +163,8 @@ function CaseStudy({ p, i, ar }) {
         </div>
 
         {p.results && <DelayChart rows={p.results} ar={ar} />}
+
+        {p.layers && <LayerStack layers={p.layers} ar={ar} />}
 
         {p.alternatives && (
           <div className="ix-row">

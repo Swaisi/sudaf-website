@@ -3892,3 +3892,61 @@ details[open] .faq-ic::after {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* GIS layer stack */
+.layer-stack {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  align-items: center;
+  gap: 28px;
+  background: var(--navy-800);
+  padding: 24px 28px;
+  margin-bottom: 28px;
+}
+
+.layer-stack svg {
+  width: 100%;
+  height: auto;
+}
+
+.layer-list {
+  list-style: none;
+  display: grid;
+  gap: 7px;
+}
+
+.layer-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.9rem;
+}
+
+.layer-list li::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--c);
+  flex-shrink: 0;
+}
+
+.layer-stack figcaption {
+  grid-column: 1 / -1;
+  color: var(--gold-500);
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 680px) {
+  .layer-stack {
+    grid-template-columns: 1fr;
+  }
+
+  .layer-stack svg {
+    max-width: 220px;
+    margin: 0 auto;
+  }
+}

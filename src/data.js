@@ -463,6 +463,55 @@ export const projects = [
       "إعداد ثلاثة بدائل بمقياس رسم على الصور الجوية مع حدود حرم الطريق، لتقييمها وفق معايير تشغيلية ومجتمعية وتصميمية.",
   },
   {
+    id: "sukairat-gis",
+    type: "gis",
+    year: "2026",
+    status: "Technical proposal",
+    statusAr: "عرض فني",
+    city: "Misurata — Al-Sukairat",
+    cityAr: "مصراتة — السكيرات",
+    title: "Al-Sukairat Infrastructure — GIS-Based Design & Supervision",
+    titleAr: "البنية التحتية لمنطقة السكيرات — تصميم وإشراف قائم على GIS",
+    client: "Housing & Utilities Projects Implementation Agency — Misurata Office",
+    clientAr: "جهاز تنفيذ مشروعات الإسكان والمرافق — مكتب مصراتة",
+    summary:
+      "Methodology for the integrated design and supervision of infrastructure across an urban district of about 486 ha covered by 32 approved planning sheets.",
+    summaryAr:
+      "منهجية متكاملة لتصميم البنية التحتية والإشراف على تنفيذها في منطقة حضرية مساحتها نحو 486 هكتارًا تغطيها 32 لوحة تخطيط معتمدة.",
+    challenge:
+      "Reconciling approved planning sheets with conditions on the ground, coordinating seven utility networks inside narrow rights-of-way, and resolving undocumented existing services.",
+    challengeAr:
+      "مطابقة لوحات التخطيط المعتمدة مع الوضع القائم على الطبيعة، وتنسيق سبع شبكات مرافق داخل حرم طرق محدود، ومعالجة الخدمات القائمة غير الموثقة.",
+    approach: [
+      "Survey control and a single coordinate reference (LGD2006 / UTM) for every deliverable",
+      "Reference GIS geodatabase with network, constraint and tie-in layers, plus field-survey layers: existing vs required",
+      "Multi-disciplinary design — roads, water, sewer, storm drainage, power & lighting, telecoms and gas — with Civil 3D, Water/Sewer/StormCAD and ArcGIS Pro",
+      "Formal clash, tie-in, RFI and NCR registers linked to GIS; QA/QC reviews at 30 / 60 / 90 % and IFC",
+      "Supervision with ITP hold/witness points, staged acceptance, As-Built files and an asset register for O&M",
+    ],
+    approachAr: [
+      "ضبط مساحي ونظام إحداثيات مرجعي موحّد (LGD2006 / UTM) لكافة المخرجات",
+      "قاعدة بيانات مكانية مرجعية (GIS) تضم طبقات الشبكات والقيود وواجهات الربط، مع طبقات حصر ميداني: القائم مقابل المطلوب",
+      "تصميم متعدد التخصصات للطرق والمياه والصرف الصحي وتصريف الأمطار والكهرباء والإنارة والاتصالات والغاز، باستخدام برامج: Civil 3D، WaterCAD / SewerCAD / StormCAD، ArcGIS Pro",
+      "سجلات رسمية للتعارضات وواجهات الربط والاستفسارات وعدم المطابقة مرتبطة بقاعدة البيانات المكانية، ومراجعات جودة عند مراحل 30% و60% و90% ثم إصدار IFC",
+      "إشراف بخطة فحص واختبار بنقاط توقف ومعاينة، واستلامات مرحلية، وملفات As-Built وسجل أصول للتشغيل والصيانة",
+    ],
+    layers: [
+      { en: "Planning sheets & parcels", ar: "لوحات التخطيط والقطع" },
+      { en: "Roads & intersections", ar: "الطرق والتقاطعات" },
+      { en: "Water mains & valves", ar: "خطوط المياه والمحابس" },
+      { en: "Sewer lines & manholes", ar: "الصرف الصحي وغرف التفتيش" },
+      { en: "Storm lines & inlets", ar: "تصريف الأمطار والمصائد" },
+      { en: "Power, lighting & telecoms", ar: "الكهرباء والإنارة والاتصالات" },
+      { en: "Gas pipes", ar: "خطوط الغاز" },
+      { en: "Constraints & tie-ins", ar: "القيود وواجهات الربط" },
+    ],
+    outcome:
+      "A single verified data platform that keeps drawings, quantities and specifications consistent from survey through IFC, construction and As-Built handover.",
+    outcomeAr:
+      "منصة بيانات موحّدة ومُتحقّق منها تضمن اتساق الرسومات والكميات والمواصفات من الحصر الميداني حتى إصدار IFC والتنفيذ وتسليم As-Built.",
+  },
+  {
     id: "lisco-tia",
     type: "tia",
     year: "2023",
