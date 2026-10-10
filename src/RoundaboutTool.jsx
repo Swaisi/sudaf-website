@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { clamp, dmrbChecks, fmt, kimber, usAnalysis } from "./tools/roundaboutCalc";
+import { dmrbChecks, fmt, kimber, usAnalysis } from "./tools/roundaboutCalc";
+import { DmrbDiagram, UsDiagram } from "./tools/RoundaboutDiagrams";
 
 /* ---------- shared UI ---------- */
 
@@ -89,70 +90,7 @@ function Metric({ label, value, unit, tone }) {
   );
 }
 
-// Dimension line with arrowheads and a label.
-function Dim({ x1, y1, x2, y2, label, lx, ly, anchor = "middle" }) {
-  return (
-    <g className="dim">
-      <line x1={x1} y1={y1} x2={x2} y2={y2} markerStart="url(#arr)" markerEnd="url(#arr)" />
-      <text x={lx ?? (x1 + x2) / 2} y={ly ?? (y1 + y2) / 2} textAnchor={anchor}>
-        {label}
-      </text>
-    </g>
-  );
-}
-
-const Defs = () => (
-  <defs>
-    <marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="currentColor" />
-    </marker>
-    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-      <path d="M20 0H0V20" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
-    </pattern>
-  </defs>
-);
-
 /* ---------- UK: DMRB / Kimber ---------- */
-
-function DmrbDiagram({ p }) {
-  const W = 9; // px per metre across the entry
-  const top = 70, gx = 300;
-  const yV = top + p.V * W, yE = top + p.E * W;
-  const fx = gx - clamp(p.lp * 4, 20, 230);
-  const Dpx = clamp(60 + p.D * 1.3, 110, 300);
-  const cx = gx + Dpx / 2 + 8, cy = top + (p.E * W) / 2 + 10;
-  const islandR = Math.max(14, Dpx / 2 - p.circW * W);
-  const rpx = clamp(p.r * 1.4, 12, 70);
-  const H = Math.round(Math.max(cy + Dpx / 2, yE + rpx + 40, yE + 50) + 24);
-  return (
-    <svg className="tool-svg" viewBox={`0 0 520 ${H}`} dir="ltr" role="img" aria-label="DMRB entry geometry schematic">
-      <Defs />
-      <rect width="520" height={H} fill="url(#grid)" />
-      {/* roundabout */}
-      <circle cx={cx} cy={cy} r={Dpx / 2} className="ln-road" />
-      <circle cx={cx} cy={cy} r={islandR} className="ln-island" />
-      {/* approach: centre line / splitter edge and flared kerb */}
-      <polygon points={`10,${top} ${gx},${top} ${gx},${yE} ${fx},${yV} 10,${yV}`} className="fill-road" />
-      <line x1="10" y1={top} x2={gx} y2={top} className="ln-kerb" />
-      <polyline points={`10,${yV} ${fx},${yV} ${gx},${yE}`} className="ln-kerb" fill="none" />
-      <path d={`M${gx},${yE} Q${gx + rpx},${yE} ${gx + rpx},${yE + rpx}`} className="ln-kerb" fill="none" />
-      <polygon points={`${gx - 90},${top} ${gx - 4},${top - 13} ${gx - 4},${top}`} className="fill-splitter" />
-      <line x1={gx} y1={top} x2={gx} y2={yE} className="ln-giveway" />
-
-      <Dim x1={40} y1={top} x2={40} y2={yV} label={`V = ${p.V} m`} lx={48} ly={(top + yV) / 2 + 4} anchor="start" />
-      <Dim x1={gx - 14} y1={top} x2={gx - 14} y2={yE} label={`E = ${p.E} m`} lx={gx - 20} ly={(top + yE) / 2 + 4} anchor="end" />
-      <Dim x1={fx} y1={yE + 22} x2={gx} y2={yE + 22} label={`l′ = ${p.lp} m`} ly={yE + 38} />
-      <Dim x1={cx - Dpx / 2} y1={cy + Dpx / 2 - 6} x2={cx + Dpx / 2} y2={cy + Dpx / 2 - 6} label={`D = ${p.D} m`} ly={cy + Dpx / 2 - 12} />
-      <g className="dim">
-        <line x1={gx + rpx * 0.3} y1={yE + rpx * 0.3} x2={gx + rpx + 40} y2={yE + rpx + 30} />
-        <text x={gx + rpx + 44} y={yE + rpx + 34}>{`r = ${p.r} m`}</text>
-        <path d={`M${gx + 26},${top + 2} A26 26 0 0 1 ${gx + 26 * Math.cos((p.phi * Math.PI) / 180)},${top + 2 + 26 * Math.sin((p.phi * Math.PI) / 180)}`} fill="none" />
-        <text x={gx + 32} y={top - 6}>{`φ = ${p.phi}°`}</text>
-      </g>
-      <text x="14" y={H - 10} className="svg-note">Schematic — not to scale</text>
-    </svg>
-  );
-}
 
 const DMRB_DEFAULT = { V: 6.5, E: 7.3, lp: 25, r: 20, phi: 30, D: 72, Qc: 900, demand: 1100, circW: 8, entryPathR: 70, exitR: 40 };
 
@@ -213,53 +151,6 @@ function DmrbTool({ ar }) {
 
 /* ---------- US: FHWA / NCHRP 672 fastest path + HCM ---------- */
 
-function arcPts(cx, cy, r, a0, a1, n = 40) {
-  return Array.from({ length: n + 1 }, (_, i) => {
-    const a = a0 + ((a1 - a0) * i) / n;
-    return `${(cx + r * Math.cos(a)).toFixed(1)},${(cy + r * Math.sin(a)).toFixed(1)}`;
-  }).join(" ");
-}
-
-function UsDiagram({ sp }) {
-  const cx = 260, cy = 165, ICD = 120, isl = 66;
-  const tag = (x, y, name, v, cls) => (
-    <g className={`ptag ${cls}`}>
-      <circle cx={x} cy={y} r="13" />
-      <text x={x} y={y + 4} textAnchor="middle">{name}</text>
-      <text x={x} y={y + 28} textAnchor="middle" className="ptag-v">{`${v.toFixed(0)} km/h`}</text>
-    </g>
-  );
-  return (
-    <svg className="tool-svg" viewBox="0 0 520 330" dir="ltr" role="img" aria-label="Fastest path diagram R1 to R5">
-      <Defs />
-      <rect width="520" height="330" fill="url(#grid)" />
-      {/* approach roads */}
-      <rect x="0" y={cy - 26} width="520" height="52" className="fill-road" />
-      <rect x={cx - 26} y="0" width="52" height="330" className="fill-road" />
-      <circle cx={cx} cy={cy} r={ICD} className="fill-road ln-kerb" />
-      <circle cx={cx} cy={cy} r={isl + 9} className="ln-apron" />
-      <circle cx={cx} cy={cy} r={isl} className="ln-island" />
-      {[[cx - ICD - 50, cy, 0], [cx + ICD + 50, cy, 0], [cx, cy - ICD - 45, 1], [cx, cy + ICD + 45, 1]].map(([x, y, vert], i) => (
-        <rect key={i} x={vert ? x - 3 : x - 34} y={vert ? y - 30 : y - 3} width={vert ? 6 : 68} height={vert ? 60 : 6} rx="3" className="fill-splitter" />
-      ))}
-
-      {/* R4: left turn west → north (around the island) */}
-      <polyline points={`0,${cy + 14} 128,${cy + 14} ${arcPts(cx, cy, isl + 20, Math.PI - 0.15, -Math.PI / 2 + 0.25)} ${cx + 14},0`} className="path p4" />
-      {/* R5: right turn west → south */}
-      <path d={`M0,${cy + 18} C120,${cy + 18} ${cx - 34},${cy + 40} ${cx - 14},330`} className="path p5" />
-      {/* Through: R1 entry, R2 circulating, R3 exit */}
-      <path d={`M0,${cy + 10} C110,${cy + 10} 150,${cy + isl + 26} ${cx},${cy + isl + 26} S${410},${cy + 10} 520,${cy + 10}`} className="path p1" />
-
-      {tag(118, cy + 58, "R1", sp.V1, "t1")}
-      {tag(cx, cy + isl + 52, "R2", sp.V2, "t1")}
-      {tag(402, cy + 58, "R3", sp.V3, "t1")}
-      {tag(cx + 62, cy - 62, "R4", sp.V4, "t4")}
-      {tag(cx - 70, cy + 120, "R5", sp.V5, "t5")}
-      <text x="14" y="318" className="svg-note">Schematic fastest paths — not to scale</text>
-    </svg>
-  );
-}
-
 const US_DEFAULT = { R1: 50, R2: 30, R3: 100, R4: 18, R5: 25, entryLanes: 2, circLanes: 2, ve: 1100, vc: 700 };
 
 function UsTool({ ar }) {
@@ -274,12 +165,7 @@ function UsTool({ ar }) {
     <div className="tool-grid">
       <div className="tool-col">
         <div className="tool-card dark">
-          <UsDiagram sp={res.speeds} />
-          <ul className="path-legend">
-            <li><i className="p1" /> {ar ? "المسار المستقيم R1–R3" : "Through R1–R3"}</li>
-            <li><i className="p4" /> {ar ? "الانعطاف لليسار R4" : "Left turn R4"}</li>
-            <li><i className="p5" /> {ar ? "الانعطاف لليمين R5" : "Right turn R5"}</li>
-          </ul>
+          <UsDiagram sp={res.speeds} p={p} ar={ar} />
         </div>
         <div className="tool-card">
           <h3>{ar ? "النتائج — NCHRP 672 وHCM" : "Results — NCHRP 672 & HCM"}</h3>
