@@ -68,9 +68,9 @@ export const pages = [
         "Free engineering tools: Kimber/DMRB roundabout capacity with QA/QC checklist, NCHRP 672 fastest paths with HCM LOS, AASHTO ramp radius and speed-change lane lengths, and CAGR traffic growth vs capacity.",
     },
     ar: {
-      title: "أدوات هندسية – الدوّارات والمنحدرات ونمو المرور | سدف للاستشارات الهندسية",
+      title: "أدوات هندسية – جزر الدوران والمنحدرات ونمو المرور | سدف للاستشارات الهندسية",
       description:
-        "أدوات مجانية لتصميم الدوّارات: سعة المدخل وفق نموذج Kimber مع قائمة فحص جودة حسب DMRB CD 116، وسرعات المسار الأسرع وفق FHWA / NCHRP 672 مع السعة والتأخير ومستوى الخدمة حسب HCM.",
+        "أدوات مجانية لتصميم جزر الدوران: سعة المدخل وفق نموذج Kimber مع قائمة فحص جودة حسب DMRB CD 116، وسرعات المسار الأسرع وفق FHWA / NCHRP 672 مع السعة والتأخير ومستوى الخدمة حسب HCM.",
     },
   },
   {

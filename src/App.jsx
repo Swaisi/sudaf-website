@@ -919,20 +919,20 @@ function ToolsPage() {
         title={ar ? "أدوات هندسية" : "Engineering Tools"}
         subtitle={
           ar
-            ? "أدوات تفاعلية لتصميم الدوّارات ومنحدرات التقاطعات المنفصلة وإسقاط الحجوم المرورية، وفق DMRB وFHWA وAASHTO."
+            ? "أدوات تفاعلية لتصميم جزر الدوران ومنحدرات التقاطعات المنفصلة وإسقاط الحجوم المرورية، وفق DMRB وFHWA وAASHTO."
             : "Interactive tools for roundabout design, interchange ramps and traffic growth — based on DMRB, FHWA and AASHTO guidance."
         }
       />
       <section className="section">
         <div className="container">
           <nav className="tool-jump" aria-label={ar ? "الأدوات" : "Tools"}>
-            <a href="#roundabout">{ar ? "01 تصميم الدوّارات" : "01 Roundabout design"}</a>
+            <a href="#roundabout">{ar ? "01 تصميم جزر الدوران" : "01 Roundabout design"}</a>
             <a href="#ramps">{ar ? "02 منحدرات التقاطعات (AASHTO)" : "02 Interchange ramps (AASHTO)"}</a>
             <a href="#growth">{ar ? "03 نمو الحجم المروري" : "03 Traffic growth"}</a>
           </nav>
 
           <div id="roundabout" className="tool-section">
-            <SectionLabel index="01" label={ar ? "تصميم الدوّارات" : "Roundabout design"} />
+            <SectionLabel index="01" label={ar ? "تصميم جزر الدوران" : "Roundabout design"} />
             <RoundaboutTool ar={ar} />
           </div>
 

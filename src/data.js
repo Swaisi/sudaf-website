@@ -36,7 +36,7 @@ export const services = [
       "دراسات الأثر المروري للمشاريع التطويرية والبنية التحتية.",
       "تحليل سعة التقاطعات ومستوى الخدمة.",
       "العدّ المروري، حركات الالتفاف، الطوابير، والتأخير.",
-      "مراجعة الإشارات المرورية والدوارات وإدارة المداخل.",
+      "مراجعة الإشارات المرورية وجزر الدوران وإدارة المداخل.",
     ],
   },
   {
@@ -397,7 +397,7 @@ export const projects = [
     challenge:
       "7,538 veh/h at the base-year peak with a high share of heavy goods vehicles, a new south arm to the Kerzaz roundabout, and demand forecast to reach 14,531 veh/h by 2045.",
     challengeAr:
-      "حجم ذروة 7,538 مركبة/ساعة في سنة الأساس مع نسبة عالية من الشاحنات الثقيلة، وذراع جنوبي جديد يربط بدوّار كرزاز، وطلب متوقع يبلغ 14,531 مركبة/ساعة بحلول 2045.",
+      "حجم ذروة 7,538 مركبة/ساعة في سنة الأساس مع نسبة عالية من الشاحنات الثقيلة، وذراع جنوبي جديد يربط بجزيرة دوران كرزاز، وطلب متوقع يبلغ 14,531 مركبة/ساعة بحلول 2045.",
     approach: [
       "15-minute classified turning-movement counts, PHF and PCE conversion, proportional balancing",
       "Four-step demand model: trip generation, gravity distribution, static user-equilibrium assignment",
@@ -412,8 +412,8 @@ export const projects = [
     ],
     // 2045 design peak, average delay (s/veh); A fails (v/c > 1)
     results: [
-      { alt: "A", en: "Roundabout interchange", ar: "دوّار بجسر علوي", delay: null, queue: null, vc: "> 1.00" },
-      { alt: "B", en: "Roundabout + loops", ar: "دوّار مع حلقات", delay: 108, queue: 130, vc: "0.90–0.95" },
+      { alt: "A", en: "Roundabout interchange", ar: "جزيرة دوران بجسر علوي", delay: null, queue: null, vc: "> 1.00" },
+      { alt: "B", en: "Roundabout + loops", ar: "جزيرة دوران مع حلقات", delay: 108, queue: 130, vc: "0.90–0.95" },
       { alt: "C", en: "Partial cloverleaf", ar: "ورقة برسيم جزئية", delay: 90, queue: 110, vc: "0.80–0.88" },
       { alt: "D", en: "Full cloverleaf", ar: "ورقة برسيم كاملة", delay: 60, queue: 50, vc: "0.78–0.86", best: true },
     ],

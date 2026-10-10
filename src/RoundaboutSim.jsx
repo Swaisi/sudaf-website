@@ -432,7 +432,7 @@ export default function RoundaboutSim({ ar }) {
           role="img"
           aria-label={
             ar
-              ? "محاكاة حيّة لتقاطع دوّار بجسر علوي للطريق الرئيسي، ومسارات انعطاف حر لليمين، ومركبات متنوعة من سيارات وحافلات وشاحنات"
+              ? "محاكاة حيّة لتقاطع جزيرة دوران بجسر علوي للطريق الرئيسي، ومسارات انعطاف حر لليمين، ومركبات متنوعة من سيارات وحافلات وشاحنات"
               : "Live simulation of a grade-separated roundabout with a flyover on the main road, free right-turn slip lanes, and a mixed fleet of cars, buses and trucks"
           }
         />

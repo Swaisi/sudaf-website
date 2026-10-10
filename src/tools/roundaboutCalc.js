@@ -86,7 +86,7 @@ export function dmrbChecks(input, result, demand) {
       status: D >= 28 ? "pass" : "warn",
       value: `${D} m`,
       en: "ICD ≥ 28 m for a normal roundabout (smaller = compact/mini)",
-      ar: "القطر الخارجي ≥ 28 م للدوّار العادي (الأصغر: مدمج/صغير)",
+      ar: "القطر الخارجي ≥ 28 م لجزيرة الدوران العادية (الأصغر: مدمجة/صغيرة)",
     },
     {
       id: "range",
