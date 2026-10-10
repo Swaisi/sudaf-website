@@ -4,6 +4,8 @@ import { services, contact, pillars, tools, about, process, faqs } from "./data"
 import { Icon, WhatsAppIcon } from "./icons";
 import RoundaboutSim from "./RoundaboutSim";
 import RoundaboutTool from "./RoundaboutTool";
+import ProjectsList from "./ProjectsPage";
+import { RampTool, GrowthTool } from "./InterchangeTools";
 import { pages, pagePath, SITE_URL } from "./seo";
 import "./App.css";
 
@@ -758,20 +760,19 @@ function ProjectsPage() {
         title={ar ? "المشاريع" : "Projects"}
         subtitle={
           ar
-            ? "نماذج من أعمالنا في النقل والبنية التحتية والدراسات الهندسية."
-            : "Selected work in transport, infrastructure, and engineering studies."
+            ? "دراسات حالة من أعمال فريقنا في تقاطعات الطرق المنفصلة والدراسات المرورية."
+            : "Case studies from our team’s work on grade-separated interchanges and traffic studies."
         }
       />
       <section className="section">
-        <div className="container narrow center-text reveal">
-          <p className="muted">
-            {ar
-              ? "نعمل حاليًا على إعداد ملف مشاريع الشركة لعرضه هنا. للاطلاع على سابقة أعمالنا أو طلب ملف تعريف الشركة، يرجى التواصل معنا."
-              : "Our project portfolio is being prepared for publication. To review our track record or request our company profile, please get in touch."}
-          </p>
-          <Link to={pagePath("contact", lang)} className="btn dark">
-            {ar ? "اطلب ملف الشركة" : "Request Company Profile"}
-          </Link>
+        <div className="container">
+          <ProjectsList ar={ar} />
+          <div className="center-text reveal">
+            <Link to={pagePath("contact", lang)} className="btn dark">
+              {ar ? "ناقش مشروعك مع فريقنا" : "Discuss your project with our team"}
+              <ArrowBadge />
+            </Link>
+          </div>
         </div>
       </section>
     </>
@@ -918,13 +919,42 @@ function ToolsPage() {
         title={ar ? "أدوات هندسية" : "Engineering Tools"}
         subtitle={
           ar
-            ? "أدوات تفاعلية لتصميم الدوّارات وفق المعيار البريطاني DMRB والدليل الأمريكي FHWA / NCHRP 672."
-            : "Interactive roundabout design tools based on the UK DMRB and the US FHWA / NCHRP 672 guidance."
+            ? "أدوات تفاعلية لتصميم الدوّارات ومنحدرات التقاطعات المنفصلة وإسقاط الحجوم المرورية، وفق DMRB وFHWA وAASHTO."
+            : "Interactive tools for roundabout design, interchange ramps and traffic growth — based on DMRB, FHWA and AASHTO guidance."
         }
       />
       <section className="section">
         <div className="container">
-          <RoundaboutTool ar={ar} />
+          <nav className="tool-jump" aria-label={ar ? "الأدوات" : "Tools"}>
+            <a href="#roundabout">{ar ? "01 تصميم الدوّارات" : "01 Roundabout design"}</a>
+            <a href="#ramps">{ar ? "02 منحدرات التقاطعات (AASHTO)" : "02 Interchange ramps (AASHTO)"}</a>
+            <a href="#growth">{ar ? "03 نمو الحجم المروري" : "03 Traffic growth"}</a>
+          </nav>
+
+          <div id="roundabout" className="tool-section">
+            <SectionLabel index="01" label={ar ? "تصميم الدوّارات" : "Roundabout design"} />
+            <RoundaboutTool ar={ar} />
+          </div>
+
+          <div id="ramps" className="tool-section">
+            <SectionLabel index="02" label={ar ? "منحدرات التقاطعات المنفصلة" : "Interchange ramps"} />
+            <p className="tool-intro">
+              {ar
+                ? "سرعة تصميم المنحدر وأقل نصف قطر وأطوال حارات التسارع والتباطؤ وفق دليل AASHTO للتصميم الهندسي (Green Book)."
+                : "Ramp design speed, minimum radius and acceleration/deceleration lane lengths from the AASHTO Green Book."}
+            </p>
+            <RampTool ar={ar} />
+          </div>
+
+          <div id="growth" className="tool-section">
+            <SectionLabel index="03" label={ar ? "نمو الحجم المروري" : "Traffic growth"} />
+            <p className="tool-intro">
+              {ar
+                ? "إسقاط حجم الذروة بطريقة معدل النمو السنوي المركّب (CAGR) ومقارنته بسعة الطريق لتحديد سنة الوصول إلى الاختناق."
+                : "Project peak-hour volume with a compound annual growth rate (CAGR) and compare it with capacity to find when the facility saturates."}
+            </p>
+            <GrowthTool ar={ar} />
+          </div>
         </div>
       </section>
     </>

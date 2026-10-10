@@ -376,3 +376,125 @@ export const faqs = [
     aAr: "أرسل لنا تفاصيل مشروعك عبر نموذج التواصل أو البريد الإلكتروني أو واتساب، وسيتواصل معك فريقنا الهندسي لمناقشة نطاق المشروع ومتطلباته.",
   },
 ];
+
+// Case studies prepared by Sudaf's founder. Costs and land-take details are
+// deliberately excluded; only technical/operational findings are published.
+export const projects = [
+  {
+    id: "coastal-heavy",
+    type: "interchange",
+    year: "2025",
+    city: "Misurata",
+    cityAr: "مصراتة",
+    title: "Coastal Road × Heavy Transport Road Interchange",
+    titleAr: "تقاطع الطريق الساحلي مع طريق النقل الثقيل",
+    client: "Ministry of Transportation — Transportation Projects Board",
+    clientAr: "وزارة المواصلات — جهاز تنفيذ مشروعات المواصلات",
+    summary:
+      "Assessment of four free-flow bridge alternatives for the junction serving the LISCO steel complex, Misurata Sea Port and Free Zone, with a 30-year demand horizon.",
+    summaryAr:
+      "تقييم أربعة بدائل لجسر حر التدفق عند التقاطع الذي يخدم مجمع الحديد والصلب وميناء مصراتة والمنطقة الحرة، بأفق طلب مروري يمتد 30 عامًا.",
+    challenge:
+      "7,538 veh/h at the base-year peak with a high share of heavy goods vehicles, a new south arm to the Kerzaz roundabout, and demand forecast to reach 14,531 veh/h by 2045.",
+    challengeAr:
+      "حجم ذروة 7,538 مركبة/ساعة في سنة الأساس مع نسبة عالية من الشاحنات الثقيلة، وذراع جنوبي جديد يربط بدوّار كرزاز، وطلب متوقع يبلغ 14,531 مركبة/ساعة بحلول 2045.",
+    approach: [
+      "15-minute classified turning-movement counts, PHF and PCE conversion, proportional balancing",
+      "Four-step demand model: trip generation, gravity distribution, static user-equilibrium assignment",
+      "HCM / AASHTO analysis of freeway segments, merge/diverge areas and weaving sections",
+      "Safety surrogates, 95th-percentile queues and TT95 reliability for 2035 / 2045 / 2055",
+    ],
+    approachAr: [
+      "عدّ مروري مصنّف لحركات الالتفاف كل 15 دقيقة، وحساب معامل ساعة الذروة ومكافئات المركبات، وموازنة الحجوم",
+      "نموذج الطلب رباعي المراحل: توليد الرحلات، التوزيع بنموذج الجاذبية، والتحميل بتوازن المستخدم",
+      "تحليل المقاطع والاندماج والتفرع ومقاطع التداخل وفق HCM وAASHTO",
+      "مؤشرات السلامة وطوابير المئين 95 ومؤشر الموثوقية TT95 لسنوات 2035 و2045 و2055",
+    ],
+    // 2045 design peak, average delay (s/veh); A fails (v/c > 1)
+    results: [
+      { alt: "A", en: "Roundabout interchange", ar: "دوّار بجسر علوي", delay: null, queue: null, vc: "> 1.00" },
+      { alt: "B", en: "Roundabout + loops", ar: "دوّار مع حلقات", delay: 108, queue: 130, vc: "0.90–0.95" },
+      { alt: "C", en: "Partial cloverleaf", ar: "ورقة برسيم جزئية", delay: 90, queue: 110, vc: "0.80–0.88" },
+      { alt: "D", en: "Full cloverleaf", ar: "ورقة برسيم كاملة", delay: 60, queue: 50, vc: "0.78–0.86", best: true },
+    ],
+    outcome:
+      "Recommended Alternative D (full cloverleaf): lowest delay and shortest queues, best reliability (TT95/TTavg ≈ 1.15), and resilient to 2055 growth.",
+    outcomeAr:
+      "التوصية بالبديل D (ورقة البرسيم الكاملة): أقل تأخير وأقصر طوابير وأفضل موثوقية (TT95/TTavg ≈ 1.15)، مع قدرة على استيعاب النمو حتى 2055.",
+  },
+  {
+    id: "abu-ruaya",
+    type: "interchange",
+    year: "",
+    city: "Misurata — Abu Ruaya",
+    cityAr: "مصراتة — أبو روية",
+    title: "Road 8–18 × Coastal Road Grade-Separated Junction",
+    titleAr: "جسر تقاطع الطريق 8-18 مع الطريق الساحلي",
+    client: "Prepared in response to the Planning Authority request",
+    clientAr: "أُعدّ بناءً على طلب مصلحة التخطيط",
+    summary:
+      "Preliminary geometric design of a grade-separated junction linking the extension of Road 8 (and future Road 18) to the Coastal Road.",
+    summaryAr:
+      "تصميم هندسي أولي لتقاطع منفصل المستوى يربط امتداد الطريق 8 (والطريق 18 مستقبلًا) بالطريق الساحلي.",
+    challenge:
+      "Near-perpendicular crossing (81°) of a 100 km/h major road and an 80 km/h minor road, with heavy plant traffic expected to climb the structure.",
+    challengeAr:
+      "تقاطع شبه متعامد (81°) بين طريق رئيسي بسرعة تصميمية 100 كم/س وطريق ثانوي بسرعة 80 كم/س، مع توقع صعود آليات ثقيلة على الجسر.",
+    approach: [
+      "Ramp design speeds from AASHTO Table 10-1 (50 % range): 50 km/h and 40 km/h",
+      "Minimum ramp radii from AASHTO Table 3-7 (e = 4 %): 86 m and 47 m",
+      "Speed-change lanes: 205 m acceleration and 120 m deceleration",
+      "4 % approach grades, ≈ 6 m vertical clearance, 30 m spans, ≈ 400 m structure",
+    ],
+    approachAr: [
+      "سرعات المنحدرات من جدول AASHTO 10-1 (المدى 50%): 50 و40 كم/س",
+      "أقل أنصاف أقطار للمنحدرات من جدول AASHTO 3-7 (e = 4%): 86 م و47 م",
+      "حارات تغيير السرعة: 205 م للتسارع و120 م للتباطؤ",
+      "ميل اقتراب 4%، خلوص رأسي ≈ 6 م، بحور 30 م، وطول جسر ≈ 400 م",
+    ],
+    alternatives: [
+      { en: "Full cloverleaf", ar: "ورقة برسيم كاملة", shape: "clover" },
+      { en: "Diamond interchange", ar: "جسر ماسي", shape: "diamond" },
+      { en: "Roundabout interchange", ar: "جسر جزيرة دوران", shape: "roundabout" },
+    ],
+    outcome:
+      "Three alternatives laid out to scale on aerial imagery with right-of-way limits for evaluation against operational, community and design criteria.",
+    outcomeAr:
+      "إعداد ثلاثة بدائل بمقياس رسم على الصور الجوية مع حدود حرم الطريق، لتقييمها وفق معايير تشغيلية ومجتمعية وتصميمية.",
+  },
+  {
+    id: "lisco-tia",
+    type: "tia",
+    year: "2023",
+    city: "Misurata",
+    cityAr: "مصراتة",
+    title: "Traffic Impact Assessment — Steel Plant, Port & Free Zone Network",
+    titleAr: "دراسة الأثر المروري لشبكة الطرق المؤدية لمصنع الحديد والميناء والمنطقة الحرة",
+    client: "Concept note",
+    clientAr: "مذكرة مفاهيمية",
+    summary:
+      "Network-level traffic study of the roads serving the steel plant, the sea port and the free zone, comparing the network before and after proposed links.",
+    summaryAr:
+      "دراسة مرورية على مستوى الشبكة للطرق المؤدية لمصنع الحديد والصلب والميناء والمنطقة الحرة، مع مقارنة الشبكة قبل الروابط المقترحة وبعدها.",
+    challenge:
+      "High and growing trip demand from industrial and logistics zones causing congestion at key junctions and roundabouts.",
+    challengeAr:
+      "طلب رحلات مرتفع ومتزايد من المناطق الصناعية واللوجستية يسبب ازدحامًا عند التقاطعات وجزر الدوران الرئيسية.",
+    approach: [
+      "Zonal multiple-regression trip generation from land-use data (GFA, employees)",
+      "Gravity-model distribution and origin–destination matrices on a node network",
+      "Binary modal split into passenger cars and heavy goods vehicles (1 HGV = 2.3 PCU)",
+      "Link-flow assignment and junction-by-junction before/after comparison",
+    ],
+    approachAr: [
+      "توليد الرحلات بالانحدار المتعدد على مستوى المناطق من بيانات استخدام الأراضي",
+      "توزيع الرحلات بنموذج الجاذبية ومصفوفات المنشأ والمقصد على شبكة عقد",
+      "تقسيم الرحلات إلى سيارات وشاحنات ثقيلة (الشاحنة = 2.3 PCU)",
+      "تحميل الحجوم على الوصلات ومقارنة قبل/بعد لكل تقاطع",
+    ],
+    outcome:
+      "Separating through traffic from site-bound traffic provides a better network option; the same framework supports future demand testing.",
+    outcomeAr:
+      "فصل الحركة العابرة عن الحركة المتجهة للمواقع يقدّم خيارًا أفضل للشبكة، ويمكن استخدام الإطار نفسه لاختبار الطلب المستقبلي.",
+  },
+];

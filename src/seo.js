@@ -51,24 +51,24 @@ export const pages = [
     en: {
       title: "Projects | Sudaf Engineering Consultancy",
       description:
-        "Selected transport, infrastructure, and engineering study projects by Sudaf Engineering Consultancy.",
+        "Case studies by the Sudaf engineering team: Coastal Road × Heavy Transport Road interchange alternatives, Road 8–18 grade-separated junction, and a port and steel-plant traffic impact assessment in Misurata.",
     },
     ar: {
       title: "المشاريع | سدف للاستشارات الهندسية",
       description:
-        "نماذج من مشاريع شركة سدف للاستشارات الهندسية في مجالات النقل والبنية التحتية والدراسات الهندسية.",
+        "دراسات حالة من أعمال فريق سدف الهندسي: بدائل جسر تقاطع الطريق الساحلي مع طريق النقل الثقيل، وجسر تقاطع الطريق 8-18، ودراسة الأثر المروري لمصنع الحديد والميناء في مصراتة.",
     },
   },
   {
     key: "tools",
     path: "tools",
     en: {
-      title: "Roundabout Design Tools – DMRB & NCHRP 672 | Sudaf Engineering",
+      title: "Engineering Tools – Roundabouts, Ramps & Traffic Growth | Sudaf Engineering",
       description:
-        "Free roundabout design tools: Kimber (TRL LR942) entry capacity with a DMRB CD 116 QA/QC checklist, and FHWA / NCHRP 672 fastest-path speeds with HCM capacity, delay and LOS.",
+        "Free engineering tools: Kimber/DMRB roundabout capacity with QA/QC checklist, NCHRP 672 fastest paths with HCM LOS, AASHTO ramp radius and speed-change lane lengths, and CAGR traffic growth vs capacity.",
     },
     ar: {
-      title: "أدوات تصميم الدوّارات – DMRB وNCHRP 672 | سدف للاستشارات الهندسية",
+      title: "أدوات هندسية – الدوّارات والمنحدرات ونمو المرور | سدف للاستشارات الهندسية",
       description:
         "أدوات مجانية لتصميم الدوّارات: سعة المدخل وفق نموذج Kimber مع قائمة فحص جودة حسب DMRB CD 116، وسرعات المسار الأسرع وفق FHWA / NCHRP 672 مع السعة والتأخير ومستوى الخدمة حسب HCM.",
     },
