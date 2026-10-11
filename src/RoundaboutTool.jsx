@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { dmrbChecks, fmt, kimber, usAnalysis } from "./tools/roundaboutCalc";
-import { DmrbDiagram, UsDiagram } from "./tools/RoundaboutDiagrams";
+import { DmrbDiagram, UsDiagram, usGeometry, US_GEOM_DEFAULT } from "./tools/RoundaboutDiagrams";
 
 /* ---------- shared UI ---------- */
 
@@ -151,12 +151,24 @@ function DmrbTool({ ar }) {
 
 /* ---------- US: FHWA / NCHRP 672 fastest path + HCM ---------- */
 
-const US_DEFAULT = { R1: 50, R2: 30, R3: 100, R4: 18, R5: 25, entryLanes: 2, circLanes: 2, ve: 1100, vc: 700 };
+const US_DEFAULT = { entryLanes: 2, circLanes: 2, ve: 1100, vc: 700 };
 
 function UsTool({ ar }) {
   const [p, setP] = useState(US_DEFAULT);
+  const [g, setG] = useState(US_GEOM_DEFAULT);
   const set = (k) => (v) => setP((s) => ({ ...s, [k]: v }));
-  const res = useMemo(() => usAnalysis(p), [p]);
+  const setGeo = (k) => (v) => setG((s) => ({ ...s, [k]: v }));
+
+  // Lane counts drive typical widths; the sliders can then fine-tune them.
+  const setLanes = (k) => (n) => {
+    setP((s) => ({ ...s, [k]: n }));
+    if (k === "entryLanes") setG((s) => ({ ...s, We: n === 2 ? 7.4 : 4.6, Wx: n === 2 ? 6.0 : 4.6 }));
+    if (k === "circLanes") setG((s) => ({ ...s, circW: n === 2 ? 9.2 : 5.5, ICD: n === 2 ? Math.max(s.ICD, 46) : s.ICD }));
+  };
+
+  const geo = useMemo(() => usGeometry(g), [g]);
+  const radii = Object.fromEntries(["R1", "R2", "R3", "R4", "R5"].map((k) => [k, geo.radii[k] ? Math.round(geo.radii[k].r) : 999]));
+  const res = useMemo(() => usAnalysis({ ...p, ...radii }), [p, radii.R1, radii.R2, radii.R3, radii.R4, radii.R5]);
   const tone = res.worst.x <= 0.85 ? "good" : res.worst.x <= 1 ? "warn" : "bad";
   const laneName = (i) =>
     res.lanes.length === 1 ? (ar ? "المسار" : "Lane") : i === 0 ? (ar ? "المسار الأيمن" : "Right lane") : ar ? "المسار الأيسر" : "Left lane";
@@ -165,19 +177,19 @@ function UsTool({ ar }) {
     <div className="tool-grid">
       <div className="tool-col">
         <div className="tool-card dark">
-          <UsDiagram sp={res.speeds} p={p} ar={ar} />
+          <UsDiagram geo={geo} g={g} p={p} speeds={res.speeds} ar={ar} />
         </div>
         <div className="tool-card">
           <h3>{ar ? "النتائج — NCHRP 672 وHCM" : "Results — NCHRP 672 & HCM"}</h3>
           <table className="speed-table" dir="ltr">
             <thead>
-              <tr><th>Path</th><th>R (m)</th><th>e</th><th>V (km/h)</th></tr>
+              <tr><th>Path</th><th>{ar ? "R مقاس (م)" : "R measured (m)"}</th><th>e</th><th>V (km/h)</th></tr>
             </thead>
             <tbody>
               {[1, 2, 3, 4, 5].map((i) => (
                 <tr key={i}>
                   <td>R{i}</td>
-                  <td>{p[`R${i}`]}</td>
+                  <td>{radii[`R${i}`] === 999 ? "—" : radii[`R${i}`]}</td>
                   <td>{i === 2 || i === 4 ? "−0.02" : "+0.02"}</td>
                   <td><strong>{fmt(res.speeds[`V${i}`])}</strong></td>
                 </tr>
@@ -197,15 +209,23 @@ function UsTool({ ar }) {
 
       <div className="tool-col">
         <div className="tool-card">
-          <h3>{ar ? "أنصاف أقطار المسار الأسرع" : "Fastest-path radii"}</h3>
-          <Field id="u-r1" sym="R1" label={ar ? "مسار الدخول" : "Entry path"} unit="m" min={10} max={200} value={p.R1} onChange={set("R1")} />
-          <Field id="u-r2" sym="R2" label={ar ? "المسار الدائري" : "Circulating path"} unit="m" min={10} max={150} value={p.R2} onChange={set("R2")} />
-          <Field id="u-r3" sym="R3" label={ar ? "مسار الخروج" : "Exit path"} unit="m" min={10} max={300} value={p.R3} onChange={set("R3")} />
-          <Field id="u-r4" sym="R4" label={ar ? "مسار الانعطاف لليسار" : "Left-turn path"} unit="m" min={8} max={100} value={p.R4} onChange={set("R4")} />
-          <Field id="u-r5" sym="R5" label={ar ? "مسار الانعطاف لليمين" : "Right-turn path"} unit="m" min={8} max={150} value={p.R5} onChange={set("R5")} />
-          <h3 className="sub">{ar ? "المسارات والتدفقات (HCM)" : "Lanes & flows (HCM)"}</h3>
-          <Segmented label={ar ? "مسارات المدخل" : "Entry lanes"} options={[1, 2]} value={p.entryLanes} onChange={set("entryLanes")} />
-          <Segmented label={ar ? "المسارات الدائرية" : "Circulating lanes"} options={[1, 2]} value={p.circLanes} onChange={set("circLanes")} />
+          <h3>{ar ? "هندسة جزيرة الدوران" : "Roundabout geometry"}</h3>
+          <Segmented label={ar ? "مسارات المدخل" : "Entry lanes"} options={[1, 2]} value={p.entryLanes} onChange={setLanes("entryLanes")} />
+          <Segmented label={ar ? "المسارات الدائرية" : "Circulating lanes"} options={[1, 2]} value={p.circLanes} onChange={setLanes("circLanes")} />
+          <Field id="u-icd" sym="ICD" label={ar ? "القطر الخارجي" : "Inscribed circle diameter"} unit="m" min={30} max={80} value={g.ICD} onChange={setGeo("ICD")} />
+          <Field id="u-cw" sym="Wc" label={ar ? "عرض الطريق الدائري" : "Circulatory width"} unit="m" min={4.5} max={12} step={0.1} value={g.circW} onChange={setGeo("circW")} />
+          <Field id="u-ap" sym="Wa" label={ar ? "عرض مئزر الشاحنات" : "Truck apron width"} unit="m" min={0} max={5} step={0.5} value={g.apron} onChange={setGeo("apron")} />
+          <Field id="u-we" sym="We" label={ar ? "عرض المدخل" : "Entry width"} unit="m" min={4} max={11} step={0.1} value={g.We} onChange={setGeo("We")} />
+          <Field id="u-wx" sym="Wx" label={ar ? "عرض المخرج" : "Exit width"} unit="m" min={4} max={10} step={0.1} value={g.Wx} onChange={setGeo("Wx")} />
+          <Field id="u-sp" sym="Ws" label={ar ? "عرض الجزيرة الفاصلة" : "Splitter island width"} unit="m" min={1.8} max={10} step={0.2} value={g.splitter} onChange={setGeo("splitter")} />
+          <Field id="u-ri" sym="Rin" label={ar ? "نصف قطر حافة المدخل" : "Entry kerb radius"} unit="m" min={10} max={45} value={g.rIn} onChange={setGeo("rIn")} />
+          <Field id="u-ro" sym="Rex" label={ar ? "نصف قطر حافة المخرج" : "Exit kerb radius"} unit="m" min={15} max={80} value={g.rOut} onChange={setGeo("rOut")} />
+          <p className="tool-hint muted-hint">
+            {ar
+              ? "يُرسم المسار الأسرع تلقائيًا على بُعد 1.5 م من الجزر و1.0 م من الحواف، وتُقاس أنصاف الأقطار R1–R5 من المسار المرسوم على قوس طوله نحو 20 م."
+              : "Fastest paths are drawn 1.5 m from islands and 1.0 m from kerbs; R1–R5 are measured on the drawn paths over a ~20 m arc."}
+          </p>
+          <h3 className="sub">{ar ? "التدفقات (HCM)" : "Flows (HCM)"}</h3>
           <Field id="u-ve" sym="ve" label={ar ? "حجم المدخل" : "Entry flow"} unit="pc/h" min={0} max={2400} step={50} value={p.ve} onChange={set("ve")} />
           <Field id="u-vc" sym="vc" label={ar ? "التدفق الدائري المتعارض" : "Conflicting flow"} unit="pc/h" min={0} max={2000} step={50} value={p.vc} onChange={set("vc")} />
         </div>

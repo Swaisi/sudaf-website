@@ -127,7 +127,7 @@ const Defs = () => (
   </defs>
 );
 
-function Plan({ L, v, Ri, children }) {
+function Plan({ L, v, Ri, apron = 0, children }) {
   const { P, d } = v;
   const [cx, cy] = P([0, 0]);
   return (
@@ -145,7 +145,8 @@ function Plan({ L, v, Ri, children }) {
           <path d={d(g.giveway)} className="giveway" />
         </g>
       ))}
-      <circle cx={cx} cy={cy} r={Ri * v.s} className="kerb island" />
+      <circle cx={cx} cy={cy} r={Ri * v.s} className={apron ? "kerb apron-ring" : "kerb island"} />
+      {apron > 0 && <circle cx={cx} cy={cy} r={(Ri - apron) * v.s} className="kerb island" />}
       {children}
     </>
   );
@@ -286,87 +287,208 @@ export function DmrbDiagram({ p }) {
 }
 
 /* ======================================================================
-   FHWA / NCHRP 672 design elements and fastest paths
+   FHWA / NCHRP 672 — geometry-driven fastest paths
+   Geometry -> fastest paths (1.5 m from islands, 1.0 m from kerbs) ->
+   R1–R5 measured on the drawn paths -> speeds (NCHRP 672 Eq. 6-1/6-2).
 ====================================================================== */
 
-export function UsDiagram({ sp: speeds, p, ar }) {
-  const [layer, setLayer] = useState("elements");
-  const Rc = 23; // ICD 46 m
-  const circW = p.circLanes === 2 ? 9.2 : 5.5;
-  const sp = 2.2;
-  const We = p.entryLanes * 3.7, Wx = p.entryLanes === 2 ? 6 : 4.6;
-  const V = We - 0.8;
-  const farW = 74, farO = 40;
-  const L = buildLayout({ Rc, circW, leg: { yOff: sp, V, E: We, lp: 12, r: 18, Wx, rx: 24, sp }, farW, farO });
-  const v = makeView(-farW, -farO, farO, farO, 640);
-  const Ri = L.Ri;
+export const US_GEOM_DEFAULT = {
+  ICD: 50, circW: 9.2, We: 7.4, Wx: 6.0, splitter: 4.4, rIn: 20, rOut: 30, apron: 3,
+};
+
+// Signed radius of the circle through three points (+ = right-hand bend on screen).
+function circle3(a, b, c) {
+  const [ax, ay] = a, [bx, by] = b, [cx, cy] = c;
+  const d = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by));
+  if (Math.abs(d) < 1e-9) return null;
+  const a2 = ax * ax + ay * ay, b2 = bx * bx + by * by, c2 = cx * cx + cy * cy;
+  const ux = (a2 * (by - cy) + b2 * (cy - ay) + c2 * (ay - by)) / d;
+  const uy = (a2 * (cx - bx) + b2 * (ax - cx) + c2 * (bx - ax)) / d;
+  const cross = (bx - ax) * (cy - by) - (by - ay) * (cx - bx);
+  return { r: Math.hypot(ax - ux, ay - uy), sign: Math.sign(cross), c: [ux, uy] };
+}
+
+function resample(pts, step = 0.5) {
+  const out = [pts[0]];
+  let need = step;
+  for (let i = 1; i < pts.length; i++) {
+    const [x0, y0] = pts[i - 1], [x1, y1] = pts[i];
+    const seg = Math.hypot(x1 - x0, y1 - y0);
+    let t = need;
+    while (t <= seg) {
+      out.push([x0 + ((x1 - x0) * t) / seg, y0 + ((y1 - y0) * t) / seg]);
+      t += step;
+    }
+    need = t - seg;
+  }
+  return out;
+}
+
+// Smallest radius of the requested bend direction within a region of the path,
+// measured over a ~20 m arc (three points 10 m apart along the path).
+function measure(path, sign, inRegion) {
+  const k = 20; // 20 samples x 0.5 m = 10 m
+  let best = null;
+  for (let i = k; i < path.length - k; i++) {
+    const pt = path[i];
+    if (!inRegion(pt)) continue;
+    const c = circle3(path[i - k], pt, path[i + k]);
+    if (!c || c.sign !== sign) continue;
+    if (!best || c.r < best.r) best = { r: c.r, at: pt, c: c.c };
+  }
+  return best;
+}
+
+// Point at the middle of a kerb fillet, moved `off` metres into the carriageway.
+function fil(f, R, off) {
+  const mid = arcBetween(f.c, f.t1, f.t2, 2)[1];
+  const k = (f.r + off) / f.r;
+  return rot([f.c[0] + (mid[0] - f.c[0]) * k, f.c[1] + (mid[1] - f.c[1]) * k], R);
+}
+
+export function usGeometry(g) {
+  const Rc = g.ICD / 2;
+  const circW = Math.min(g.circW, Rc - 6);
+  const Ri = Rc - circW;
+  const sp = g.splitter / 2;
+  const farO = Math.max(40, Rc + 18);
+  const farW = farO + 34;
+  const L = buildLayout({
+    Rc,
+    circW,
+    leg: { yOff: sp, V: g.We - 0.8, E: g.We, lp: 12, r: g.rIn, Wx: g.Wx, rx: g.rOut, sp },
+    farW,
+    farO,
+  });
   const xA = L.xA;
+  // rotations applied to the local (west-pointing) leg geometry
+  const W = 0, S = -Math.PI / 2, E = Math.PI, N = Math.PI / 2;
+  const rr = Ri + 1.5;
+  const islandPt = (deg) => [rr * Math.cos(toRad(deg)), rr * Math.sin(toRad(deg))];
+  const approach = [[-farW, sp + 1.5], [xA - 14, sp + 1.5]];
+  const entry = fil(L.ent, W, 1.0);
+  const exitTo = (R) => [fil(L.ext, R, 1.0), rot([xA - 14, -(sp + 1.5)], R), rot([-farO - 2, -(sp + 1.5)], R)];
 
-  // Fastest paths from the west approach: 1.0 m from kerbs, 1.5 m from islands.
-  const yE = sp + We - 1.0, yX = sp + Wx - 1.0, rr = Ri + 1.5;
-  const through = spline([[-farW, sp + 1.5], [-Rc - 10, yE - 0.4], [-Rc + 3, yE + 2], [0, rr], [Rc - 3, yX + 2], [Rc + 10, yX - 0.4], [farO, sp + 1.5]]);
-  const leftTurn = spline([
-    [-farW, sp + 1.5], [-Rc - 10, yE - 0.4], [-Rc + 3, yE + 2],
-    ...[110, 70, 30, -10, -50].map((a) => [rr * Math.cos(toRad(a)), rr * Math.sin(toRad(a))]),
-    [yX + 2, -Rc + 3], [yX - 0.4, -Rc - 10], [sp + 1.5, -farO],
-  ]);
-  const rightTurn = spline([[-farW, yE], [-Rc - 7, yE], [-Rc + 1, yE + 4.5], [-yX - 4.5, Rc - 1], [-yX, Rc + 7], [-yX, farO]]);
+  const through = resample(spline([...approach, entry, islandPt(90), ...exitTo(E)], 24));
+  // left turn: follows the island at 1.5 m offset between the entry and exit transitions
+  const [exN, ...exRest] = exitTo(N);
+  const gapTo = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  const arc = [];
+  for (let a = 120; a >= -75; a -= 6) {
+    const q = islandPt(a);
+    // keep only the part of the circle clear of the entry and exit transitions
+    if (gapTo(q, entry) > Rc * 0.45 && gapTo(q, exN) > Rc * 0.45) arc.push(q);
+  }
+  const left = resample(spline([...approach, entry, ...arc, exN, ...exRest], 12));
+  const yR = sp + g.We - 1.0, yRx = sp + g.Wx - 1.0;
+  const right = resample(
+    spline([[-farW, yR], [xA - 10, yR], fil(L.ent, W, 1.0), fil(L.ext, S, 1.0), rot([xA - 10, -yRx], S), rot([-farO - 2, -yRx], S)], 24)
+  );
 
-  const tag = (q, name, val, cls) => {
-    const [x, y] = v.P(q);
+  const zone = Ri * 0.75;
+  const radii = {
+    R1: measure(through, 1, (q) => q[0] < -zone),
+    R2: measure(through, -1, (q) => Math.abs(q[0]) <= zone),
+    R3: measure(through, 1, (q) => q[0] > zone),
+    R4: measure(left, -1, (q) => Math.hypot(q[0], q[1]) < Rc),
+    R5: measure(right, 1, () => true),
+  };
+  return { Rc, Ri, circW, sp, farW, farO, L, xA, through, left, right, radii };
+}
+
+export function UsDiagram({ geo, g, p, speeds, ar }) {
+  const [layer, setLayer] = useState("paths");
+  const { Rc, Ri, circW, sp, farW, farO, L, xA, radii } = geo;
+  const v = makeView(-farW, -farO, farO, farO, 640);
+  const diag = toRad(-40);
+  const wc = toRad(45);
+
+  // Fitted radius: short arc of the fitted circle, radius line and centre point.
+  const mark = (m, cls, key) => {
+    if (!m) return null;
+    const a = Math.atan2(m.at[1] - m.c[1], m.at[0] - m.c[0]);
+    const span = Math.min(0.6, 14 / m.r);
+    const arc = Array.from({ length: 21 }, (_, i) => {
+      const t = a - span + (2 * span * i) / 20;
+      return [m.c[0] + m.r * Math.cos(t), m.c[1] + m.r * Math.sin(t)];
+    });
+    const near = m.r < 60;
+    const from = near ? m.c : [m.at[0] - ((m.at[0] - m.c[0]) * 12) / m.r, m.at[1] - ((m.at[1] - m.c[1]) * 12) / m.r];
     return (
-      <g className={`ptag ${cls}`} transform={`translate(${x},${y})`}>
-        <circle r="13" />
-        <text y="4" textAnchor="middle">{name}</text>
-        <text y="28" textAnchor="middle" className="ptag-v">{`${val.toFixed(0)} km/h`}</text>
+      <g key={key} className={`rmark ${cls}`}>
+        <path d={v.d(arc)} />
+        <path d={v.d([from, m.at])} className="rline" />
+        {near && <circle cx={v.P(m.c)[0]} cy={v.P(m.c)[1]} r="2.5" />}
       </g>
     );
   };
 
-  const diag = toRad(-40);
-  const wc = toRad(45);
+  const placed = [];
+  const tag = (name, cls, val) => {
+    const m = radii[name];
+    if (!m) return null;
+    const dx = m.at[0] - m.c[0], dy = m.at[1] - m.c[1], k = 7 / Math.hypot(dx, dy);
+    let [x, y] = v.P([m.at[0] + dx * k, m.at[1] + dy * k]);
+    // nudge away from labels already placed
+    for (let n = 0; n < 6 && placed.some(([px, py]) => Math.abs(px - x) < 90 && Math.abs(py - y) < 44); n++) y += 46;
+    y = Math.min(y, v.H - 40);
+    placed.push([x, y]);
+    return (
+      <g key={name} className={`ptag ${cls}`} transform={`translate(${x},${y})`}>
+        <circle r="13" />
+        <text y="4" textAnchor="middle">{name}</text>
+        <text y="28" textAnchor="middle" className="ptag-v">{`${Math.round(m.r)} m · ${val.toFixed(0)} km/h`}</text>
+      </g>
+    );
+  };
 
   return (
     <div className="plan-wrap">
       <div className="plan-toggle" role="group">
-        <button className={layer === "elements" ? "active" : ""} aria-pressed={layer === "elements"} onClick={() => setLayer("elements")}>
-          {ar ? "عناصر التصميم" : "Design elements"}
-        </button>
         <button className={layer === "paths" ? "active" : ""} aria-pressed={layer === "paths"} onClick={() => setLayer("paths")}>
           {ar ? "المسار الأسرع" : "Fastest paths"}
         </button>
+        <button className={layer === "elements" ? "active" : ""} aria-pressed={layer === "elements"} onClick={() => setLayer("elements")}>
+          {ar ? "عناصر التصميم" : "Design elements"}
+        </button>
       </div>
-      <svg className="tool-svg plan" viewBox={`0 0 ${v.W} ${v.H}`} dir="ltr" role="img" aria-label="FHWA roundabout design elements and fastest paths">
+      <svg className="tool-svg plan" viewBox={`0 0 ${v.W} ${v.H}`} dir="ltr" role="img" aria-label="FHWA roundabout design elements and fastest paths, to scale">
         <Defs />
-        <Plan L={L} v={v} Ri={Ri}>
+        <Plan L={L} v={v} Ri={Ri} apron={g.apron}>
           {layer === "elements" ? (
             <>
               <Dim a={[-Rc * Math.cos(diag), -Rc * Math.sin(diag)]} b={[Rc * Math.cos(diag), Rc * Math.sin(diag)]} v={v} />
-              <Dim a={[xA - 1.5, sp]} b={[xA - 1.5, sp + We]} v={v} />
-              <Dim a={[xA - 1.5, -sp]} b={[xA - 1.5, -sp - Wx]} v={v} />
+              <Dim a={[xA - 1.5, sp]} b={[xA - 1.5, sp + g.We]} v={v} />
+              <Dim a={[xA - 1.5, -sp]} b={[xA - 1.5, -sp - g.Wx]} v={v} />
               <Dim a={[xA + 2.2, -sp]} b={[xA + 2.2, sp]} v={v} />
               <Dim a={[Ri * Math.cos(wc), Ri * Math.sin(wc)]} b={[Rc * Math.cos(wc), Rc * Math.sin(wc)]} v={v} />
-              <Callout v={v} at={[Rc * Math.cos(diag) * 0.5, Rc * Math.sin(diag) * 0.5]} label={[v.W - 196, 30]} lines={["Inscribed circle diameter", "ICD = 46 m"]} />
-              <Callout v={v} at={[xA - 1.5, -sp - Wx / 2]} label={[200, 110]} anchor="end" lines={["Exit width", `${Wx.toFixed(1)} m`]} />
-              <Callout v={v} at={[xA - 1.5, sp + We / 2]} label={[200, v.H - 110]} anchor="end" lines={["Entry width", `${We.toFixed(1)} m · ${p.entryLanes} lane${p.entryLanes > 1 ? "s" : ""}`]} />
-              <Callout v={v} at={[xA + 2.2, 0]} label={[200, v.H - 40]} anchor="end" lines={["Splitter island width", `${(2 * sp).toFixed(1)} m`]} />
-              <Callout v={v} at={[(Ri + Rc) / 2 * Math.cos(wc), (Ri + Rc) / 2 * Math.sin(wc)]} label={[v.W - 210, v.H - 40]} lines={["Circulatory roadway width", `${circW} m · ${p.circLanes} lane${p.circLanes > 1 ? "s" : ""}`]} />
+              <Callout v={v} at={[Rc * Math.cos(diag) * 0.5, Rc * Math.sin(diag) * 0.5]} label={[v.W - 196, 30]} lines={["Inscribed circle diameter", `ICD = ${g.ICD} m`]} />
+              <Callout v={v} at={[xA - 1.5, -sp - g.Wx / 2]} label={[200, 110]} anchor="end" lines={["Exit width", `${g.Wx} m`]} />
+              <Callout v={v} at={[xA - 1.5, sp + g.We / 2]} label={[200, v.H - 110]} anchor="end" lines={["Entry width", `${g.We} m · ${p.entryLanes} lane${p.entryLanes > 1 ? "s" : ""}`]} />
+              <Callout v={v} at={[xA + 2.2, 0]} label={[200, v.H - 40]} anchor="end" lines={["Splitter island width", `${g.splitter} m`]} />
+              <Callout v={v} at={[((Ri + Rc) / 2) * Math.cos(wc), ((Ri + Rc) / 2) * Math.sin(wc)]} label={[v.W - 210, v.H - 40]} lines={["Circulatory roadway width", `${circW} m · ${p.circLanes} lane${p.circLanes > 1 ? "s" : ""}`]} />
+              {g.apron > 0 && <Callout v={v} at={[0, -(Ri - g.apron / 2)]} label={[v.W - 196, 92]} lines={["Truck apron", `${g.apron} m`]} />}
             </>
           ) : (
             <>
-              <path d={v.d(rightTurn)} className="path p5" />
-              <path d={v.d(leftTurn)} className="path p4" />
-              <path d={v.d(through)} className="path p1" />
-              {tag([-Rc - 5, yE + 9], "R1", speeds.V1, "t1")}
-              {tag([0, rr + 5], "R2", speeds.V2, "t1")}
-              {tag([Rc + 5, yX + 9], "R3", speeds.V3, "t1")}
-              {tag([rr * Math.cos(toRad(-25)) + 6, rr * Math.sin(toRad(-25)) - 3], "R4", speeds.V4, "t4")}
-              {tag([-Rc - 9, Rc + 7], "R5", speeds.V5, "t5")}
+              <path d={v.d(geo.right)} className="path p5" />
+              <path d={v.d(geo.left)} className="path p4" />
+              <path d={v.d(geo.through)} className="path p1" />
+              {mark(radii.R5, "t5", "m5")}
+              {mark(radii.R4, "t4", "m4")}
+              {mark(radii.R1, "t1", "m1")}
+              {mark(radii.R2, "t1", "m2")}
+              {mark(radii.R3, "t1", "m3")}
+              {tag("R1", "t1", speeds.V1)}
+              {tag("R2", "t1", speeds.V2)}
+              {tag("R3", "t1", speeds.V3)}
+              {tag("R4", "t4", speeds.V4)}
+              {tag("R5", "t5", speeds.V5)}
             </>
           )}
         </Plan>
         <ScaleBar v={v} metres={10} />
-        <text x={14} y={40} className="svg-note">FHWA / NCHRP 672 — to scale</text>
+        <text x={14} y={40} className="svg-note">FHWA / NCHRP 672 — to scale · radii measured on drawn paths</text>
       </svg>
       {layer === "paths" && (
         <ul className="path-legend">
