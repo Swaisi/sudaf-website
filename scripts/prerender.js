@@ -6,6 +6,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { pages, pagePath, SITE_URL } from "../src/seo.js";
+import { services, contact, faqs, projects, tools } from "../src/data.js";
 
 const DIST = "dist";
 const template = readFileSync(`${DIST}/index.html`, "utf8");
@@ -66,13 +67,78 @@ ${urls.join("\n")}
 `
 );
 
+// robots.txt: everyone is welcome, AI search/assistant crawlers are named explicitly.
+const AI_BOTS = [
+  "GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-User", "Claude-SearchBot",
+  "anthropic-ai", "PerplexityBot", "Perplexity-User", "Google-Extended", "Applebot-Extended",
+  "Bingbot", "CCBot", "Amazonbot", "Meta-ExternalAgent", "DuckAssistBot", "MistralAI-User",
+];
 writeFileSync(
   `${DIST}/robots.txt`,
   `User-agent: *
 Allow: /
 
+${AI_BOTS.map((b) => `User-agent: ${b}\nAllow: /`).join("\n\n")}
+
 Sitemap: ${SITE_URL}/sitemap.xml
 `
 );
 
-console.log("prerender: sitemap.xml and robots.txt written");
+// llms.txt (index) and llms-full.txt (all content) so AI agents can read the site as plain text.
+const home = pages.find((p) => p.key === "home");
+const phones = contact.phones.map((p) => p.display).join(", ");
+const link = (page, lang) => `${SITE_URL}${pagePath(page.path, lang)}`;
+
+const llms = `# Sudaf Engineering Consultancy
+
+> ${home.en.description}
+
+Bilingual site (English and Arabic). Misurata, Libya. Contact: ${contact.email}, ${phones}, WhatsApp ${contact.whatsapp}.
+Full text of the site: ${SITE_URL}/llms-full.txt
+
+## Pages (English)
+${pages.map((p) => `- [${p.en.title}](${link(p, "en")}): ${p.en.description}`).join("\n")}
+
+## Pages (Arabic)
+${pages.map((p) => `- [${p.ar.title}](${link(p, "ar")}): ${p.ar.description}`).join("\n")}
+`;
+writeFileSync(`${DIST}/llms.txt`, llms);
+
+const list = (a) => a.map((x) => `- ${x}`).join("\n");
+const full = `# Sudaf Engineering Consultancy
+
+> ${home.en.description}
+
+Website: ${SITE_URL} (Arabic: ${SITE_URL}/ar)
+
+## Contact
+- Email: ${contact.email}
+- Studies: ${contact.studiesEmail}
+- Phone: ${phones}
+- WhatsApp: ${contact.whatsapp}
+- Map: ${contact.mapUrl}
+
+## Services
+${services.map((s) => `### ${s.title}\n${s.desc}\n${list(s.details || [])}`).join("\n\n")}
+
+## Software
+${tools.join(", ")}
+
+## Projects
+${projects
+  .map(
+    (p) => `### ${p.title}
+${[p.city, p.year, p.client].filter(Boolean).join(" | ")}
+${p.summary}
+- Challenge: ${p.challenge}
+${list(p.approach || [])}
+- Outcome: ${p.outcome || ""}`
+  )
+  .join("\n\n")}
+
+## FAQ
+${faqs.map((f) => `### ${f.q}\n${f.a}`).join("\n\n")}
+`;
+writeFileSync(`${DIST}/llms-full.txt`, full);
+
+console.log("prerender: sitemap.xml, robots.txt, llms.txt, llms-full.txt written");
